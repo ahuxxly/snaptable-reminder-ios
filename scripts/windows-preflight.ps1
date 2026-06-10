@@ -361,6 +361,9 @@ if (-not $githubPublishText.Contains("write-site-support-links.ps1")) {
 if (-not $githubPublishText.Contains("write-fastlane-store-urls.ps1")) {
     throw "GitHub publish script should write Fastlane store URLs after repo creation."
 }
+if (-not $githubPublishText.Contains("--enable-issues")) {
+    throw "GitHub publish script should enable Issues for the public support link."
+}
 if (-not $githubPublishText.Contains("docs: add public support request links")) {
     throw "GitHub publish script should commit generated release URL updates."
 }

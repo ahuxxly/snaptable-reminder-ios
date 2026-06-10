@@ -42,6 +42,7 @@ What the script does:
 - Requires a clean git working tree.
 - Creates a GitHub repository when `origin` is missing.
 - Pushes the current branch.
+- Enables GitHub Issues so the public support link has a working request channel.
 - Writes a public support request link into `site/support.html` and `site/privacy.html` after the repository URL is known.
 - Writes `fastlane/metadata/en-US/privacy_url.txt` and `fastlane/metadata/en-US/support_url.txt` from the GitHub Pages URL.
 - Commits and pushes those generated release URL updates when needed.

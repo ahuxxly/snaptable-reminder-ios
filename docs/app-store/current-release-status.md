@@ -13,7 +13,7 @@ Local repository status:
 - GitHub Actions workflows are present for iOS CI, GitHub Pages, App Store screenshots, and release readiness.
 - Fastlane lanes are present for verify, archive, and TestFlight upload.
 - GitHub login and publish helper script is present in `scripts/github-login-and-publish.ps1`.
-- GitHub publish helper can write public support request links and Fastlane store URL files after the repository URL is known.
+- GitHub publish helper can enable GitHub Issues, write public support request links, and write Fastlane store URL files after the repository URL is known.
 - App Store metadata, privacy, age rating, export compliance, review notes, screenshot plan, monetization plan, and launch runbook are drafted.
 - App Store account setup checklist is drafted in `docs/app-store/account-setup.md`.
 - Machine-readable App Store Connect fields are present in `docs/app-store/app-store-fields.json` and covered by Windows preflight.

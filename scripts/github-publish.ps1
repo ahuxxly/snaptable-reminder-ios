@@ -69,6 +69,13 @@ if (-not $repoFullName -or -not $repoFullName.Contains("/")) {
 }
 Write-Host "repo=$repoFullName"
 
+Write-Section "Repository settings"
+& $ghPath repo edit $repoFullName --enable-issues
+if ($LASTEXITCODE -ne 0) {
+    throw "Could not enable GitHub Issues for the support link."
+}
+Write-Host "GitHub Issues enabled"
+
 Write-Section "Support links"
 $repoParts = $repoFullName -split "/", 2
 powershell -ExecutionPolicy Bypass -File scripts\write-site-support-links.ps1 -Owner $repoParts[0] -RepoName $repoParts[1]
