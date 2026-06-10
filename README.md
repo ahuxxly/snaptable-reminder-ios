@@ -32,6 +32,12 @@ xcodebuild test -scheme SnapTableReminder -destination 'platform=iOS Simulator,n
 xcodebuild build -scheme SnapTableReminder -destination 'platform=iOS Simulator,name=iPhone 15'
 ```
 
+Or run:
+
+```bash
+bash scripts/mac-verify.sh
+```
+
 ## App Store Direction
 
 Version 1 is planned as a paid upfront Productivity app distributed outside China mainland at launch. See `docs/app-store/app-store-checklist.md`.
