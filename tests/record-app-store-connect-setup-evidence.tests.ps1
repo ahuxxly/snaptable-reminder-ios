@@ -1,8 +1,8 @@
 $ErrorActionPreference = "Stop"
 
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
-$recordEvidencePath = Join-Path $repoRoot "scripts\record-app-store-release-evidence.ps1"
 $recordSetupPath = Join-Path $repoRoot "scripts\record-app-store-connect-setup-evidence.ps1"
+$recordReleasePath = Join-Path $repoRoot "scripts\record-app-store-release-evidence.ps1"
 $prepareMaterialsPath = Join-Path $repoRoot "scripts\prepare-apple-materials-folder.ps1"
 $exportEntryPackPath = Join-Path $repoRoot "scripts\export-app-store-connect-entry-pack.ps1"
 $releaseDoctorPath = Join-Path $repoRoot "scripts\release-doctor.ps1"
@@ -20,11 +20,11 @@ function Assert-Contains($text, $expected, $message) {
     }
 }
 
-function Invoke-RecordEvidence($arguments) {
+function Invoke-RecordSetup($arguments) {
     $previousErrorActionPreference = $ErrorActionPreference
     $ErrorActionPreference = "Continue"
     try {
-        $output = & powershell -NoProfile -ExecutionPolicy Bypass -File $recordEvidencePath @arguments 2>&1 | Out-String
+        $output = & powershell -NoProfile -ExecutionPolicy Bypass -File $recordSetupPath @arguments 2>&1 | Out-String
         $exitCode = $LASTEXITCODE
     } finally {
         $ErrorActionPreference = $previousErrorActionPreference
@@ -111,85 +111,80 @@ test-private-key
 "@
 }
 
-function New-CompleteEvidenceArguments($materials) {
+function New-CompleteSetupArguments($materials, $excludedCountriesOrRegions = @("China mainland")) {
     @(
         "-MaterialsDirectory", $materials,
         "-AppStoreConnectAppId", "1234567890",
-        "-AppVersion", "1.0",
-        "-BuildNumber", "1",
-        "-MetadataWorkflowRunUrl", "https://github.com/owner/repo/actions/runs/100",
-        "-TestFlightWorkflowRunUrl", "https://github.com/owner/repo/actions/runs/101",
-        "-AppReviewWorkflowRunUrl", "https://github.com/owner/repo/actions/runs/102",
-        "-MetadataUploaded",
-        "-ScreenshotsUploaded",
-        "-ReviewCheckPassed",
-        "-TestFlightUploaded",
-        "-BuildProcessed",
-        "-AppReviewSubmitted",
-        "-AppStatus", "Waiting for Review"
+        "-AppName", "SnapTable Reminder",
+        "-BundleId", "com.snaptable.reminder",
+        "-Sku", "SNAPTABLE-REMINDER-IOS-V1",
+        "-PrimaryLanguage", "en-US",
+        "-PrimaryCategory", "Productivity",
+        "-PriceCurrency", "USD",
+        "-PriceAmount", "1.99",
+        "-AvailabilityMode", "selectedCountriesOrRegions",
+        "-ExcludedCountriesOrRegions", $excludedCountriesOrRegions,
+        "-PrivacyPolicyUrl", "https://ahuxxly.github.io/snaptable-reminder-ios/privacy.html",
+        "-SupportUrl", "https://ahuxxly.github.io/snaptable-reminder-ios/support.html",
+        "-PrivacyAnswersCompleted",
+        "-AgeRatingCompleted",
+        "-ExportComplianceCompleted",
+        "-EuDsaTraderStatusCompleted"
     )
 }
 
-function Add-CompleteSetupEvidence($materials) {
-    & powershell -NoProfile -ExecutionPolicy Bypass -File $recordSetupPath `
+function Add-CompleteReleaseEvidence($materials) {
+    & powershell -NoProfile -ExecutionPolicy Bypass -File $recordReleasePath `
         -MaterialsDirectory $materials `
         -AppStoreConnectAppId "1234567890" `
-        -AppName "SnapTable Reminder" `
-        -BundleId "com.snaptable.reminder" `
-        -Sku "SNAPTABLE-REMINDER-IOS-V1" `
-        -PrimaryLanguage "en-US" `
-        -PrimaryCategory "Productivity" `
-        -PriceCurrency "USD" `
-        -PriceAmount "1.99" `
-        -AvailabilityMode "selectedCountriesOrRegions" `
-        -ExcludedCountriesOrRegions "China mainland" `
-        -PrivacyPolicyUrl "https://ahuxxly.github.io/snaptable-reminder-ios/privacy.html" `
-        -SupportUrl "https://ahuxxly.github.io/snaptable-reminder-ios/support.html" `
-        -PrivacyAnswersCompleted `
-        -AgeRatingCompleted `
-        -ExportComplianceCompleted `
-        -EuDsaTraderStatusCompleted | Out-Null
+        -AppVersion "1.0" `
+        -BuildNumber "1" `
+        -MetadataWorkflowRunUrl "https://github.com/owner/repo/actions/runs/100" `
+        -TestFlightWorkflowRunUrl "https://github.com/owner/repo/actions/runs/101" `
+        -AppReviewWorkflowRunUrl "https://github.com/owner/repo/actions/runs/102" `
+        -MetadataUploaded `
+        -ScreenshotsUploaded `
+        -ReviewCheckPassed `
+        -TestFlightUploaded `
+        -BuildProcessed `
+        -AppReviewSubmitted `
+        -AppStatus "Waiting for Review" | Out-Null
     if ($LASTEXITCODE -ne 0) {
-        throw "Could not record test App Store Connect setup evidence."
+        throw "Could not record test release evidence."
     }
 }
 
-$tempRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("snaptable-record-evidence-tests-" + [guid]::NewGuid().ToString("N"))
+$tempRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("snaptable-record-setup-tests-" + [guid]::NewGuid().ToString("N"))
 New-Item -ItemType Directory -Path $tempRoot | Out-Null
 
 try {
-    Run-Test "records complete App Store release evidence in private materials folder" {
+    Run-Test "records App Store Connect setup evidence that matches source fields" {
         $materials = Join-Path $tempRoot "materials"
         New-CompleteMaterialsFolder $materials
 
-        $result = Invoke-RecordEvidence (New-CompleteEvidenceArguments $materials)
+        $result = Invoke-RecordSetup (New-CompleteSetupArguments $materials)
 
         Assert-True ($result.ExitCode -eq 0) "expected exit 0, got $($result.ExitCode): $($result.Output)"
-        Assert-Contains $result.Output "release-evidence.private.json" "record script should mention the private evidence JSON"
-        $evidencePath = Join-Path $materials "05-release-evidence\release-evidence.private.json"
-        $summaryPath = Join-Path $materials "05-release-evidence\release-evidence-summary.md"
-        Assert-True (Test-Path $evidencePath) "evidence JSON should be written"
-        Assert-True (Test-Path $summaryPath) "evidence summary should be written"
-
-        $evidence = Get-Content $evidencePath -Raw | ConvertFrom-Json
-        Assert-True ($evidence.appStoreConnectAppId -eq "1234567890") "evidence should keep App Store Connect app id"
-        Assert-True ($evidence.status.metadataUploaded -eq $true) "evidence should record metadata upload"
-        Assert-True ($evidence.status.appReviewSubmitted -eq $true) "evidence should record App Review submission"
-        Assert-True ($evidence.appStatus -eq "Waiting for Review") "evidence should record App Store status"
+        Assert-Contains $result.Output "app-store-connect-setup.private.json" "record script should mention the private setup JSON"
+        $setupPath = Join-Path $materials "05-release-evidence\app-store-connect-setup.private.json"
+        Assert-True (Test-Path $setupPath) "setup evidence JSON should be written"
+        $setup = Get-Content $setupPath -Raw | ConvertFrom-Json
+        Assert-True ($setup.app.bundleId -eq "com.snaptable.reminder") "setup should record bundle id"
+        Assert-True ($setup.availability.excludeCountriesOrRegions -contains "China mainland") "setup should record China mainland exclusion"
+        Assert-True ($setup.compliance.euDsaTraderStatusCompleted -eq $true) "setup should record DSA completion"
     }
 
-    Run-Test "dry-run previews evidence without writing private files" {
-        $materials = Join-Path $tempRoot "dry-materials"
+    Run-Test "rejects setup evidence when China mainland is not excluded" {
+        $materials = Join-Path $tempRoot "bad-availability-materials"
         New-CompleteMaterialsFolder $materials
 
-        $result = Invoke-RecordEvidence ((New-CompleteEvidenceArguments $materials) + @("-DryRun"))
+        $result = Invoke-RecordSetup (New-CompleteSetupArguments $materials @("Canada"))
 
-        Assert-True ($result.ExitCode -eq 0) "expected exit 0, got $($result.ExitCode): $($result.Output)"
-        Assert-Contains $result.Output "dry-run: would write release evidence JSON" "dry-run should show the evidence write"
-        Assert-True (-not (Test-Path (Join-Path $materials "05-release-evidence\release-evidence.private.json"))) "dry-run should not write evidence JSON"
+        Assert-True ($result.ExitCode -ne 0) "expected non-zero exit when China mainland is not excluded"
+        Assert-Contains $result.Output "China mainland" "failure should explain the China mainland exclusion"
     }
 
-    Run-Test "release doctor accepts complete local artifacts and submitted release evidence" {
+    Run-Test "release doctor accepts complete local artifacts with setup and release evidence" {
         $entryPack = Join-Path $tempRoot "entry-pack"
         $materials = Join-Path $tempRoot "doctor-materials"
         & powershell -NoProfile -ExecutionPolicy Bypass -File $exportEntryPackPath -OutputDirectory $entryPack -Owner "doctor-owner" -RepoName "doctor-repo" | Out-Null
@@ -197,14 +192,15 @@ try {
             throw "Could not export test entry pack."
         }
         New-CompleteMaterialsFolder $materials
-        Add-CompleteSetupEvidence $materials
-        $record = Invoke-RecordEvidence (New-CompleteEvidenceArguments $materials)
-        Assert-True ($record.ExitCode -eq 0) "could not record evidence: $($record.Output)"
+        $setup = Invoke-RecordSetup (New-CompleteSetupArguments $materials)
+        Assert-True ($setup.ExitCode -eq 0) "could not record setup evidence: $($setup.Output)"
+        Add-CompleteReleaseEvidence $materials
 
         $doctor = Invoke-ReleaseDoctor $entryPack $materials
 
         Assert-True ($doctor.ExitCode -ne 2) "complete local artifacts and evidence should not create blocked gates: $($doctor.Output)"
-        Assert-Contains $doctor.Output "[OK] App Store release evidence" "doctor should accept complete local release evidence"
+        Assert-Contains $doctor.Output "[OK] App Store Connect setup evidence" "doctor should accept complete setup evidence"
+        Assert-Contains $doctor.Output "[OK] App Store release evidence" "doctor should accept complete release evidence"
         Assert-Contains $doctor.Output "blocked=0" "doctor should report zero blocked local gates"
     }
 } finally {
@@ -217,7 +213,7 @@ try {
 
 if ($failures.Count -gt 0) {
     Write-Host ""
-    Write-Host "record-app-store-release-evidence tests failed:"
+    Write-Host "record-app-store-connect-setup-evidence tests failed:"
     foreach ($failure in $failures) {
         Write-Host "- $failure"
     }
@@ -225,4 +221,4 @@ if ($failures.Count -gt 0) {
 }
 
 Write-Host ""
-Write-Host "record-app-store-release-evidence tests passed."
+Write-Host "record-app-store-connect-setup-evidence tests passed."

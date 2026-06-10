@@ -186,6 +186,32 @@ Evidence:
 - EU DSA trader status decision is complete if EU storefronts are selected.
 - Pricing follows `docs/app-store/monetization-plan.md`.
 
+After the App Store Connect record, pricing, availability, privacy, age rating, export compliance, and EU DSA fields are set, record private setup evidence:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/record-app-store-connect-setup-evidence.ps1 `
+  -MaterialsDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials" `
+  -AppStoreConnectAppId "1234567890" `
+  -AppName "SnapTable Reminder" `
+  -BundleId "com.snaptable.reminder" `
+  -Sku "SNAPTABLE-REMINDER-IOS-V1" `
+  -PrimaryLanguage "en-US" `
+  -PrimaryCategory "Productivity" `
+  -PriceCurrency "USD" `
+  -PriceAmount "1.99" `
+  -AvailabilityMode "selectedCountriesOrRegions" `
+  -ExcludedCountriesOrRegions "China mainland" `
+  -PrivacyPolicyUrl "https://ahuxxly.github.io/snaptable-reminder-ios/privacy.html" `
+  -SupportUrl "https://ahuxxly.github.io/snaptable-reminder-ios/support.html" `
+  -PrivacyAnswersCompleted `
+  -AgeRatingCompleted `
+  -ExportComplianceCompleted `
+  -EuDsaTraderStatusCompleted `
+  -DryRun
+```
+
+Remove `-DryRun` only after the preview matches App Store Connect.
+
 ## Phase 5: Metadata and Compliance
 
 Use these repository files:

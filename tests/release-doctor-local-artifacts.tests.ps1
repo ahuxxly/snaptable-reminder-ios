@@ -4,6 +4,7 @@ $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 $releaseDoctorPath = Join-Path $repoRoot "scripts\release-doctor.ps1"
 $entryPackExporterPath = Join-Path $repoRoot "scripts\export-app-store-connect-entry-pack.ps1"
 $materialsPrepPath = Join-Path $repoRoot "scripts\prepare-apple-materials-folder.ps1"
+$recordSetupPath = Join-Path $repoRoot "scripts\record-app-store-connect-setup-evidence.ps1"
 $recordEvidencePath = Join-Path $repoRoot "scripts\record-app-store-release-evidence.ps1"
 $failures = New-Object "System.Collections.Generic.List[string]"
 
@@ -115,6 +116,30 @@ function Add-CompleteReleaseEvidence($materials) {
     }
 }
 
+function Add-CompleteSetupEvidence($materials) {
+    & powershell -NoProfile -ExecutionPolicy Bypass -File $recordSetupPath `
+        -MaterialsDirectory $materials `
+        -AppStoreConnectAppId "1234567890" `
+        -AppName "SnapTable Reminder" `
+        -BundleId "com.snaptable.reminder" `
+        -Sku "SNAPTABLE-REMINDER-IOS-V1" `
+        -PrimaryLanguage "en-US" `
+        -PrimaryCategory "Productivity" `
+        -PriceCurrency "USD" `
+        -PriceAmount "1.99" `
+        -AvailabilityMode "selectedCountriesOrRegions" `
+        -ExcludedCountriesOrRegions "China mainland" `
+        -PrivacyPolicyUrl "https://ahuxxly.github.io/snaptable-reminder-ios/privacy.html" `
+        -SupportUrl "https://ahuxxly.github.io/snaptable-reminder-ios/support.html" `
+        -PrivacyAnswersCompleted `
+        -AgeRatingCompleted `
+        -ExportComplianceCompleted `
+        -EuDsaTraderStatusCompleted | Out-Null
+    if ($LASTEXITCODE -ne 0) {
+        throw "Could not record test App Store Connect setup evidence."
+    }
+}
+
 $tempRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("snaptable-release-doctor-local-tests-" + [guid]::NewGuid().ToString("N"))
 New-Item -ItemType Directory -Path $tempRoot | Out-Null
 
@@ -125,6 +150,7 @@ try {
         & powershell -NoProfile -ExecutionPolicy Bypass -File $entryPackExporterPath -OutputDirectory $entryPack | Out-Null
         Assert-True ($LASTEXITCODE -eq 0) "entry pack setup failed"
         New-CompleteMaterialsFolder $materials
+        Add-CompleteSetupEvidence $materials
         Add-CompleteReleaseEvidence $materials
 
         $result = Invoke-ReleaseDoctor @(
@@ -136,6 +162,7 @@ try {
         Assert-True ($result.ExitCode -ne 2) "complete local artifacts should not create blocked gates: $($result.Output)"
         Assert-Contains $result.Output "[OK] App Store Connect entry packet" "entry pack gate should be OK"
         Assert-Contains $result.Output "[OK] Apple private material folder" "materials gate should be OK"
+        Assert-Contains $result.Output "[OK] App Store Connect setup evidence" "setup evidence gate should be OK"
         Assert-Contains $result.Output "[OK] App Store release evidence" "release evidence gate should be OK"
         Assert-Contains $result.Output "blocked=0" "local-only doctor should report zero blocked gates for complete local artifacts"
     }

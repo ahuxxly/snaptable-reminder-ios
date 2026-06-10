@@ -184,6 +184,7 @@ Use `-DryRun` first when you only want to verify paths and field shapes.
 After TestFlight upload and App Review submission, record private release evidence:
 
 ```powershell
+powershell -ExecutionPolicy Bypass -File scripts/record-app-store-connect-setup-evidence.ps1 -MaterialsDirectory "$materialsRoot" -AppStoreConnectAppId "1234567890" -AppName "SnapTable Reminder" -BundleId "com.snaptable.reminder" -Sku "SNAPTABLE-REMINDER-IOS-V1" -PrimaryLanguage "en-US" -PrimaryCategory "Productivity" -PriceCurrency "USD" -PriceAmount "1.99" -AvailabilityMode "selectedCountriesOrRegions" -ExcludedCountriesOrRegions "China mainland" -PrivacyPolicyUrl "https://ahuxxly.github.io/snaptable-reminder-ios/privacy.html" -SupportUrl "https://ahuxxly.github.io/snaptable-reminder-ios/support.html" -PrivacyAnswersCompleted -AgeRatingCompleted -ExportComplianceCompleted -EuDsaTraderStatusCompleted -DryRun
 powershell -ExecutionPolicy Bypass -File scripts/record-app-store-release-evidence.ps1 -MaterialsDirectory "$materialsRoot" -AppStoreConnectAppId "1234567890" -AppVersion "1.0" -BuildNumber "1" -MetadataUploaded -ScreenshotsUploaded -ReviewCheckPassed -TestFlightUploaded -BuildProcessed -AppReviewSubmitted -AppStatus "Waiting for Review" -DryRun
 ```
 '@

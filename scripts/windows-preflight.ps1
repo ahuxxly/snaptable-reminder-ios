@@ -544,6 +544,9 @@ if (-not (Test-Path "scripts\stage-apple-release-materials.ps1")) {
 if (-not (Test-Path "scripts\record-app-store-release-evidence.ps1")) {
     throw "Missing App Store release evidence recorder script."
 }
+if (-not (Test-Path "scripts\record-app-store-connect-setup-evidence.ps1")) {
+    throw "Missing App Store Connect setup evidence recorder script."
+}
 if (-not (Test-Path "scripts\export-app-store-connect-entry-pack.ps1")) {
     throw "Missing App Store Connect entry packet exporter script."
 }
@@ -555,6 +558,9 @@ if (-not (Test-Path "tests\stage-apple-release-materials.tests.ps1")) {
 }
 if (-not (Test-Path "tests\record-app-store-release-evidence.tests.ps1")) {
     throw "Missing App Store release evidence recorder tests."
+}
+if (-not (Test-Path "tests\record-app-store-connect-setup-evidence.tests.ps1")) {
+    throw "Missing App Store Connect setup evidence recorder tests."
 }
 if (-not (Test-Path "tests\github-set-apple-secrets.tests.ps1")) {
     throw "Missing GitHub Apple secret helper tests."
@@ -648,6 +654,31 @@ foreach ($recordReleaseEvidenceTerm in @(
 if (-not $launchRunbookText.Contains("record-app-store-release-evidence.ps1")) {
     throw "Launch runbook should mention the App Store release evidence recorder."
 }
+$recordSetupEvidenceText = Get-Content "scripts\record-app-store-connect-setup-evidence.ps1" -Raw
+foreach ($recordSetupEvidenceTerm in @(
+    "AppStoreConnectAppId",
+    "AppName",
+    "BundleId",
+    "Sku",
+    "PriceAmount",
+    "ExcludedCountriesOrRegions",
+    "China mainland must be excluded",
+    "PrivacyAnswersCompleted",
+    "AgeRatingCompleted",
+    "ExportComplianceCompleted",
+    "EuDsaTraderStatusCompleted",
+    "app-store-connect-setup.private.json",
+    "app-store-connect-setup-summary.md",
+    "Dry run complete; no files were written",
+    "outside this repository"
+)) {
+    if (-not $recordSetupEvidenceText.Contains($recordSetupEvidenceTerm)) {
+        throw "App Store Connect setup evidence recorder should include: $recordSetupEvidenceTerm"
+    }
+}
+if (-not $launchRunbookText.Contains("record-app-store-connect-setup-evidence.ps1")) {
+    throw "Launch runbook should mention the App Store Connect setup evidence recorder."
+}
 $entryPackExporterText = Get-Content "scripts\export-app-store-connect-entry-pack.ps1" -Raw
 foreach ($entryPackTerm in @(
     "app-store-connect-entry-pack.json",
@@ -667,6 +698,7 @@ if (-not $launchRunbookText.Contains("export-app-store-connect-entry-pack.ps1"))
 powershell -NoProfile -ExecutionPolicy Bypass -File tests\prepare-apple-materials-folder.tests.ps1
 powershell -NoProfile -ExecutionPolicy Bypass -File tests\stage-apple-release-materials.tests.ps1
 powershell -NoProfile -ExecutionPolicy Bypass -File tests\record-app-store-release-evidence.tests.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File tests\record-app-store-connect-setup-evidence.tests.ps1
 powershell -NoProfile -ExecutionPolicy Bypass -File tests\github-set-apple-secrets.tests.ps1
 powershell -NoProfile -ExecutionPolicy Bypass -File tests\github-release-workflow.tests.ps1
 powershell -NoProfile -ExecutionPolicy Bypass -File tests\export-app-store-connect-entry-pack.tests.ps1
@@ -788,8 +820,10 @@ foreach ($releaseDoctorTerm in @(
     "MaterialsDirectory",
     "App Store Connect entry packet",
     "Apple private material folder",
+    "App Store Connect setup evidence",
     "App Store release evidence",
     "scripts/record-app-store-release-evidence.ps1",
+    "scripts/record-app-store-connect-setup-evidence.ps1",
     "scripts/stage-apple-release-materials.ps1",
     "scripts/github-run-app-store-release.ps1 -Wait",
     "scripts/github-submit-app-review.ps1 -ConfirmSubmitForReview YES -Wait"
@@ -814,6 +848,7 @@ foreach ($releaseIssueSyncTerm in @(
     "scripts/release-doctor.ps1 -RunPreflight",
     "scripts/stage-apple-release-materials.ps1",
     "scripts/record-app-store-release-evidence.ps1",
+    "scripts/record-app-store-connect-setup-evidence.ps1",
     "scripts/github-set-apple-secrets.ps1 -UploadOnly",
     "scripts/github-set-apple-secrets.ps1 -SigningOnly",
     "scripts/github-set-apple-secrets.ps1 -ReviewOnly",

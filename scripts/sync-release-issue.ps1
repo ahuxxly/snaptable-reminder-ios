@@ -51,6 +51,7 @@ This issue tracks the private Apple-account work required before SnapTable Remin
 - Windows preflight: `powershell -ExecutionPolicy Bypass -File scripts/windows-preflight.ps1`
 - Private Apple material folder helper: `powershell -ExecutionPolicy Bypass -File scripts/prepare-apple-materials-folder.ps1`
 - Apple release material staging helper: `powershell -ExecutionPolicy Bypass -File scripts/stage-apple-release-materials.ps1`
+- App Store Connect setup evidence recorder: `powershell -ExecutionPolicy Bypass -File scripts/record-app-store-connect-setup-evidence.ps1`
 - App Store release evidence recorder: `powershell -ExecutionPolicy Bypass -File scripts/record-app-store-release-evidence.ps1`
 - App Store Connect entry packet exporter: `powershell -ExecutionPolicy Bypass -File scripts/export-app-store-connect-entry-pack.ps1`
 - Main release docs:
@@ -84,6 +85,7 @@ This issue tracks the private Apple-account work required before SnapTable Remin
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/prepare-apple-materials-folder.ps1
 powershell -ExecutionPolicy Bypass -File scripts/stage-apple-release-materials.ps1 -OutputDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials" -AppStoreConnectApiKeyPath "C:\path\to\AuthKey_KEYID1234.p8" -AppleDistributionCertificatePath "C:\path\to\apple-distribution.p12" -AppleAppStoreProfilePath "C:\path\to\SnapTableReminder_AppStore.mobileprovision" -DsaEvidencePath "C:\path\to\dsa-private-evidence.md" -AppStoreConnectUsername "account@example.invalid" -AppleDeveloperTeamId "TEAMID1234" -AppStoreConnectApiKeyId "KEYID1234" -AppStoreConnectApiIssuerId "00000000-0000-0000-0000-000000000000" -AppleDistributionCertificatePassword "p12-export-password" -AppleCodesignKeychainPassword "temporary-ci-keychain-password" -ReviewFirstName "App" -ReviewLastName "Reviewer" -ReviewEmail "reviewer@example.invalid" -ReviewPhone "+1 555 010 1000" -AppleDeveloperProgramActive -PaidAppsAgreementActive -TaxComplete -BankingComplete -AppStoreConnectAppCreated -DryRun
+powershell -ExecutionPolicy Bypass -File scripts/record-app-store-connect-setup-evidence.ps1 -MaterialsDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials" -AppStoreConnectAppId "1234567890" -AppName "SnapTable Reminder" -BundleId "com.snaptable.reminder" -Sku "SNAPTABLE-REMINDER-IOS-V1" -PrimaryLanguage "en-US" -PrimaryCategory "Productivity" -PriceCurrency "USD" -PriceAmount "1.99" -AvailabilityMode "selectedCountriesOrRegions" -ExcludedCountriesOrRegions "China mainland" -PrivacyPolicyUrl "https://ahuxxly.github.io/snaptable-reminder-ios/privacy.html" -SupportUrl "https://ahuxxly.github.io/snaptable-reminder-ios/support.html" -PrivacyAnswersCompleted -AgeRatingCompleted -ExportComplianceCompleted -EuDsaTraderStatusCompleted -DryRun
 powershell -ExecutionPolicy Bypass -File scripts/prepare-apple-materials-folder.ps1 -OutputDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials" -ValidateOnly
 powershell -ExecutionPolicy Bypass -File scripts/github-set-apple-secrets.ps1 -MaterialsDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials" -DryRun
 powershell -ExecutionPolicy Bypass -File scripts/export-app-store-connect-entry-pack.ps1
@@ -92,6 +94,7 @@ powershell -ExecutionPolicy Bypass -File scripts/export-app-store-connect-entry-
 Remove `-DryRun` from the staging command only after the preview shows the right paths. Do not paste real passwords or phone numbers into this public issue.
 
 - [ ] App Store Connect API key is generated and stored outside the repository.
+- [ ] App Store Connect setup evidence is recorded in `05-release-evidence/app-store-connect-setup.private.json`.
 - [ ] Apple Distribution `.p12` certificate is exported and stored outside the repository.
 - [ ] App Store provisioning profile for `com.snaptable.reminder` is downloaded and stored outside the repository.
 - [ ] App Review contact details are chosen and stored privately.

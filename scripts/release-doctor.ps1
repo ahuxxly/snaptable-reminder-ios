@@ -296,6 +296,62 @@ function Test-ReleaseEvidence($gates, $materialsPath) {
     Add-Gate $gates "App Store release evidence" "OK" "Version $($evidence.appVersion) build $($evidence.buildNumber) is recorded with status '$($evidence.appStatus)'."
 }
 
+function Test-AppStoreConnectSetupEvidence($gates, $materialsPath) {
+    $setupPath = Join-Path $materialsPath "05-release-evidence\app-store-connect-setup.private.json"
+    if (-not (Test-Path $setupPath)) {
+        Add-Gate $gates "App Store Connect setup evidence" "BLOCKED" "No App Store Connect setup evidence is recorded in the private materials folder." "After creating the app record and completing pricing, availability, privacy, age rating, export compliance, and EU DSA fields, run scripts/record-app-store-connect-setup-evidence.ps1 -MaterialsDirectory `"$materialsPath`"."
+        return
+    }
+
+    try {
+        $setup = Get-Content $setupPath -Raw | ConvertFrom-Json
+        $storeFields = Get-Content "docs\app-store\app-store-fields.json" -Raw | ConvertFrom-Json
+    } catch {
+        Add-Gate $gates "App Store Connect setup evidence" "BLOCKED" "Setup evidence or source App Store fields JSON is invalid." "Regenerate setup evidence with scripts/record-app-store-connect-setup-evidence.ps1."
+        return
+    }
+
+    $missingFields = @()
+    foreach ($field in @("appStoreConnectAppId", "app", "pricing", "availability", "urls", "compliance")) {
+        if ($null -eq $setup.$field) {
+            $missingFields += $field
+        }
+    }
+    if ($missingFields.Count -gt 0) {
+        Add-Gate $gates "App Store Connect setup evidence" "BLOCKED" "Setup evidence is missing: $($missingFields -join ', ')." "Regenerate setup evidence with scripts/record-app-store-connect-setup-evidence.ps1."
+        return
+    }
+
+    $mismatches = @()
+    if ($setup.app.name -ne $storeFields.app.name) { $mismatches += "app.name" }
+    if ($setup.app.bundleId -ne $storeFields.app.bundleId) { $mismatches += "app.bundleId" }
+    if ($setup.app.sku -ne $storeFields.app.sku) { $mismatches += "app.sku" }
+    if ($setup.app.primaryLanguage -ne $storeFields.app.primaryLanguage) { $mismatches += "app.primaryLanguage" }
+    if ($setup.app.primaryCategory -ne $storeFields.app.category) { $mismatches += "app.primaryCategory" }
+    if ($setup.pricing.currency -ne $storeFields.pricing.startingPrice.currency -or [decimal]$setup.pricing.amount -ne [decimal]$storeFields.pricing.startingPrice.amount) { $mismatches += "pricing" }
+    if ($setup.availability.mode -ne $storeFields.availability.strategy) { $mismatches += "availability.mode" }
+    foreach ($excludedRegion in @($storeFields.availability.excludeCountriesOrRegions)) {
+        if (-not (@($setup.availability.excludeCountriesOrRegions) -contains $excludedRegion)) {
+            $mismatches += "availability.excludeCountriesOrRegions:$excludedRegion"
+        }
+    }
+    if (-not (@($setup.availability.excludeCountriesOrRegions) -contains "China mainland")) {
+        $mismatches += "availability.excludeCountriesOrRegions:China mainland"
+    }
+    foreach ($flag in @("privacyAnswersCompleted", "ageRatingCompleted", "exportComplianceCompleted", "euDsaTraderStatusCompleted")) {
+        if ($setup.compliance.$flag -ne $true) {
+            $mismatches += "compliance.$flag"
+        }
+    }
+
+    if ($mismatches.Count -gt 0) {
+        Add-Gate $gates "App Store Connect setup evidence" "BLOCKED" "Setup evidence does not match release requirements: $($mismatches -join ', ')." "Update App Store Connect, then rerun scripts/record-app-store-connect-setup-evidence.ps1."
+        return
+    }
+
+    Add-Gate $gates "App Store Connect setup evidence" "OK" "App record, pricing, availability, privacy, and compliance setup evidence matches release requirements."
+}
+
 $gates = New-Object "System.Collections.Generic.List[object]"
 
 Write-Section "Local repository"
@@ -330,6 +386,7 @@ Write-Section "Local release artifacts"
 Test-EntryPack $gates $EntryPackDirectory (-not [string]::IsNullOrWhiteSpace($EntryPackDirectory))
 $validMaterialsPath = Test-Materials $gates $MaterialsDirectory (-not [string]::IsNullOrWhiteSpace($MaterialsDirectory))
 if (-not [string]::IsNullOrWhiteSpace($validMaterialsPath)) {
+    Test-AppStoreConnectSetupEvidence $gates $validMaterialsPath
     Test-ReleaseEvidence $gates $validMaterialsPath
 }
 
