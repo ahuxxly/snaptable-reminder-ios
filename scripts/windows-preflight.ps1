@@ -424,6 +424,19 @@ if (-not $screenshotWorkflowText.Contains("actions/upload-artifact")) {
 if (-not $screenshotWorkflowText.Contains("fastlane-screenshots")) {
     throw "App Store screenshot workflow should upload Fastlane screenshot artifacts."
 }
+$releaseReadinessWorkflowText = Get-Content ".github\workflows\release-readiness.yml" -Raw
+if (-not $releaseReadinessWorkflowText.Contains("workflow_dispatch")) {
+    throw "Release Readiness workflow should be manually runnable."
+}
+if (-not $releaseReadinessWorkflowText.Contains("scripts/mac-release-readiness.sh")) {
+    throw "Release Readiness workflow should run the Mac release readiness script."
+}
+if (-not $releaseReadinessWorkflowText.Contains("actions/upload-artifact")) {
+    throw "Release Readiness workflow should upload artifacts."
+}
+if (-not $releaseReadinessWorkflowText.Contains("fastlane-screenshots")) {
+    throw "Release Readiness workflow should upload Fastlane screenshot artifacts."
+}
 Write-Host "screenshot capture path present"
 
 Write-Section "Static site links"

@@ -10,7 +10,7 @@ Local repository status:
 - XcodeGen project configuration is present in `project.yml`.
 - Unit test source files are present for parsing, CSV export, date logic, settings persistence, and reminder date policy.
 - App Store support site files are present in `site/`.
-- GitHub Actions workflows are present for iOS CI and GitHub Pages.
+- GitHub Actions workflows are present for iOS CI, GitHub Pages, App Store screenshots, and release readiness.
 - Fastlane lanes are present for verify, archive, and TestFlight upload.
 - GitHub login and publish helper script is present in `scripts/github-login-and-publish.ps1`.
 - App Store metadata, privacy, age rating, export compliance, review notes, screenshot plan, monetization plan, and launch runbook are drafted.
@@ -73,6 +73,7 @@ powershell -ExecutionPolicy Bypass -File scripts/github-login-and-publish.ps1 -R
 - `iOS CI`
 - `Publish App Store Site`
 - `App Store Screenshots`
+- `Release Readiness`
 
 5. Copy live URLs into App Store Connect:
 

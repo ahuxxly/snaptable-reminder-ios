@@ -36,11 +36,13 @@ Then:
 3. Confirm `iOS CI` runs.
 4. Enable GitHub Pages using GitHub Actions.
 5. Confirm `Publish App Store Site` runs.
-6. Open the public `privacy.html` and `support.html` URLs.
+6. Run `Release Readiness` manually.
+7. Open the public `privacy.html` and `support.html` URLs.
 
 Evidence:
 
 - iOS CI workflow is green.
+- Release Readiness workflow is green.
 - GitHub Pages URL opens in a browser.
 - Privacy URL and Support URL are copied into App Store Connect.
 

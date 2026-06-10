@@ -1,0 +1,53 @@
+name: Release Readiness
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  readiness:
+    runs-on: macos-15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Run release readiness
+        run: bash scripts/mac-release-readiness.sh
+
+      - name: Upload raw screenshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-store-screenshots
+          path: build/app-store-screenshots
+          if-no-files-found: error
+
+      - name: Upload Fastlane screenshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: fastlane-screenshots
+          path: fastlane/screenshots
+          if-no-files-found: error
+
+      - name: Summarize readiness
+        run: |
+          {
+            echo "### Release readiness"
+            echo ""
+            echo "Mac verification and screenshot capture completed."
+            echo "Download app-store-screenshots for raw XCTest exports."
+            echo "Download fastlane-screenshots for the Fastlane upload folder."
+            echo ""
+            echo "Next upload commands require App Store Connect credentials:"
+            echo "\`\`\`bash"
+            echo "bash scripts/mac-validate-upload-env.sh"
+            echo "bundle exec fastlane ios metadata"
+            echo "bundle exec fastlane ios screenshots"
+            echo "bundle exec fastlane ios review_check"
+            echo "bundle exec fastlane ios testflight"
+            echo "\`\`\`"
+          } >> "$GITHUB_STEP_SUMMARY"

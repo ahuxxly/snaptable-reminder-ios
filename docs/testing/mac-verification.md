@@ -40,11 +40,11 @@ bash scripts/mac-capture-screenshots.sh
 
 This uses reset demo data, exports screenshot attachments for Capture, Records, Dashboard, and Settings to `build/app-store-screenshots`, and stages Fastlane-ready screenshots in `fastlane/screenshots/en-US`.
 
-After the repository is on GitHub, the same screenshot path is available through the manual `App Store Screenshots` workflow. Download `app-store-screenshots` for raw exports or `fastlane-screenshots` for the upload folder.
+After the repository is on GitHub, the same screenshot path is available through the manual `App Store Screenshots` workflow. The manual `Release Readiness` workflow runs Mac verification and screenshot capture together. Download `app-store-screenshots` for raw exports or `fastlane-screenshots` for the upload folder.
 
 ## GitHub Actions
 
-The repository includes `.github/workflows/ios-ci.yml`. After pushing to GitHub, open the Actions tab and confirm the iOS CI workflow passes. This verifies the same project generation, test, and simulator build path on a hosted macOS runner.
+The repository includes `.github/workflows/ios-ci.yml` and `.github/workflows/release-readiness.yml`. After pushing to GitHub, open the Actions tab and confirm the iOS CI workflow passes. Run `Release Readiness` manually before upload work. These verify project generation, tests, simulator build, screenshot UI test build, and screenshot artifact generation on a hosted macOS runner.
 
 If the local Mac run or CI fails, use `docs/testing/ci-failure-playbook.md` before retrying.
 
