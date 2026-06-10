@@ -23,6 +23,7 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.snaptable.reminder
         INFOPLIST_FILE: SnapTableReminder/Resources/Info.plist
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        TARGETED_DEVICE_FAMILY: "1"
     info:
       path: SnapTableReminder/Resources/Info.plist
       properties:
