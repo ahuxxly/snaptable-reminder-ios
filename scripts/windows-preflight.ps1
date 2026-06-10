@@ -339,6 +339,39 @@ if ($LASTEXITCODE -eq 0) {
     Write-Host "no UserDefaults usage found"
 }
 
+Write-Section "Privacy source scan"
+$forbiddenPrivacySourcePatterns = @(
+    "\bURLSession\b",
+    "\bURLRequest\b",
+    "\bURLSessionConfiguration\b",
+    "\bimport\s+Network\b",
+    "\bNWPathMonitor\b",
+    "\bimport\s+WebKit\b",
+    "\bWKWebView\b",
+    "\bimport\s+Firebase\b",
+    "\bFirebaseApp\b",
+    "\bFirebaseAnalytics\b",
+    "\bAnalytics\.logEvent\b",
+    "\bCrashlytics\b",
+    "\bSentrySDK\b",
+    "\bAmplitude\b",
+    "\bMixpanel\b",
+    "\bPostHog\b",
+    "\bDatadog\b",
+    "\bTelemetryClient\b",
+    "\bOpenAI\b"
+)
+$forbiddenPrivacySourcePattern = $forbiddenPrivacySourcePatterns -join "|"
+$privacySourceScan = rg $forbiddenPrivacySourcePattern SnapTableReminder SnapTableReminderTests SnapTableReminderUITests project.yml Gemfile fastlane 2>$null
+if ($LASTEXITCODE -eq 0) {
+    Write-Host $privacySourceScan
+    throw "Source contains networking, analytics, crash reporting, or cloud-AI code that conflicts with the version 1 privacy promise."
+}
+if ($LASTEXITCODE -gt 1) {
+    throw "Privacy source scan failed."
+}
+Write-Host "no network, analytics, crash reporting, or cloud-AI code found"
+
 Write-Section "Test coverage files"
 $requiredTestFiles = @(
     "SnapTableReminderTests\DocumentParserTests.swift",
