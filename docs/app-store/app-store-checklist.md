@@ -24,6 +24,10 @@
 - Support URL: host `site/support.html` before submission.
 - Contact email: publish before submission.
 - App Store metadata draft: `docs/app-store/metadata.md`.
+- Privacy questionnaire draft: `docs/app-store/privacy-questionnaire.md`.
+- Export compliance draft: `docs/app-store/export-compliance.md`.
+- Review notes draft: `docs/app-store/review-notes.md`.
+- Age rating draft: `docs/app-store/age-rating.md`.
 
 ## Screenshots
 
@@ -63,4 +67,6 @@ screenshot OCR, document scanner, table export, reminder, receipt organizer, dea
 5. Upload to App Store Connect.
 6. Host `site/privacy.html` and `site/support.html`, or push to GitHub and use `.github/workflows/pages.yml` to publish them with GitHub Pages.
 7. Set paid price and selected country/region availability excluding China mainland.
-8. Fill privacy details and submit for review.
+8. Fill privacy details using `docs/app-store/privacy-questionnaire.md`.
+9. Complete age rating and export compliance using the drafts in `docs/app-store`.
+10. Submit for review.

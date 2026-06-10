@@ -44,6 +44,8 @@ screenshot OCR,document scanner,table export,reminder,receipt organizer,deadline
 
 SnapTable Reminder recognizes text on device using Apple frameworks. Saved records and recognized OCR text are stored locally on device. The app does not create accounts, connect to a backend, use third-party analytics, track users, or provide legal, medical, tax, financial, or investment advice. Users review and edit parsed fields before saving.
 
+Detailed review notes draft: `docs/app-store/review-notes.md`.
+
 ## Suggested Price
 
 Paid upfront: USD 1.99 or USD 2.99 equivalent.
