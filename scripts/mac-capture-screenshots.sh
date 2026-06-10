@@ -75,5 +75,8 @@ xcrun xcresulttool export attachments \
   --path "${RESULT_BUNDLE_PATH}" \
   --output-path "${OUTPUT_DIR}"
 
+bash scripts/mac-stage-fastlane-screenshots.sh "${OUTPUT_DIR}" fastlane/screenshots/en-US
+
 echo "Screenshots exported to ${OUTPUT_DIR}"
+echo "Fastlane screenshots staged in fastlane/screenshots/en-US"
 find "${OUTPUT_DIR}" -maxdepth 2 -type f | sort

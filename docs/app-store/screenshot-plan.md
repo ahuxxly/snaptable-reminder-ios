@@ -14,15 +14,22 @@ Run on a Mac:
 bash scripts/mac-capture-screenshots.sh
 ```
 
-The script generates the Xcode project, runs `SnapTableReminderUITests`, and exports XCTest screenshot attachments to `build/app-store-screenshots`.
+The script generates the Xcode project, runs `SnapTableReminderUITests`, exports XCTest screenshot attachments to `build/app-store-screenshots`, and stages Fastlane-ready screenshots in `fastlane/screenshots/en-US`.
 
 GitHub Actions path:
 
 1. Push the repository to GitHub.
 2. Open Actions.
 3. Run `App Store Screenshots`.
-4. Download the `app-store-screenshots` artifact.
-5. Upload the exported screenshots to App Store Connect.
+4. Download the `app-store-screenshots` artifact for the raw XCTest export.
+5. Download the `fastlane-screenshots` artifact for the Fastlane upload folder.
+6. Upload the exported screenshots to App Store Connect.
+
+Fastlane upload path after screenshots are staged:
+
+```bash
+bundle exec fastlane ios screenshots
+```
 
 Preferred simulators:
 

@@ -85,6 +85,7 @@ Fastlane alternative:
 ```bash
 bundle exec fastlane ios verify
 bundle exec fastlane ios metadata
+bundle exec fastlane ios screenshots
 bundle exec fastlane ios archive
 bundle exec fastlane ios testflight
 ```

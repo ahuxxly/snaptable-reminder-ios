@@ -122,8 +122,15 @@ bash scripts/mac-capture-screenshots.sh
 GitHub Actions alternative:
 
 1. Run the `App Store Screenshots` workflow.
-2. Download the `app-store-screenshots` artifact.
-3. Upload the screenshots to App Store Connect.
+2. Download the `app-store-screenshots` artifact for raw exports.
+3. Download the `fastlane-screenshots` artifact for the Fastlane upload folder.
+4. Upload the screenshots to App Store Connect.
+
+Fastlane upload path:
+
+```bash
+bundle exec fastlane ios screenshots
+```
 
 Manual path:
 
@@ -155,6 +162,7 @@ export APP_STORE_CONNECT_API_KEY_ID="api-key-id"
 export APP_STORE_CONNECT_API_ISSUER_ID="issuer-id"
 export APP_STORE_CONNECT_API_KEY_PATH="/absolute/path/to/AuthKey.p8"
 bundle exec fastlane ios metadata
+bundle exec fastlane ios screenshots
 bundle exec fastlane ios testflight
 ```
 

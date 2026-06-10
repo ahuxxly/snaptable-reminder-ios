@@ -38,9 +38,9 @@ After full verification passes, run:
 bash scripts/mac-capture-screenshots.sh
 ```
 
-This uses demo data and exports screenshot attachments for Capture, Records, Dashboard, and Settings to `build/app-store-screenshots`.
+This uses demo data, exports screenshot attachments for Capture, Records, Dashboard, and Settings to `build/app-store-screenshots`, and stages Fastlane-ready screenshots in `fastlane/screenshots/en-US`.
 
-After the repository is on GitHub, the same screenshot path is available through the manual `App Store Screenshots` workflow. Download the `app-store-screenshots` artifact from the workflow run.
+After the repository is on GitHub, the same screenshot path is available through the manual `App Store Screenshots` workflow. Download `app-store-screenshots` for raw exports or `fastlane-screenshots` for the upload folder.
 
 ## GitHub Actions
 

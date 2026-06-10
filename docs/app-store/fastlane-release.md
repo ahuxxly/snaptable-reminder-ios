@@ -78,8 +78,24 @@ bundle exec fastlane ios metadata
 
 This uploads metadata only. It does not upload a binary, upload screenshots, or submit the app for review.
 
+## Screenshot Upload
+
+Generate and stage screenshots first:
+
+```bash
+bash scripts/mac-capture-screenshots.sh
+```
+
+This creates `fastlane/screenshots/en-US`. Then run:
+
+```bash
+bundle exec fastlane ios screenshots
+```
+
+This uploads screenshots only. It does not upload a binary, upload metadata, or submit the app for review.
+
 ## Notes
 
 - The bundle identifier is `com.snaptable.reminder`.
-- The `testflight` lane uploads a build. The `metadata` lane uploads listing metadata. Final App Review submission still requires screenshots, privacy answers, pricing, and country/region availability.
+- The `testflight` lane uploads a build. The `metadata` lane uploads listing metadata. The `screenshots` lane uploads staged screenshots. Final App Review submission still requires privacy answers, pricing, and country/region availability.
 - Do not commit `.p8` API keys, certificates, provisioning profiles, or exported archives.

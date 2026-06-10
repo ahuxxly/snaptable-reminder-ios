@@ -20,6 +20,7 @@ Local repository status:
 - GitHub Pages workflow prints the exact Privacy Policy and Support URLs after deployment.
 - App Store screenshot UI test target and Mac capture script are present.
 - Manual GitHub Actions workflow is present for App Store screenshot artifact generation.
+- Fastlane screenshot staging and upload lane are present.
 
 Verified on this Windows workspace:
 

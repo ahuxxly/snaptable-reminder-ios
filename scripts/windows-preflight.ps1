@@ -309,8 +309,24 @@ if (-not $screenshotScriptText.Contains("SnapTableReminderScreenshots")) {
 if (-not $screenshotScriptText.Contains("xcresulttool export attachments")) {
     throw "Screenshot script should export XCTest screenshot attachments."
 }
+if (-not $screenshotScriptText.Contains("mac-stage-fastlane-screenshots.sh")) {
+    throw "Screenshot script should stage screenshots for Fastlane."
+}
 if (-not $screenshotScriptText.Contains("iPhone 16 Pro Max") -and -not $screenshotScriptText.Contains("iPhone 17 Pro Max")) {
     throw "Screenshot script should prefer current App Store iPhone screenshot simulators."
+}
+if (-not (Test-Path "scripts\mac-stage-fastlane-screenshots.sh")) {
+    throw "Missing Mac Fastlane screenshot staging script."
+}
+$screenshotStagingText = Get-Content "scripts\mac-stage-fastlane-screenshots.sh" -Raw
+if (-not $screenshotStagingText.Contains("fastlane/screenshots/en-US")) {
+    throw "Screenshot staging script should output fastlane/screenshots/en-US."
+}
+if (-not $fastfileText.Contains("lane :screenshots")) {
+    throw "fastlane/Fastfile should include the screenshots lane."
+}
+if (-not $fastfileText.Contains("screenshots_path: `"fastlane/screenshots`"")) {
+    throw "Fastlane screenshots lane should upload fastlane/screenshots."
 }
 if (-not $launchRunbookText.Contains("scripts/mac-capture-screenshots.sh")) {
     throw "Launch runbook should mention the screenshot capture script."
@@ -324,6 +340,9 @@ if (-not $screenshotWorkflowText.Contains("scripts/mac-capture-screenshots.sh"))
 }
 if (-not $screenshotWorkflowText.Contains("actions/upload-artifact")) {
     throw "App Store screenshot workflow should upload screenshot artifacts."
+}
+if (-not $screenshotWorkflowText.Contains("fastlane-screenshots")) {
+    throw "App Store screenshot workflow should upload Fastlane screenshot artifacts."
 }
 Write-Host "screenshot capture path present"
 
