@@ -25,6 +25,7 @@
 - `SnapTableReminder/Core/OCRService.swift`: Vision OCR service and protocol.
 - `SnapTableReminder/Persistence/DocumentRecordStore.swift`: local JSON persistence.
 - `SnapTableReminder/Views/CaptureView.swift`: import/paste/manual entry and parse confirmation.
+- `SnapTableReminder/Views/DocumentCameraView.swift`: VisionKit document scanner wrapper.
 - `SnapTableReminder/Views/RecordsView.swift`: searchable record list.
 - `SnapTableReminder/Views/RecordFormView.swift`: add/edit form.
 - `SnapTableReminder/Views/DashboardView.swift`: upcoming reminders and summary.
@@ -208,6 +209,7 @@ Expected: commit succeeds.
 **Files:**
 - Create: `SnapTableReminder/App/SnapTableReminderApp.swift`
 - Create: `SnapTableReminder/Views/CaptureView.swift`
+- Create: `SnapTableReminder/Views/DocumentCameraView.swift`
 - Create: `SnapTableReminder/Views/RecordsView.swift`
 - Create: `SnapTableReminder/Views/RecordFormView.swift`
 - Create: `SnapTableReminder/Views/DashboardView.swift`

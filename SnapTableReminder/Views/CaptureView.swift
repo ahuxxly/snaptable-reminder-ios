@@ -1,6 +1,7 @@
 import PhotosUI
 import SwiftUI
 import UIKit
+import VisionKit
 
 struct CaptureView: View {
     @EnvironmentObject private var appState: AppState
@@ -9,6 +10,7 @@ struct CaptureView: View {
     @State private var rawText = ""
     @State private var selectedPhotoItem: PhotosPickerItem?
     @State private var activeSheet: ActiveSheet?
+    @State private var isShowingScanner = false
     @State private var isRecognizing = false
     @State private var errorMessage: String?
 
@@ -29,11 +31,20 @@ struct CaptureView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
                     HStack(spacing: 12) {
+                        Button {
+                            isShowingScanner = true
+                        } label: {
+                            Label("Scan", systemImage: "doc.viewfinder")
+                                .frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .disabled(!VNDocumentCameraViewController.isSupported)
+
                         PhotosPicker(selection: $selectedPhotoItem, matching: .images) {
                             Label("Import Image", systemImage: "photo")
                                 .frame(maxWidth: .infinity)
                         }
-                        .buttonStyle(.borderedProminent)
+                        .buttonStyle(.bordered)
 
                         Button {
                             activeSheet = .manual
@@ -42,6 +53,15 @@ struct CaptureView: View {
                                 .frame(maxWidth: .infinity)
                         }
                         .buttonStyle(.bordered)
+                    }
+                    .font(.callout)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+
+                    if !VNDocumentCameraViewController.isSupported {
+                        Text("Document camera scanning is unavailable on this device. You can still import an image or paste text.")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
                     }
 
                     if isRecognizing {
@@ -97,6 +117,17 @@ struct CaptureView: View {
                     }
                 }
             }
+            .sheet(isPresented: $isShowingScanner) {
+                DocumentCameraView { images in
+                    isShowingScanner = false
+                    recognizeText(from: images)
+                } onCancel: {
+                    isShowingScanner = false
+                } onError: { error in
+                    errorMessage = error.localizedDescription
+                    isShowingScanner = false
+                }
+            }
         }
     }
 
@@ -118,6 +149,27 @@ struct CaptureView: View {
                     return
                 }
                 rawText = try await appState.ocrService.recognizeText(in: image)
+                parseText()
+            } catch {
+                errorMessage = error.localizedDescription
+            }
+        }
+    }
+
+    private func recognizeText(from images: [UIImage]) {
+        guard !images.isEmpty else { return }
+        isRecognizing = true
+        errorMessage = nil
+
+        Task {
+            defer { isRecognizing = false }
+            do {
+                var recognizedPages: [String] = []
+                for image in images {
+                    let pageText = try await appState.ocrService.recognizeText(in: image)
+                    recognizedPages.append(pageText)
+                }
+                rawText = recognizedPages.joined(separator: "\n\n")
                 parseText()
             } catch {
                 errorMessage = error.localizedDescription

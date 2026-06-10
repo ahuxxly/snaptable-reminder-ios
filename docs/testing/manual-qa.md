@@ -4,8 +4,16 @@
 
 1. Launch the app.
 2. Confirm Capture opens without a crash.
-3. Confirm empty state offers pasted text and manual entry.
+3. Confirm Capture offers Scan, Import Image, pasted text, and manual entry.
 4. Confirm no login or network setup is required.
+
+## Document Scan
+
+1. Open Capture.
+2. Tap Scan.
+3. Scan one paper document or receipt.
+4. Confirm recognized text appears after saving the scan.
+5. Confirm parsed fields open for review before saving a record.
 
 ## Text Parsing Fallback
 

@@ -20,9 +20,10 @@
 - Subtitle: Screenshots to tables.
 - Category: Productivity.
 - Price: paid upfront, suggested USD 1.99 or 2.99 equivalent.
-- Privacy policy URL: hosted from `docs/app-store/privacy-policy.md`.
-- Support URL: publish before submission.
+- Privacy policy URL: host `site/privacy.html` before submission.
+- Support URL: host `site/support.html` before submission.
 - Contact email: publish before submission.
+- App Store metadata draft: `docs/app-store/metadata.md`.
 
 ## Screenshots
 
@@ -60,5 +61,6 @@ screenshot OCR, document scanner, table export, reminder, receipt organizer, dea
 3. Configure signing with the Apple Developer account.
 4. Archive in Xcode.
 5. Upload to App Store Connect.
-6. Set paid price and selected country/region availability excluding China mainland.
-7. Fill privacy details and submit for review.
+6. Host `site/privacy.html` and `site/support.html`, then copy their public URLs into App Store Connect.
+7. Set paid price and selected country/region availability excluding China mainland.
+8. Fill privacy details and submit for review.
