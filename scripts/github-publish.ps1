@@ -13,11 +13,21 @@ function Write-Section($title) {
 
 Write-Section "GitHub CLI"
 $gh = Get-Command gh -ErrorAction SilentlyContinue
-if (-not $gh) {
+$ghPath = $null
+if ($gh) {
+    $ghPath = $gh.Source
+} else {
+    $fallbackGhPath = "C:\Program Files\GitHub CLI\gh.exe"
+    if (Test-Path $fallbackGhPath) {
+        $ghPath = $fallbackGhPath
+    }
+}
+if (-not $ghPath) {
     throw "GitHub CLI is missing. Install it, then run 'gh auth login'. On Windows: winget install --id GitHub.cli -e --source winget"
 }
+Write-Host "gh=$ghPath"
 
-$authOutput = gh auth status 2>&1
+$authOutput = & $ghPath auth status 2>&1
 if ($LASTEXITCODE -ne 0) {
     Write-Host $authOutput
     throw "GitHub CLI is not authenticated. Run 'gh auth login' first."
@@ -44,15 +54,15 @@ if ($LASTEXITCODE -eq 0 -and $originUrl) {
     git push -u origin $branch
 } else {
     $visibilityFlag = "--$Visibility"
-    gh repo create $RepoName $visibilityFlag --source . --remote origin --push
+    & $ghPath repo create $RepoName $visibilityFlag --source . --remote origin --push
 }
 
 Write-Section "Repository"
-$repoFullName = gh repo view --json nameWithOwner --jq ".nameWithOwner"
+$repoFullName = & $ghPath repo view --json nameWithOwner --jq ".nameWithOwner"
 Write-Host "repo=$repoFullName"
 
 Write-Section "Recent workflow runs"
-gh run list --limit 10
+& $ghPath run list --limit 10
 
 Write-Section "Next checks"
 Write-Host "Open the repository Actions tab and confirm these workflows:"

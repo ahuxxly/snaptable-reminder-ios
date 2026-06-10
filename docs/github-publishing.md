@@ -13,6 +13,8 @@ gh auth login
 
 Choose GitHub.com and browser login. The account must be able to create repositories or push to the target repository.
 
+If the current PowerShell session does not recognize `gh` right after installation, open a new terminal. The publishing script also checks the standard install path `C:\Program Files\GitHub CLI\gh.exe`.
+
 ## Create and Push a Repository
 
 From the repository root:
