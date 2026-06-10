@@ -31,6 +31,7 @@
 - Fastlane release notes: `docs/app-store/fastlane-release.md`.
 - Screenshot plan: `docs/app-store/screenshot-plan.md`.
 - Launch runbook: `docs/app-store/launch-runbook.md`.
+- Monetization plan: `docs/app-store/monetization-plan.md`.
 
 ## Screenshots
 

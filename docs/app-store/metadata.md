@@ -48,11 +48,13 @@ Detailed review notes draft: `docs/app-store/review-notes.md`.
 
 ## Suggested Price
 
-Paid upfront: USD 1.99 or USD 2.99 equivalent.
+Paid upfront: start at USD 1.99 equivalent. Consider USD 2.99 equivalent after early demand validation.
 
 ## Suggested Availability
 
 Public App Store distribution in selected countries and regions. Exclude China mainland for version 1 until ICP and local compliance requirements are intentionally handled.
+
+Detailed pricing and availability plan: `docs/app-store/monetization-plan.md`.
 
 ## Support URL
 

@@ -75,7 +75,7 @@ If any command fails, follow `docs/testing/ci-failure-playbook.md` and keep the 
 3. App name candidate: `SnapTable Reminder`.
 4. Primary language: English.
 5. Category: Productivity.
-6. Pricing: paid upfront, suggested USD 1.99 or USD 2.99 equivalent.
+6. Pricing: paid upfront, start at USD 1.99 equivalent.
 7. Availability: selected countries or regions, excluding China mainland in version 1.
 
 Evidence:
@@ -83,6 +83,7 @@ Evidence:
 - App record exists.
 - Bundle ID matches `project.yml`.
 - China mainland is not selected.
+- Pricing follows `docs/app-store/monetization-plan.md`.
 
 ## Phase 5: Metadata and Compliance
 
