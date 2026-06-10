@@ -368,6 +368,32 @@ if (-not $siteSupportLinkWriterText.Contains("https://github.com/")) {
 if (-not $siteSupportLinkWriterText.Contains("support.html") -or -not $siteSupportLinkWriterText.Contains("privacy.html")) {
     throw "Site support link writer should update support and privacy pages."
 }
+$tempSupportSiteRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("snaptable-support-preflight-" + [guid]::NewGuid().ToString("N"))
+New-Item -ItemType Directory -Path $tempSupportSiteRoot | Out-Null
+try {
+    Copy-Item -Recurse -Path "site" -Destination (Join-Path $tempSupportSiteRoot "site")
+    Push-Location $tempSupportSiteRoot
+    try {
+        powershell -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot "write-site-support-links.ps1") -Owner "preflight-owner" -RepoName "snaptable-reminder-ios" | Out-Null
+    } finally {
+        Pop-Location
+    }
+    $expectedSupportUrl = "https://github.com/preflight-owner/snaptable-reminder-ios/issues"
+    $tempSupportPath = Join-Path $tempSupportSiteRoot "site\support.html"
+    $tempPrivacyPath = Join-Path $tempSupportSiteRoot "site\privacy.html"
+    if (-not (Select-String -Path $tempSupportPath -SimpleMatch $expectedSupportUrl -Quiet)) {
+        throw "Site support link writer did not update support.html in the preflight temp copy."
+    }
+    if (-not (Select-String -Path $tempPrivacyPath -SimpleMatch $expectedSupportUrl -Quiet)) {
+        throw "Site support link writer did not update privacy.html in the preflight temp copy."
+    }
+} finally {
+    $resolvedSupportTemp = [System.IO.Path]::GetFullPath($tempSupportSiteRoot)
+    $resolvedTempBase = [System.IO.Path]::GetFullPath([System.IO.Path]::GetTempPath())
+    if ($resolvedSupportTemp.StartsWith($resolvedTempBase, [System.StringComparison]::OrdinalIgnoreCase)) {
+        Remove-Item -LiteralPath $resolvedSupportTemp -Recurse -Force
+    }
+}
 Write-Host "GitHub publishing helpers present"
 
 Write-Section "Screenshot automation"
