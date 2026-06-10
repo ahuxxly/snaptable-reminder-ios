@@ -52,8 +52,13 @@ if (-not $branch) {
 }
 
 Write-Section "Remote"
-$originUrl = git remote get-url origin 2>$null
-if ($LASTEXITCODE -eq 0 -and $originUrl) {
+$previousErrorActionPreference = $ErrorActionPreference
+$ErrorActionPreference = "Continue"
+$originOutput = git remote get-url origin 2>&1
+$originExitCode = $LASTEXITCODE
+$ErrorActionPreference = $previousErrorActionPreference
+$originUrl = if ($originExitCode -eq 0) { ($originOutput | Select-Object -First 1).ToString().Trim() } else { "" }
+if ($originExitCode -eq 0 -and $originUrl) {
     Write-Host "origin=$originUrl"
     git push -u origin $branch
 } else {
