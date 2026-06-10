@@ -27,8 +27,12 @@ if (-not $ghPath) {
 }
 Write-Host "gh=$ghPath"
 
+$previousErrorActionPreference = $ErrorActionPreference
+$ErrorActionPreference = "Continue"
 $authOutput = & $ghPath auth status 2>&1
-if ($LASTEXITCODE -ne 0) {
+$authExitCode = $LASTEXITCODE
+$ErrorActionPreference = $previousErrorActionPreference
+if ($authExitCode -ne 0) {
     Write-Host $authOutput
     throw "GitHub CLI is not authenticated. Run 'gh auth login' first."
 }
