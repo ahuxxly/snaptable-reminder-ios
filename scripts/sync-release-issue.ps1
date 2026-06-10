@@ -51,6 +51,7 @@ This issue tracks the private Apple-account work required before SnapTable Remin
 - Windows preflight: `powershell -ExecutionPolicy Bypass -File scripts/windows-preflight.ps1`
 - Private Apple material folder helper: `powershell -ExecutionPolicy Bypass -File scripts/prepare-apple-materials-folder.ps1`
 - Apple release material staging helper: `powershell -ExecutionPolicy Bypass -File scripts/stage-apple-release-materials.ps1`
+- App Store release evidence recorder: `powershell -ExecutionPolicy Bypass -File scripts/record-app-store-release-evidence.ps1`
 - App Store Connect entry packet exporter: `powershell -ExecutionPolicy Bypass -File scripts/export-app-store-connect-entry-pack.ps1`
 - Main release docs:
   - `docs/app-store/current-release-status.md`
@@ -135,8 +136,10 @@ powershell -ExecutionPolicy Bypass -File scripts/github-run-app-store-release.ps
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/github-submit-app-review.ps1 -ConfirmSubmitForReview YES -DryRun
 powershell -ExecutionPolicy Bypass -File scripts/github-submit-app-review.ps1 -ConfirmSubmitForReview YES -Wait
+powershell -ExecutionPolicy Bypass -File scripts/record-app-store-release-evidence.ps1 -MaterialsDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials" -AppStoreConnectAppId "1234567890" -AppVersion "1.0" -BuildNumber "1" -MetadataWorkflowRunUrl "https://github.com/owner/repo/actions/runs/100" -TestFlightWorkflowRunUrl "https://github.com/owner/repo/actions/runs/101" -AppReviewWorkflowRunUrl "https://github.com/owner/repo/actions/runs/102" -MetadataUploaded -ScreenshotsUploaded -ReviewCheckPassed -TestFlightUploaded -BuildProcessed -AppReviewSubmitted -AppStatus "Waiting for Review" -DryRun
 ```
 
+- [ ] Private release evidence is recorded in `05-release-evidence/release-evidence.private.json`.
 - [ ] App status reaches Waiting for Review.
 - [ ] App status reaches Ready for Distribution after approval.
 

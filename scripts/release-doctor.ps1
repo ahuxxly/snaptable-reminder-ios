@@ -214,7 +214,7 @@ function Test-Materials($gates, $materialsDirectory, $explicitPath) {
         } else {
             Add-Gate $gates "Apple private material folder" "WARN" "Default materials folder is missing: $materialsPath" "Run scripts/prepare-apple-materials-folder.ps1."
         }
-        return
+        return $null
     }
 
     $previousErrorActionPreference = $ErrorActionPreference
@@ -231,10 +231,69 @@ function Test-Materials($gates, $materialsDirectory, $explicitPath) {
         if ($validationOutput) {
             Write-Host $validationOutput.Trim()
         }
-        return
+        return $null
     }
 
     Add-Gate $gates "Apple private material folder" "OK" "Private Apple material folder validates at $materialsPath."
+    return $materialsPath
+}
+
+function Test-ReleaseEvidence($gates, $materialsPath) {
+    $evidencePath = Join-Path $materialsPath "05-release-evidence\release-evidence.private.json"
+    if (-not (Test-Path $evidencePath)) {
+        Add-Gate $gates "App Store release evidence" "BLOCKED" "No App Store Connect release evidence is recorded in the private materials folder." "After upload/submission, run scripts/record-app-store-release-evidence.ps1 -MaterialsDirectory `"$materialsPath`"."
+        return
+    }
+
+    try {
+        $evidence = Get-Content $evidencePath -Raw | ConvertFrom-Json
+    } catch {
+        Add-Gate $gates "App Store release evidence" "BLOCKED" "release-evidence.private.json is not valid JSON." "Regenerate it with scripts/record-app-store-release-evidence.ps1."
+        return
+    }
+
+    $missingFields = @()
+    foreach ($field in @("appStoreConnectAppId", "appVersion", "buildNumber", "appStatus")) {
+        if ([string]::IsNullOrWhiteSpace([string]$evidence.$field)) {
+            $missingFields += $field
+        }
+    }
+    if ($missingFields.Count -gt 0) {
+        Add-Gate $gates "App Store release evidence" "BLOCKED" "Evidence is missing: $($missingFields -join ', ')." "Regenerate it with scripts/record-app-store-release-evidence.ps1."
+        return
+    }
+
+    $requiredCompletedFlags = @(
+        "metadataUploaded",
+        "screenshotsUploaded",
+        "reviewCheckPassed",
+        "testFlightUploaded",
+        "buildProcessed",
+        "appReviewSubmitted"
+    )
+    $missingFlags = @()
+    foreach ($flag in $requiredCompletedFlags) {
+        if ($evidence.status.$flag -ne $true) {
+            $missingFlags += $flag
+        }
+    }
+    if ($missingFlags.Count -gt 0) {
+        Add-Gate $gates "App Store release evidence" "BLOCKED" "Evidence is not complete: $($missingFlags -join ', ')." "Record the missing upload/submission evidence after the corresponding App Store Connect step succeeds."
+        return
+    }
+
+    $acceptableSubmittedStatuses = @(
+        "Waiting for Review",
+        "In Review",
+        "Pending Developer Release",
+        "Ready for Distribution"
+    )
+    if ($acceptableSubmittedStatuses -notcontains [string]$evidence.appStatus) {
+        Add-Gate $gates "App Store release evidence" "BLOCKED" "App Store status is '$($evidence.appStatus)', not a submitted/releasable status." "Record evidence again after App Store Connect shows Waiting for Review or later."
+        return
+    }
+
+    Add-Gate $gates "App Store release evidence" "OK" "Version $($evidence.appVersion) build $($evidence.buildNumber) is recorded with status '$($evidence.appStatus)'."
 }
 
 $gates = New-Object "System.Collections.Generic.List[object]"
@@ -269,7 +328,10 @@ if ($RunPreflight) {
 
 Write-Section "Local release artifacts"
 Test-EntryPack $gates $EntryPackDirectory (-not [string]::IsNullOrWhiteSpace($EntryPackDirectory))
-Test-Materials $gates $MaterialsDirectory (-not [string]::IsNullOrWhiteSpace($MaterialsDirectory))
+$validMaterialsPath = Test-Materials $gates $MaterialsDirectory (-not [string]::IsNullOrWhiteSpace($MaterialsDirectory))
+if (-not [string]::IsNullOrWhiteSpace($validMaterialsPath)) {
+    Test-ReleaseEvidence $gates $validMaterialsPath
+}
 
 if ($LocalOnly) {
     Complete-Doctor $gates
@@ -433,6 +495,10 @@ Write-Section "External Apple gates"
 Add-Gate $gates "Apple Developer Program" "BLOCKED" "Cannot verify from this workspace." "Confirm membership, Paid Apps Agreement, tax, and banking in App Store Connect."
 Add-Gate $gates "App Store Connect app record" "BLOCKED" "Cannot verify from this workspace without Apple credentials." "Create the iOS app record for com.snaptable.reminder using docs/app-store/app-store-fields.json."
 Add-Gate $gates "EU DSA trader status" "BLOCKED" "Cannot verify from this workspace." "Complete docs/app-store/eu-dsa-trader.md, or intentionally exclude EU storefronts."
-Add-Gate $gates "Build uploaded and submitted" "BLOCKED" "No App Store Connect evidence is available in this workspace." "After secrets exist, run scripts/github-run-app-store-release.ps1 -Wait, then scripts/github-submit-app-review.ps1 -ConfirmSubmitForReview YES -Wait."
+if (-not [string]::IsNullOrWhiteSpace($validMaterialsPath)) {
+    Add-Gate $gates "Build uploaded and submitted" "WARN" "Use the local App Store release evidence gate above as the workspace evidence source." "Keep release-evidence.private.json updated after each App Store Connect status change."
+} else {
+    Add-Gate $gates "Build uploaded and submitted" "BLOCKED" "No App Store Connect evidence is available in this workspace." "After secrets exist, run scripts/github-run-app-store-release.ps1 -Wait, then scripts/github-submit-app-review.ps1 -ConfirmSubmitForReview YES -Wait."
+}
 
 Complete-Doctor $gates

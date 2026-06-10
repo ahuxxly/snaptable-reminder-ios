@@ -140,7 +140,7 @@ Keep a private copy after checking App Store Connect.
 }
 "@
 
-    Set-TextFileIfMissing (Join-Path $materialsRoot "README.md") @"
+    Set-TextFileIfMissing (Join-Path $materialsRoot "README.md") @'
 # SnapTable Reminder Apple Release Materials
 
 This folder is for private Apple release material for `com.snaptable.reminder`.
@@ -180,7 +180,13 @@ powershell -ExecutionPolicy Bypass -File scripts/github-set-apple-secrets.ps1 -M
 ```
 
 Use `-DryRun` first when you only want to verify paths and field shapes.
-"@
+
+After TestFlight upload and App Review submission, record private release evidence:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/record-app-store-release-evidence.ps1 -MaterialsDirectory "$materialsRoot" -AppStoreConnectAppId "1234567890" -AppVersion "1.0" -BuildNumber "1" -MetadataUploaded -ScreenshotsUploaded -ReviewCheckPassed -TestFlightUploaded -BuildProcessed -AppReviewSubmitted -AppStatus "Waiting for Review" -DryRun
+```
+'@
 }
 
 function Find-FirstFile($directory, $filter) {

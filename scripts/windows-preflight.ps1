@@ -541,6 +541,9 @@ if (-not (Test-Path "scripts\prepare-apple-materials-folder.ps1")) {
 if (-not (Test-Path "scripts\stage-apple-release-materials.ps1")) {
     throw "Missing Apple release material staging helper script."
 }
+if (-not (Test-Path "scripts\record-app-store-release-evidence.ps1")) {
+    throw "Missing App Store release evidence recorder script."
+}
 if (-not (Test-Path "scripts\export-app-store-connect-entry-pack.ps1")) {
     throw "Missing App Store Connect entry packet exporter script."
 }
@@ -549,6 +552,9 @@ if (-not (Test-Path "tests\prepare-apple-materials-folder.tests.ps1")) {
 }
 if (-not (Test-Path "tests\stage-apple-release-materials.tests.ps1")) {
     throw "Missing Apple release material staging helper tests."
+}
+if (-not (Test-Path "tests\record-app-store-release-evidence.tests.ps1")) {
+    throw "Missing App Store release evidence recorder tests."
 }
 if (-not (Test-Path "tests\github-set-apple-secrets.tests.ps1")) {
     throw "Missing GitHub Apple secret helper tests."
@@ -621,6 +627,27 @@ foreach ($stageAppleMaterialsTerm in @(
 if (-not $launchRunbookText.Contains("stage-apple-release-materials.ps1")) {
     throw "Launch runbook should mention the Apple release material staging helper."
 }
+$recordReleaseEvidenceText = Get-Content "scripts\record-app-store-release-evidence.ps1" -Raw
+foreach ($recordReleaseEvidenceTerm in @(
+    "AppStoreConnectAppId",
+    "MetadataUploaded",
+    "ScreenshotsUploaded",
+    "ReviewCheckPassed",
+    "TestFlightUploaded",
+    "BuildProcessed",
+    "AppReviewSubmitted",
+    "release-evidence.private.json",
+    "release-evidence-summary.md",
+    "Dry run complete; no files were written",
+    "outside this repository"
+)) {
+    if (-not $recordReleaseEvidenceText.Contains($recordReleaseEvidenceTerm)) {
+        throw "App Store release evidence recorder should include: $recordReleaseEvidenceTerm"
+    }
+}
+if (-not $launchRunbookText.Contains("record-app-store-release-evidence.ps1")) {
+    throw "Launch runbook should mention the App Store release evidence recorder."
+}
 $entryPackExporterText = Get-Content "scripts\export-app-store-connect-entry-pack.ps1" -Raw
 foreach ($entryPackTerm in @(
     "app-store-connect-entry-pack.json",
@@ -639,6 +666,7 @@ if (-not $launchRunbookText.Contains("export-app-store-connect-entry-pack.ps1"))
 }
 powershell -NoProfile -ExecutionPolicy Bypass -File tests\prepare-apple-materials-folder.tests.ps1
 powershell -NoProfile -ExecutionPolicy Bypass -File tests\stage-apple-release-materials.tests.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File tests\record-app-store-release-evidence.tests.ps1
 powershell -NoProfile -ExecutionPolicy Bypass -File tests\github-set-apple-secrets.tests.ps1
 powershell -NoProfile -ExecutionPolicy Bypass -File tests\github-release-workflow.tests.ps1
 powershell -NoProfile -ExecutionPolicy Bypass -File tests\export-app-store-connect-entry-pack.tests.ps1
@@ -760,6 +788,8 @@ foreach ($releaseDoctorTerm in @(
     "MaterialsDirectory",
     "App Store Connect entry packet",
     "Apple private material folder",
+    "App Store release evidence",
+    "scripts/record-app-store-release-evidence.ps1",
     "scripts/stage-apple-release-materials.ps1",
     "scripts/github-run-app-store-release.ps1 -Wait",
     "scripts/github-submit-app-review.ps1 -ConfirmSubmitForReview YES -Wait"
@@ -783,6 +813,7 @@ foreach ($releaseIssueSyncTerm in @(
     "docs/app-store/eu-dsa-trader.md",
     "scripts/release-doctor.ps1 -RunPreflight",
     "scripts/stage-apple-release-materials.ps1",
+    "scripts/record-app-store-release-evidence.ps1",
     "scripts/github-set-apple-secrets.ps1 -UploadOnly",
     "scripts/github-set-apple-secrets.ps1 -SigningOnly",
     "scripts/github-set-apple-secrets.ps1 -ReviewOnly",

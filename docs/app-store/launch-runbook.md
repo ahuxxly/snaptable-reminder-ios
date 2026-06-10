@@ -291,6 +291,26 @@ GitHub Actions TestFlight path:
 2. Preview the dispatch command with `scripts/github-run-app-store-release.ps1 -DryRun`.
 3. Run `scripts/github-run-app-store-release.ps1`.
 4. Wait for App Store Connect to finish processing the build.
+5. Record private release evidence:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/record-app-store-release-evidence.ps1 `
+  -MaterialsDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials" `
+  -AppStoreConnectAppId "1234567890" `
+  -AppVersion "1.0" `
+  -BuildNumber "1" `
+  -MetadataWorkflowRunUrl "https://github.com/owner/repo/actions/runs/100" `
+  -TestFlightWorkflowRunUrl "https://github.com/owner/repo/actions/runs/101" `
+  -MetadataUploaded `
+  -ScreenshotsUploaded `
+  -ReviewCheckPassed `
+  -TestFlightUploaded `
+  -BuildProcessed `
+  -AppStatus "Ready for Review" `
+  -DryRun
+```
+
+Remove `-DryRun` after the preview matches App Store Connect and GitHub Actions.
 
 GitHub Actions metadata and screenshot path:
 
@@ -330,7 +350,30 @@ powershell -ExecutionPolicy Bypass -File scripts/github-submit-app-review.ps1 -C
 powershell -ExecutionPolicy Bypass -File scripts/github-submit-app-review.ps1 -ConfirmSubmitForReview YES -Wait
 ```
 
-9. On the Mac used for submission, run:
+9. Record submitted review evidence:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/record-app-store-release-evidence.ps1 `
+  -MaterialsDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials" `
+  -AppStoreConnectAppId "1234567890" `
+  -AppVersion "1.0" `
+  -BuildNumber "1" `
+  -MetadataWorkflowRunUrl "https://github.com/owner/repo/actions/runs/100" `
+  -TestFlightWorkflowRunUrl "https://github.com/owner/repo/actions/runs/101" `
+  -AppReviewWorkflowRunUrl "https://github.com/owner/repo/actions/runs/102" `
+  -MetadataUploaded `
+  -ScreenshotsUploaded `
+  -ReviewCheckPassed `
+  -TestFlightUploaded `
+  -BuildProcessed `
+  -AppReviewSubmitted `
+  -AppStatus "Waiting for Review" `
+  -DryRun
+```
+
+Remove `-DryRun` after App Store Connect shows the same status.
+
+10. On the Mac used for submission, run:
 
 ```bash
 bash scripts/mac-validate-review-contact-env.sh

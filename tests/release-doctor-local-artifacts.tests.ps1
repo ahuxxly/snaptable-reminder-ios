@@ -4,6 +4,7 @@ $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 $releaseDoctorPath = Join-Path $repoRoot "scripts\release-doctor.ps1"
 $entryPackExporterPath = Join-Path $repoRoot "scripts\export-app-store-connect-entry-pack.ps1"
 $materialsPrepPath = Join-Path $repoRoot "scripts\prepare-apple-materials-folder.ps1"
+$recordEvidencePath = Join-Path $repoRoot "scripts\record-app-store-release-evidence.ps1"
 $failures = New-Object "System.Collections.Generic.List[string]"
 
 function Assert-True($condition, $message) {
@@ -93,6 +94,27 @@ test-private-key
 "@
 }
 
+function Add-CompleteReleaseEvidence($materials) {
+    & powershell -NoProfile -ExecutionPolicy Bypass -File $recordEvidencePath `
+        -MaterialsDirectory $materials `
+        -AppStoreConnectAppId "1234567890" `
+        -AppVersion "1.0" `
+        -BuildNumber "1" `
+        -MetadataWorkflowRunUrl "https://github.com/owner/repo/actions/runs/100" `
+        -TestFlightWorkflowRunUrl "https://github.com/owner/repo/actions/runs/101" `
+        -AppReviewWorkflowRunUrl "https://github.com/owner/repo/actions/runs/102" `
+        -MetadataUploaded `
+        -ScreenshotsUploaded `
+        -ReviewCheckPassed `
+        -TestFlightUploaded `
+        -BuildProcessed `
+        -AppReviewSubmitted `
+        -AppStatus "Waiting for Review" | Out-Null
+    if ($LASTEXITCODE -ne 0) {
+        throw "Could not record test release evidence."
+    }
+}
+
 $tempRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("snaptable-release-doctor-local-tests-" + [guid]::NewGuid().ToString("N"))
 New-Item -ItemType Directory -Path $tempRoot | Out-Null
 
@@ -103,6 +125,7 @@ try {
         & powershell -NoProfile -ExecutionPolicy Bypass -File $entryPackExporterPath -OutputDirectory $entryPack | Out-Null
         Assert-True ($LASTEXITCODE -eq 0) "entry pack setup failed"
         New-CompleteMaterialsFolder $materials
+        Add-CompleteReleaseEvidence $materials
 
         $result = Invoke-ReleaseDoctor @(
             "-LocalOnly",
@@ -113,6 +136,7 @@ try {
         Assert-True ($result.ExitCode -ne 2) "complete local artifacts should not create blocked gates: $($result.Output)"
         Assert-Contains $result.Output "[OK] App Store Connect entry packet" "entry pack gate should be OK"
         Assert-Contains $result.Output "[OK] Apple private material folder" "materials gate should be OK"
+        Assert-Contains $result.Output "[OK] App Store release evidence" "release evidence gate should be OK"
         Assert-Contains $result.Output "blocked=0" "local-only doctor should report zero blocked gates for complete local artifacts"
     }
 

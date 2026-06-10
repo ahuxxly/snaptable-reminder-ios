@@ -34,6 +34,7 @@ Local repository status:
 - Windows GitHub Apple secret helper is present for configuring upload, signing, and App Review contact secrets without committing private files.
 - Windows private Apple materials folder helper is present for preparing and validating account, API key, signing, DSA, and review-contact evidence outside the repository.
 - Windows Apple release material staging helper is present for copying downloaded Apple files into the private materials folder and writing private release JSON from command parameters.
+- Windows App Store release evidence recorder is present for storing TestFlight/App Review status evidence in the private materials folder.
 - Windows App Store Connect entry packet exporter is present for generating paste-ready app record, metadata, privacy/compliance, and review fields from source files.
 - Windows GitHub App Store release helper is present for checking secrets and triggering upload workflows.
 - Windows GitHub App Review submit helper is present for checking review-contact secrets and triggering final submission with explicit confirmation.
@@ -152,7 +153,10 @@ powershell -ExecutionPolicy Bypass -File scripts/github-run-app-store-release.ps
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/github-submit-app-review.ps1 -ConfirmSubmitForReview YES -DryRun
 powershell -ExecutionPolicy Bypass -File scripts/github-submit-app-review.ps1 -ConfirmSubmitForReview YES -Wait
+powershell -ExecutionPolicy Bypass -File scripts/record-app-store-release-evidence.ps1 -MaterialsDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials" -AppStoreConnectAppId "1234567890" -AppVersion "1.0" -BuildNumber "1" -MetadataWorkflowRunUrl "https://github.com/owner/repo/actions/runs/100" -TestFlightWorkflowRunUrl "https://github.com/owner/repo/actions/runs/101" -AppReviewWorkflowRunUrl "https://github.com/owner/repo/actions/runs/102" -MetadataUploaded -ScreenshotsUploaded -ReviewCheckPassed -TestFlightUploaded -BuildProcessed -AppReviewSubmitted -AppStatus "Waiting for Review" -DryRun
 ```
+
+Remove `-DryRun` from the evidence command only after App Store Connect shows the same status.
 
 12. On a Mac, run:
 
