@@ -30,6 +30,7 @@
 - Age rating draft: `docs/app-store/age-rating.md`.
 - Fastlane release notes: `docs/app-store/fastlane-release.md`.
 - Screenshot plan: `docs/app-store/screenshot-plan.md`.
+- Launch runbook: `docs/app-store/launch-runbook.md`.
 
 ## Screenshots
 

@@ -76,3 +76,5 @@ Use the hosted URLs for:
 ## App Store Direction
 
 Version 1 is planned as a paid upfront Productivity app distributed outside China mainland at launch. See `docs/app-store/app-store-checklist.md`.
+
+For the full launch sequence, follow `docs/app-store/launch-runbook.md`.
