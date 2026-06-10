@@ -38,6 +38,16 @@ Or run:
 bash scripts/mac-verify.sh
 ```
 
+## Windows Preflight
+
+On this Windows workspace, run the static checks with:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/windows-preflight.ps1
+```
+
+This checks git cleanliness, unfinished markers, common encoding damage, resource parsing, static site links, and reports whether the iOS toolchain is available.
+
 ## GitHub CI
 
 The repository includes `.github/workflows/ios-ci.yml`. After this project is pushed to GitHub, GitHub Actions can run XcodeGen, unit tests, and an iPhone simulator build on macOS. Signing and App Store upload still require Apple Developer account setup.
