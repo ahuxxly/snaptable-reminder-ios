@@ -52,6 +52,8 @@ This checks git cleanliness, unfinished markers, common encoding damage, resourc
 
 The repository includes `.github/workflows/ios-ci.yml`. After this project is pushed to GitHub, GitHub Actions can run XcodeGen, unit tests, and an iPhone simulator build on macOS. Signing and App Store upload still require Apple Developer account setup.
 
+Publishing helper: `docs/github-publishing.md`.
+
 ## Fastlane on Mac
 
 Fastlane is available for repeatable Mac release commands:

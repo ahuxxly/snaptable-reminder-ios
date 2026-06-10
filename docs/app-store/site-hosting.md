@@ -19,6 +19,8 @@ https://<github-user-or-org>.github.io/<repository-name>/support.html
 
 Replace `<github-user-or-org>` and `<repository-name>` with the actual GitHub owner and repository.
 
+Publishing helper: `docs/github-publishing.md`.
+
 ## Other Static Hosts
 
 The same `site/` folder can be uploaded to any static host, including Vercel, Netlify, Cloudflare Pages, or an object storage bucket with public website hosting.
