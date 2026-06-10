@@ -61,6 +61,6 @@ screenshot OCR, document scanner, table export, reminder, receipt organizer, dea
 3. Configure signing with the Apple Developer account.
 4. Archive in Xcode.
 5. Upload to App Store Connect.
-6. Host `site/privacy.html` and `site/support.html`, then copy their public URLs into App Store Connect.
+6. Host `site/privacy.html` and `site/support.html`, or push to GitHub and use `.github/workflows/pages.yml` to publish them with GitHub Pages.
 7. Set paid price and selected country/region availability excluding China mainland.
 8. Fill privacy details and submit for review.

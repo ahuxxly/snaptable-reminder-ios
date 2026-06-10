@@ -42,6 +42,15 @@ bash scripts/mac-verify.sh
 
 The repository includes `.github/workflows/ios-ci.yml`. After this project is pushed to GitHub, GitHub Actions can run XcodeGen, unit tests, and an iPhone simulator build on macOS. Signing and App Store upload still require Apple Developer account setup.
 
+## App Store Support Site
+
+The `site/` folder contains static privacy and support pages. The repository includes `.github/workflows/pages.yml`, which can publish those pages with GitHub Pages after the project is pushed to GitHub and Pages is enabled.
+
+Use the hosted URLs for:
+
+- Privacy Policy URL: `/privacy.html`
+- Support URL: `/support.html`
+
 ## App Store Direction
 
 Version 1 is planned as a paid upfront Productivity app distributed outside China mainland at launch. See `docs/app-store/app-store-checklist.md`.
