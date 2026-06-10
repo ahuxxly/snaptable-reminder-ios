@@ -95,6 +95,7 @@ try {
         Assert-Contains $result.Output ".p8" "missing API key should be reported"
         Assert-Contains $result.Output ".p12" "missing distribution certificate should be reported"
         Assert-Contains $result.Output ".mobileprovision" "missing provisioning profile should be reported"
+        Assert-Contains $result.Output "release-secrets.private.json" "missing release secret values should be reported"
         Assert-Contains $result.Output "review-contact.private.json" "missing review contact should be reported"
         Assert-Contains $result.Output "dsa-private-evidence.md" "missing DSA evidence should be reported"
     }
@@ -120,6 +121,16 @@ test-private-key
 "@
         [System.IO.File]::WriteAllBytes((Join-Path $target "02-signing\apple-distribution.p12"), [byte[]](1, 2, 3, 4))
         [System.IO.File]::WriteAllText((Join-Path $target "02-signing\app-store.mobileprovision"), "com.snaptable.reminder")
+        Set-Content -Path (Join-Path $target "release-secrets.private.json") -Encoding UTF8 -Value @"
+{
+  "appStoreConnectUsername": "account@example.invalid",
+  "appleDeveloperTeamId": "TEAM123456",
+  "appStoreConnectApiKeyId": "TESTKEY123",
+  "appStoreConnectApiIssuerId": "00000000-0000-0000-0000-000000000000",
+  "appleDistributionCertificatePassword": "p12-password",
+  "appleCodesignKeychainPassword": "temporary-keychain-password"
+}
+"@
         Set-Content -Path (Join-Path $target "03-review-contact\review-contact.private.json") -Encoding UTF8 -Value @"
 {
   "firstName": "App",

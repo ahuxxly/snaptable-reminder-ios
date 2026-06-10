@@ -129,6 +129,17 @@ Keep a private copy after checking App Store Connect.
 - Contact verification: completed if the account is a trader account
 "@
 
+    Set-TextFileIfMissing (Join-Path $materialsRoot "release-secrets.template.json") @"
+{
+  "appStoreConnectUsername": "account@example.com",
+  "appleDeveloperTeamId": "TEAMID1234",
+  "appStoreConnectApiKeyId": "KEYID1234",
+  "appStoreConnectApiIssuerId": "00000000-0000-0000-0000-000000000000",
+  "appleDistributionCertificatePassword": "p12-export-password",
+  "appleCodesignKeychainPassword": "temporary-ci-keychain-password"
+}
+"@
+
     Set-TextFileIfMissing (Join-Path $materialsRoot "README.md") @"
 # SnapTable Reminder Apple Release Materials
 
@@ -144,6 +155,7 @@ Do not commit this folder, screenshots of private Apple pages, tax records, bank
 - `03-review-contact/review-contact.private.json`: private App Review contact details.
 - `04-eu-dsa/dsa-private-evidence.md`: private EU Digital Services Act decision evidence.
 - `05-release-evidence/`: screenshots or notes proving upload, TestFlight processing, and App Review submission status.
+- `release-secrets.private.json`: private upload/signing values used by `scripts/github-set-apple-secrets.ps1 -MaterialsDirectory`.
 
 ## After Materials Exist
 
@@ -156,9 +168,9 @@ powershell -ExecutionPolicy Bypass -File scripts/prepare-apple-materials-folder.
 Then set GitHub secrets:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts/github-set-apple-secrets.ps1 -UploadOnly
-powershell -ExecutionPolicy Bypass -File scripts/github-set-apple-secrets.ps1 -SigningOnly
-powershell -ExecutionPolicy Bypass -File scripts/github-set-apple-secrets.ps1 -ReviewOnly
+powershell -ExecutionPolicy Bypass -File scripts/github-set-apple-secrets.ps1 -MaterialsDirectory "$materialsRoot" -UploadOnly
+powershell -ExecutionPolicy Bypass -File scripts/github-set-apple-secrets.ps1 -MaterialsDirectory "$materialsRoot" -SigningOnly
+powershell -ExecutionPolicy Bypass -File scripts/github-set-apple-secrets.ps1 -MaterialsDirectory "$materialsRoot" -ReviewOnly
 ```
 
 Use `-DryRun` first when you only want to verify paths and field shapes.
@@ -221,6 +233,32 @@ function Test-MaterialsFolder($materialsRoot) {
         Add-Missing $missingItems "Missing App Store provisioning profile: 02-signing/*.mobileprovision."
     } elseif ($profileFile.Length -le 0) {
         Add-Missing $missingItems "App Store provisioning profile file is empty: $($profileFile.Name)."
+    }
+
+    $releaseSecretsPath = Join-Path $materialsRoot "release-secrets.private.json"
+    if (-not (Test-Path $releaseSecretsPath)) {
+        Add-Missing $missingItems "Missing private release secret values: release-secrets.private.json."
+    } else {
+        try {
+            $releaseSecrets = Get-Content $releaseSecretsPath -Raw | ConvertFrom-Json
+            foreach ($field in @(
+                "appStoreConnectUsername",
+                "appleDeveloperTeamId",
+                "appStoreConnectApiKeyId",
+                "appStoreConnectApiIssuerId",
+                "appleDistributionCertificatePassword",
+                "appleCodesignKeychainPassword"
+            )) {
+                if ([string]::IsNullOrWhiteSpace([string]$releaseSecrets.$field)) {
+                    Add-Missing $missingItems "release-secrets.private.json is missing $field."
+                }
+            }
+            if (-not [string]::IsNullOrWhiteSpace([string]$releaseSecrets.appStoreConnectUsername) -and [string]$releaseSecrets.appStoreConnectUsername -notmatch "^[^@\s]+@[^@\s]+\.[^@\s]+$") {
+                Add-Missing $missingItems "release-secrets.private.json appStoreConnectUsername should look like an email address."
+            }
+        } catch {
+            Add-Missing $missingItems "release-secrets.private.json is not valid JSON."
+        }
     }
 
     $reviewContactPath = Join-Path $materialsRoot "03-review-contact\review-contact.private.json"

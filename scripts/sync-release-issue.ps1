@@ -80,6 +80,7 @@ This issue tracks the private Apple-account work required before SnapTable Remin
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/prepare-apple-materials-folder.ps1
 powershell -ExecutionPolicy Bypass -File scripts/prepare-apple-materials-folder.ps1 -OutputDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials" -ValidateOnly
+powershell -ExecutionPolicy Bypass -File scripts/github-set-apple-secrets.ps1 -MaterialsDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials" -DryRun
 ```
 
 - [ ] App Store Connect API key is generated and stored outside the repository.
@@ -89,19 +90,19 @@ powershell -ExecutionPolicy Bypass -File scripts/prepare-apple-materials-folder.
 - [ ] GitHub upload secrets are configured:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts/github-set-apple-secrets.ps1 -UploadOnly
+powershell -ExecutionPolicy Bypass -File scripts/github-set-apple-secrets.ps1 -UploadOnly -MaterialsDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials"
 ```
 
 - [ ] GitHub signing secrets are configured:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts/github-set-apple-secrets.ps1 -SigningOnly
+powershell -ExecutionPolicy Bypass -File scripts/github-set-apple-secrets.ps1 -SigningOnly -MaterialsDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials"
 ```
 
 - [ ] GitHub App Review contact secrets are configured:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts/github-set-apple-secrets.ps1 -ReviewOnly
+powershell -ExecutionPolicy Bypass -File scripts/github-set-apple-secrets.ps1 -ReviewOnly -MaterialsDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials"
 ```
 
 ## Upload and Submission

@@ -30,6 +30,7 @@ Keep that folder outside this repository. After adding Apple materials, validate
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/prepare-apple-materials-folder.ps1 -OutputDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials" -ValidateOnly
+powershell -ExecutionPolicy Bypass -File scripts/github-set-apple-secrets.ps1 -MaterialsDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials" -DryRun
 ```
 
 ## Phase 1: Apple Account Readiness
@@ -165,7 +166,7 @@ Evidence:
 
 GitHub Actions upload path:
 
-1. Add the repository secrets with `scripts/github-set-apple-secrets.ps1`.
+1. Add the repository secrets with `scripts/github-set-apple-secrets.ps1 -MaterialsDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials"`.
 2. Run `scripts/github-run-app-store-release.ps1 -SkipTestFlight`.
 3. Keep metadata, screenshots, and review check enabled unless you are intentionally rerunning only part of the upload.
 
@@ -241,13 +242,13 @@ bundle exec fastlane ios testflight
 
 GitHub Actions TestFlight path:
 
-1. Add the upload and signing secrets with `scripts/github-set-apple-secrets.ps1`.
+1. Add the upload and signing secrets with `scripts/github-set-apple-secrets.ps1 -MaterialsDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials"`.
 2. Run `scripts/github-run-app-store-release.ps1`.
 3. Wait for App Store Connect to finish processing the build.
 
 GitHub Actions metadata and screenshot path:
 
-1. Add the upload secrets with `scripts/github-set-apple-secrets.ps1`.
+1. Add the upload secrets with `scripts/github-set-apple-secrets.ps1 -UploadOnly -MaterialsDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials"`.
 2. Run `scripts/github-run-app-store-release.ps1 -SkipTestFlight`.
 3. Confirm the workflow summary says the requested upload steps ran.
 
@@ -267,7 +268,7 @@ Evidence:
 6. Configure review contact secrets with:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts/github-set-apple-secrets.ps1 -ReviewOnly
+powershell -ExecutionPolicy Bypass -File scripts/github-set-apple-secrets.ps1 -ReviewOnly -MaterialsDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials"
 ```
 
 7. Submit with explicit confirmation:

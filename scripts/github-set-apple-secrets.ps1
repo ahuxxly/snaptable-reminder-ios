@@ -5,6 +5,7 @@ param(
     [switch]$SigningOnly,
     [switch]$ReviewOnly,
     [switch]$DryRun,
+    [string]$MaterialsDirectory = "",
 
     [string]$AppStoreConnectUsername = "",
     [string]$AppleDeveloperTeamId = "",
@@ -93,6 +94,69 @@ function Assert-FileOutsideRepository($path, $repoRoot, $label) {
     }
 }
 
+function Assert-DirectoryOutsideRepository($path, $repoRoot, $label) {
+    $fullPath = [System.IO.Path]::GetFullPath($path)
+    $fullRepoRoot = [System.IO.Path]::GetFullPath($repoRoot)
+    $repoPrefix = $fullRepoRoot.TrimEnd([System.IO.Path]::DirectorySeparatorChar, [System.IO.Path]::AltDirectorySeparatorChar) + [System.IO.Path]::DirectorySeparatorChar
+
+    if ($fullPath.Equals($fullRepoRoot, [System.StringComparison]::OrdinalIgnoreCase) -or
+        $fullPath.StartsWith($repoPrefix, [System.StringComparison]::OrdinalIgnoreCase)) {
+        throw "$label must be stored outside this repository: $fullPath"
+    }
+}
+
+function Find-FirstFile($directory, $filter, $label) {
+    if (-not (Test-Path $directory)) {
+        throw "Materials directory is missing $label folder: $directory"
+    }
+
+    $file = Get-ChildItem -LiteralPath $directory -Filter $filter -File -ErrorAction SilentlyContinue | Select-Object -First 1
+    if ($null -eq $file) {
+        throw "Materials directory is missing $label matching $filter in $directory"
+    }
+    return $file.FullName
+}
+
+function Read-JsonFile($path, $label) {
+    if (-not (Test-Path $path)) {
+        throw "Materials directory is missing $label`: $path"
+    }
+
+    try {
+        return Get-Content $path -Raw | ConvertFrom-Json
+    } catch {
+        throw "$label is not valid JSON: $path"
+    }
+}
+
+function Use-ValueIfEmpty($currentValue, $newValue) {
+    if (-not [string]::IsNullOrWhiteSpace($currentValue)) {
+        return $currentValue
+    }
+    if ($null -eq $newValue) {
+        return ""
+    }
+    return ([string]$newValue).Trim()
+}
+
+function Load-MaterialsDirectory($materialsDirectory, $repoRoot) {
+    $resolvedMaterialsDirectory = Resolve-Path -LiteralPath $materialsDirectory -ErrorAction Stop
+    $materialsRoot = [System.IO.Path]::GetFullPath($resolvedMaterialsDirectory.Path)
+    Assert-DirectoryOutsideRepository $materialsRoot $repoRoot "Apple materials directory"
+
+    $releaseSecrets = Read-JsonFile (Join-Path $materialsRoot "release-secrets.private.json") "release-secrets.private.json"
+    $reviewContact = Read-JsonFile (Join-Path $materialsRoot "03-review-contact\review-contact.private.json") "review-contact.private.json"
+
+    [pscustomobject]@{
+        Root = $materialsRoot
+        ReleaseSecrets = $releaseSecrets
+        ReviewContact = $reviewContact
+        ApiKeyPath = Find-FirstFile (Join-Path $materialsRoot "01-app-store-connect-api-key") "AuthKey_*.p8" "App Store Connect API key"
+        DistributionCertificatePath = Find-FirstFile (Join-Path $materialsRoot "02-signing") "*.p12" "Apple Distribution certificate"
+        AppStoreProfilePath = Find-FirstFile (Join-Path $materialsRoot "02-signing") "*.mobileprovision" "App Store provisioning profile"
+    }
+}
+
 function Convert-FileToBase64($path) {
     $bytes = [System.IO.File]::ReadAllBytes($path)
     return [Convert]::ToBase64String($bytes)
@@ -172,6 +236,26 @@ Write-Host "repo=$RepoFullName"
 $repoRoot = (git rev-parse --show-toplevel).Trim()
 if (-not $repoRoot) {
     throw "Could not determine the repository root."
+}
+
+if (-not [string]::IsNullOrWhiteSpace($MaterialsDirectory)) {
+    Write-Section "Apple materials folder"
+    $materials = Load-MaterialsDirectory $MaterialsDirectory $repoRoot
+    Write-Host "materials=$($materials.Root)"
+
+    $AppStoreConnectUsername = Use-ValueIfEmpty $AppStoreConnectUsername $materials.ReleaseSecrets.appStoreConnectUsername
+    $AppleDeveloperTeamId = Use-ValueIfEmpty $AppleDeveloperTeamId $materials.ReleaseSecrets.appleDeveloperTeamId
+    $AppStoreConnectApiKeyId = Use-ValueIfEmpty $AppStoreConnectApiKeyId $materials.ReleaseSecrets.appStoreConnectApiKeyId
+    $AppStoreConnectApiIssuerId = Use-ValueIfEmpty $AppStoreConnectApiIssuerId $materials.ReleaseSecrets.appStoreConnectApiIssuerId
+    $AppleDistributionCertificatePassword = Use-ValueIfEmpty $AppleDistributionCertificatePassword $materials.ReleaseSecrets.appleDistributionCertificatePassword
+    $AppleCodesignKeychainPassword = Use-ValueIfEmpty $AppleCodesignKeychainPassword $materials.ReleaseSecrets.appleCodesignKeychainPassword
+    $AppReviewFirstName = Use-ValueIfEmpty $AppReviewFirstName $materials.ReviewContact.firstName
+    $AppReviewLastName = Use-ValueIfEmpty $AppReviewLastName $materials.ReviewContact.lastName
+    $AppReviewEmail = Use-ValueIfEmpty $AppReviewEmail $materials.ReviewContact.email
+    $AppReviewPhone = Use-ValueIfEmpty $AppReviewPhone $materials.ReviewContact.phone
+    $AppStoreConnectApiKeyPath = Use-ValueIfEmpty $AppStoreConnectApiKeyPath $materials.ApiKeyPath
+    $AppleDistributionCertificatePath = Use-ValueIfEmpty $AppleDistributionCertificatePath $materials.DistributionCertificatePath
+    $AppleAppStoreProfilePath = Use-ValueIfEmpty $AppleAppStoreProfilePath $materials.AppStoreProfilePath
 }
 
 if ($configureUploadSecrets) {

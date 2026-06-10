@@ -14,6 +14,12 @@ After adding the private Apple materials, validate the folder:
 powershell -ExecutionPolicy Bypass -File scripts/prepare-apple-materials-folder.ps1 -OutputDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials" -ValidateOnly
 ```
 
+The same folder can drive GitHub secret setup:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/github-set-apple-secrets.ps1 -MaterialsDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials" -DryRun
+```
+
 ## Required Account State
 
 - Apple Developer Program membership is active.
@@ -111,6 +117,7 @@ In App Store Connect:
 
 Apple only lets you download the private key once. Store it outside this repository.
 The generated private materials folder expects the file under `01-app-store-connect-api-key/`.
+Put the Key ID, Issuer ID, account username, Team ID, and signing passwords in `release-secrets.private.json` inside the generated private materials folder.
 
 ## Mac Environment Variables
 
@@ -161,6 +168,13 @@ Windows helper:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/github-set-apple-secrets.ps1 -UploadOnly `
+  -MaterialsDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials"
+```
+
+Or pass fields manually:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/github-set-apple-secrets.ps1 -UploadOnly `
   -AppStoreConnectUsername "account-email" `
   -AppleDeveloperTeamId "team-id" `
   -AppStoreConnectApiKeyId "api-key-id" `
@@ -197,6 +211,13 @@ Windows helper:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/github-set-apple-secrets.ps1 -SigningOnly `
+  -MaterialsDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials"
+```
+
+Or pass paths manually:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/github-set-apple-secrets.ps1 -SigningOnly `
   -AppleDistributionCertificatePath "C:\path\outside\repo\AppleDistribution.p12" `
   -AppleAppStoreProfilePath "C:\path\outside\repo\SnapTable_AppStore.mobileprovision"
 ```
@@ -218,6 +239,13 @@ APP_REVIEW_PHONE
 ```
 
 Windows helper:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/github-set-apple-secrets.ps1 -ReviewOnly `
+  -MaterialsDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials"
+```
+
+Or pass fields manually:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/github-set-apple-secrets.ps1 -ReviewOnly `

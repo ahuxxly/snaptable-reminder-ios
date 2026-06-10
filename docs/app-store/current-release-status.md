@@ -110,17 +110,17 @@ powershell -ExecutionPolicy Bypass -File scripts/prepare-apple-materials-folder.
 powershell -ExecutionPolicy Bypass -File scripts/prepare-apple-materials-folder.ps1 -OutputDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials" -ValidateOnly
 ```
 
-5. Add the App Store Connect upload secrets with `scripts/github-set-apple-secrets.ps1`.
+5. Add the App Store Connect upload secrets with `scripts/github-set-apple-secrets.ps1 -UploadOnly -MaterialsDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials"`.
 
 6. Run `scripts/github-run-app-store-release.ps1 -SkipTestFlight` to upload metadata, screenshots, and precheck.
 
-7. Add the Apple signing secrets with `scripts/github-set-apple-secrets.ps1`.
+7. Add the Apple signing secrets with `scripts/github-set-apple-secrets.ps1 -SigningOnly -MaterialsDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials"`.
 
 8. Complete the EU DSA trader status decision in `docs/app-store/eu-dsa-trader.md`.
 
 9. Run `scripts/github-run-app-store-release.ps1` to upload metadata, screenshots, precheck, and a signed TestFlight build.
 
-10. Add App Review contact secrets with `scripts/github-set-apple-secrets.ps1 -ReviewOnly`.
+10. Add App Review contact secrets with `scripts/github-set-apple-secrets.ps1 -ReviewOnly -MaterialsDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials"`.
 
 11. After App Store Connect shows the build is processed, run `scripts/github-submit-app-review.ps1 -ConfirmSubmitForReview YES -Wait`.
 

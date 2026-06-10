@@ -541,6 +541,9 @@ if (-not (Test-Path "scripts\prepare-apple-materials-folder.ps1")) {
 if (-not (Test-Path "tests\prepare-apple-materials-folder.tests.ps1")) {
     throw "Missing Apple private materials folder helper tests."
 }
+if (-not (Test-Path "tests\github-set-apple-secrets.tests.ps1")) {
+    throw "Missing GitHub Apple secret helper tests."
+}
 if (-not (Test-Path "scripts\release-doctor.ps1")) {
     throw "Missing release doctor script."
 }
@@ -565,6 +568,8 @@ foreach ($prepareAppleMaterialsTerm in @(
     "Assert-PrivateFolderLocation",
     "outside this repository",
     "review-contact.private.json",
+    "release-secrets.private.json",
+    "release-secrets.template.json",
     "dsa-private-evidence.md",
     "Apple material folder is ready",
     "github-set-apple-secrets.ps1"
@@ -577,6 +582,7 @@ if (-not $launchRunbookText.Contains("prepare-apple-materials-folder.ps1")) {
     throw "Launch runbook should mention the Apple private materials folder helper."
 }
 powershell -NoProfile -ExecutionPolicy Bypass -File tests\prepare-apple-materials-folder.tests.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File tests\github-set-apple-secrets.tests.ps1
 $githubPublishText = Get-Content "scripts\github-publish.ps1" -Raw
 if (-not $githubPublishText.Contains("write-site-support-links.ps1")) {
     throw "GitHub publish script should write public support links after repo creation."
@@ -633,6 +639,9 @@ if (-not $githubAppleSecretsText.Contains("UploadOnly") -or -not $githubAppleSec
 }
 if (-not $githubAppleSecretsText.Contains("DryRun")) {
     throw "GitHub Apple secret helper should support a dry-run validation mode."
+}
+if (-not $githubAppleSecretsText.Contains("MaterialsDirectory")) {
+    throw "GitHub Apple secret helper should support reading a prepared Apple materials folder."
 }
 $githubAppStoreReleaseText = Get-Content "scripts\github-run-app-store-release.ps1" -Raw
 foreach ($githubAppleSecretName in ($requiredGitHubUploadSecretNames + $requiredGitHubSigningSecretNames)) {
