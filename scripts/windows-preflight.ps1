@@ -290,6 +290,7 @@ $requiredReleaseDocs = @(
     "docs\app-store\launch-runbook.md",
     "docs\app-store\metadata.md",
     "docs\app-store\privacy-questionnaire.md",
+    "docs\app-store\review-contact.md",
     "docs\app-store\monetization-plan.md"
 )
 foreach ($releaseDoc in $requiredReleaseDocs) {
@@ -298,6 +299,40 @@ foreach ($releaseDoc in $requiredReleaseDocs) {
     }
 }
 Write-Host "required release docs present"
+
+Write-Section "App Review contact safeguards"
+if (-not (Test-Path "scripts\mac-validate-review-contact-env.sh")) {
+    throw "Missing Mac App Review contact environment validation script."
+}
+$reviewContactText = Get-Content "scripts\mac-validate-review-contact-env.sh" -Raw
+$requiredReviewContactVars = @(
+    "APP_REVIEW_FIRST_NAME",
+    "APP_REVIEW_LAST_NAME",
+    "APP_REVIEW_EMAIL",
+    "APP_REVIEW_PHONE"
+)
+foreach ($reviewContactVar in $requiredReviewContactVars) {
+    if (-not $reviewContactText.Contains($reviewContactVar)) {
+        throw "Review contact validation script should check $reviewContactVar."
+    }
+}
+if (-not $reviewContactText.Contains("[^@[:space:]]+@")) {
+    throw "Review contact validation script should validate email shape."
+}
+if (-not $reviewContactText.Contains("review-reachable phone number")) {
+    throw "Review contact validation script should validate phone shape."
+}
+$reviewContactDocText = Get-Content "docs\app-store\review-contact.md" -Raw
+if (-not $reviewContactDocText.Contains("Do not commit personal contact details")) {
+    throw "Review contact document should warn against committing personal details."
+}
+if (-not $reviewContactDocText.Contains("scripts/mac-validate-review-contact-env.sh")) {
+    throw "Review contact document should mention the Mac validation script."
+}
+if (-not $launchRunbookText.Contains("scripts/mac-validate-review-contact-env.sh")) {
+    throw "Launch runbook should mention review contact validation."
+}
+Write-Host "App Review contact safeguards present"
 
 Write-Section "GitHub publishing helpers"
 if (-not (Test-Path "scripts\github-publish.ps1")) {
@@ -337,6 +372,9 @@ if (-not $releaseReadinessText.Contains("scripts/mac-capture-screenshots.sh")) {
 }
 if (-not $releaseReadinessText.Contains("scripts/mac-validate-upload-env.sh")) {
     throw "Mac release readiness script should print upload environment validation."
+}
+if (-not $releaseReadinessText.Contains("scripts/mac-validate-review-contact-env.sh")) {
+    throw "Mac release readiness script should print review contact validation."
 }
 $uploadEnvText = Get-Content "scripts\mac-validate-upload-env.sh" -Raw
 $requiredUploadEnvVars = @(

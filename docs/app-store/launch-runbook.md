@@ -116,6 +116,7 @@ Use these repository files:
 - Fastlane metadata files: `fastlane/metadata/`
 - Privacy answers: `docs/app-store/privacy-questionnaire.md`
 - Review notes: `docs/app-store/review-notes.md`
+- App Review contact checklist: `docs/app-store/review-contact.md`
 - Export compliance: `docs/app-store/export-compliance.md`
 - Age rating: `docs/app-store/age-rating.md`
 - Privacy URL and Support URL: hosted files from `site/`
@@ -196,7 +197,14 @@ Evidence:
 1. Select the processed build.
 2. Confirm screenshots, metadata, privacy, age rating, pricing, and availability.
 3. Confirm review notes explain local-only OCR and no advice claims.
-4. Submit for review.
+4. Enter App Review contact details from `docs/app-store/review-contact.md`.
+5. On the Mac used for submission, run:
+
+```bash
+bash scripts/mac-validate-review-contact-env.sh
+```
+
+6. Submit for review.
 
 Evidence:
 
@@ -210,6 +218,7 @@ Evidence:
 - Exported `.ipa` files.
 - Real screenshots containing private documents.
 - Banking, tax, or personal identity documents.
+- Personal App Review contact details.
 
 ## Version 1 Boundaries
 

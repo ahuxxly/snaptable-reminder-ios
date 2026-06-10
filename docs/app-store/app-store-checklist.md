@@ -30,6 +30,7 @@
 - Privacy manifest includes UserDefaults required reason API entry.
 - Export compliance draft: `docs/app-store/export-compliance.md`.
 - Review notes draft: `docs/app-store/review-notes.md`.
+- App Review contact checklist: `docs/app-store/review-contact.md`.
 - Age rating draft: `docs/app-store/age-rating.md`.
 - Fastlane release notes: `docs/app-store/fastlane-release.md`.
 - Fastlane metadata files: `fastlane/metadata/`.
@@ -78,15 +79,18 @@ screenshot OCR, doc scanner, CSV, receipt log, deadline tracker, bill organizer,
 7. Set paid price and selected country/region availability excluding China mainland.
 8. Fill privacy details using `docs/app-store/privacy-questionnaire.md`.
 9. Complete age rating and export compliance using the drafts in `docs/app-store`.
-10. Submit for review.
+10. Enter App Review contact details using `docs/app-store/review-contact.md`.
+11. Submit for review.
 
 Fastlane alternative:
 
 ```bash
+bash scripts/mac-validate-upload-env.sh
 bundle exec fastlane ios verify
 bundle exec fastlane ios metadata
 bundle exec fastlane ios screenshots
 bundle exec fastlane ios review_check
 bundle exec fastlane ios archive
 bundle exec fastlane ios testflight
+bash scripts/mac-validate-review-contact-env.sh
 ```

@@ -27,8 +27,9 @@ done
 
 echo ""
 echo "Release readiness checks completed."
-echo "Next upload commands, after App Store Connect credentials are configured:"
+echo "Next upload and submission checks, after App Store Connect credentials are configured:"
 echo "bash scripts/mac-validate-upload-env.sh"
+echo "bash scripts/mac-validate-review-contact-env.sh"
 echo "bundle exec fastlane ios metadata"
 echo "bundle exec fastlane ios screenshots"
 echo "bundle exec fastlane ios review_check"

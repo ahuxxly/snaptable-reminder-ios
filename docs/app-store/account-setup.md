@@ -109,6 +109,27 @@ bundle exec fastlane ios review_check
 bundle exec fastlane ios testflight
 ```
 
+## App Review Contact
+
+Apple also requires reviewer contact information during final submission. Use `docs/app-store/review-contact.md` as the source checklist.
+
+Set these only on the Mac or password manager session used for final submission:
+
+```bash
+export APP_REVIEW_FIRST_NAME="<first name>"
+export APP_REVIEW_LAST_NAME="<last name>"
+export APP_REVIEW_EMAIL="<review email>"
+export APP_REVIEW_PHONE="<review phone>"
+```
+
+Then run:
+
+```bash
+bash scripts/mac-validate-review-contact-env.sh
+```
+
+Enter the same values in App Store Connect during final submission. Do not commit the real contact details to this repository.
+
 ## Do Not Commit
 
 - `.p8` API key files.
@@ -119,6 +140,7 @@ bundle exec fastlane ios testflight
 - Banking documents.
 - Tax documents.
 - Identity documents.
+- Personal App Review contact details.
 
 ## Evidence to Keep
 

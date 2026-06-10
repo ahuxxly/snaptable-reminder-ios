@@ -118,8 +118,16 @@ bundle exec fastlane ios review_check
 
 This uses Fastlane precheck against App Store Connect metadata. It scans for common App Review risks such as placeholder text, test words, other platforms, future functionality claims, unreachable URLs, and selected risky marketing claims. It does not upload a binary or submit the app for review.
 
+Before final App Review submission, also run:
+
+```bash
+bash scripts/mac-validate-review-contact-env.sh
+```
+
+This validates that the local submission session has reviewer contact details ready. The real first name, last name, email, and phone number still need to be entered in App Store Connect.
+
 ## Notes
 
 - The bundle identifier is `com.snaptable.reminder`.
-- The `testflight` lane uploads a build. The `metadata` lane uploads listing metadata. The `screenshots` lane uploads staged screenshots. The `review_check` lane runs Fastlane precheck. Final App Review submission still requires privacy answers, pricing, and country/region availability.
+- The `testflight` lane uploads a build. The `metadata` lane uploads listing metadata. The `screenshots` lane uploads staged screenshots. The `review_check` lane runs Fastlane precheck. Final App Review submission still requires privacy answers, pricing, country/region availability, and App Review contact details.
 - Do not commit `.p8` API keys, certificates, provisioning profiles, or exported archives.

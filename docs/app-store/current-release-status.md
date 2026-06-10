@@ -26,6 +26,7 @@ Local repository status:
 - Mac release readiness script is present for local build, test, and screenshot staging checks.
 - Fastlane `review_check` lane and Precheckfile are present for App Review metadata risk checks.
 - Mac Fastlane upload environment validation script is present.
+- App Review contact checklist and Mac environment validation script are present.
 
 Verified on this Windows workspace:
 
@@ -49,6 +50,7 @@ These are still required before the goal is actually complete:
 - Signing configured.
 - App screenshots captured and uploaded.
 - App archived and uploaded to TestFlight/App Store Connect.
+- App Review contact details entered in App Store Connect.
 - App Review submission completed.
 - App status reaches Waiting for Review, then Ready for Distribution after approval.
 
@@ -91,7 +93,13 @@ bash scripts/mac-verify.sh
 bash scripts/mac-release-readiness.sh
 ```
 
-7. Continue with `docs/app-store/launch-runbook.md`.
+7. Before final App Review submission, set the `APP_REVIEW_*` contact environment variables and run:
+
+```bash
+bash scripts/mac-validate-review-contact-env.sh
+```
+
+8. Continue with `docs/app-store/launch-runbook.md`.
 
 ## Release Boundaries
 
@@ -114,5 +122,6 @@ Do not mark the project complete until there is evidence for:
 - hosted privacy and support URLs;
 - uploaded build in App Store Connect;
 - completed App Store metadata, privacy, age rating, pricing, and availability;
+- completed App Review contact fields;
 - App Store Connect fields copied from `docs/app-store/app-store-fields.json`;
 - App Review submission status in App Store Connect.
