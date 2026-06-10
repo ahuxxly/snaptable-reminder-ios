@@ -145,8 +145,10 @@ bash scripts/mac-validate-review-contact-env.sh
 
 This validates that the local submission session has reviewer contact details ready. The real first name, last name, email, and phone number still need to be entered in App Store Connect.
 
+Before final submission, also complete `docs/app-store/eu-dsa-trader.md` if EU storefronts are selected in App Store Connect. Fastlane can submit the build, but the account-level DSA trader status and any required verification live in App Store Connect.
+
 ## Notes
 
 - The bundle identifier is `com.snaptable.reminder`.
-- The `testflight` lane uploads a build. The `metadata` lane uploads listing metadata. The `screenshots` lane uploads staged screenshots. The `review_check` lane runs Fastlane precheck. Final App Review submission still requires privacy answers, pricing, country/region availability, and App Review contact details.
+- The `testflight` lane uploads a build. The `metadata` lane uploads listing metadata. The `screenshots` lane uploads staged screenshots. The `review_check` lane runs Fastlane precheck. Final App Review submission still requires privacy answers, pricing, country/region availability, EU DSA trader status when EU storefronts are selected, and App Review contact details.
 - Do not commit `.p8` API keys, certificates, provisioning profiles, or exported archives.

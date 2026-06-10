@@ -16,11 +16,13 @@ Complete these before expecting upload or paid sales to work:
 4. Complete tax information.
 5. Complete banking information.
 6. Confirm the legal seller name shown on App Store product pages is acceptable.
+7. Complete the EU Digital Services Act trader status decision if EU storefronts will be included.
 
 Evidence:
 
 - App Store Connect > Business shows Paid Apps Agreement active.
 - App Store Connect > Business shows tax and banking complete.
+- App Store Connect > Business > Compliance shows DSA trader status declared, or EU storefronts are intentionally excluded.
 
 ## Phase 2: Repository Hosting
 
@@ -99,12 +101,14 @@ Use `docs/app-store/app-store-fields.json` as the single source for fields that 
 5. Category: Productivity.
 6. Pricing: paid upfront, start at USD 1.99 equivalent.
 7. Availability: selected countries or regions, excluding China mainland in version 1.
+8. EU storefronts: keep included only after completing `docs/app-store/eu-dsa-trader.md`.
 
 Evidence:
 
 - App record exists.
 - Bundle ID matches `project.yml`.
 - China mainland is not selected.
+- EU DSA trader status decision is complete if EU storefronts are selected.
 - Pricing follows `docs/app-store/monetization-plan.md`.
 
 ## Phase 5: Metadata and Compliance
@@ -117,6 +121,7 @@ Use these repository files:
 - Privacy answers: `docs/app-store/privacy-questionnaire.md`
 - Review notes: `docs/app-store/review-notes.md`
 - App Review contact checklist: `docs/app-store/review-contact.md`
+- EU DSA trader status checklist: `docs/app-store/eu-dsa-trader.md`
 - Export compliance: `docs/app-store/export-compliance.md`
 - Age rating: `docs/app-store/age-rating.md`
 - Privacy URL and Support URL: hosted files from `site/`
@@ -226,21 +231,22 @@ Evidence:
 
 1. Select or confirm the processed build in App Store Connect.
 2. Confirm screenshots, metadata, privacy, age rating, pricing, and availability.
-3. Confirm review notes explain local-only OCR and no advice claims.
-4. Enter App Review contact details from `docs/app-store/review-contact.md`.
-5. Configure review contact secrets with:
+3. Confirm EU DSA trader status is declared if EU storefronts are selected.
+4. Confirm review notes explain local-only OCR and no advice claims.
+5. Enter App Review contact details from `docs/app-store/review-contact.md`.
+6. Configure review contact secrets with:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/github-set-apple-secrets.ps1 -ReviewOnly
 ```
 
-6. Submit with explicit confirmation:
+7. Submit with explicit confirmation:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/github-submit-app-review.ps1 -ConfirmSubmitForReview YES -Wait
 ```
 
-7. On the Mac used for submission, run:
+8. On the Mac used for submission, run:
 
 ```bash
 bash scripts/mac-validate-review-contact-env.sh

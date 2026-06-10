@@ -7,12 +7,14 @@
 - Paid Apps Agreement is accepted in App Store Connect.
 - Tax and banking information is complete.
 - Account Holder, Admin, or App Manager access is available for upload and submission.
+- EU Digital Services Act trader status is declared before including EU storefronts.
 
 ## Availability
 
 - Distribution method: Public.
 - Availability: Specific Countries or Regions.
 - China mainland: excluded for version 1.
+- EU storefronts: included only after the DSA trader status decision in `docs/app-store/eu-dsa-trader.md` is complete.
 
 ## Metadata
 
@@ -31,6 +33,7 @@
 - Export compliance draft: `docs/app-store/export-compliance.md`.
 - Review notes draft: `docs/app-store/review-notes.md`.
 - App Review contact checklist: `docs/app-store/review-contact.md`.
+- EU DSA trader status checklist: `docs/app-store/eu-dsa-trader.md`.
 - Age rating draft: `docs/app-store/age-rating.md`.
 - Fastlane release notes: `docs/app-store/fastlane-release.md`.
 - Fastlane metadata files: `fastlane/metadata/`.
@@ -79,8 +82,9 @@ screenshot OCR, doc scanner, CSV, receipt log, deadline tracker, bill organizer,
 7. Set paid price and selected country/region availability excluding China mainland.
 8. Fill privacy details using `docs/app-store/privacy-questionnaire.md`.
 9. Complete age rating and export compliance using the drafts in `docs/app-store`.
-10. Enter App Review contact details using `docs/app-store/review-contact.md`.
-11. Submit for review.
+10. Complete the EU DSA trader status decision using `docs/app-store/eu-dsa-trader.md`.
+11. Enter App Review contact details using `docs/app-store/review-contact.md`.
+12. Submit for review.
 
 Fastlane alternative:
 

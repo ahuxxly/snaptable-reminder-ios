@@ -171,12 +171,26 @@ $excludedRegions = @($storeFields.availability.excludeCountriesOrRegions)
 if (-not ($excludedRegions -contains "China mainland")) {
     throw "China mainland must be excluded for version 1 availability."
 }
+$euDsa = $storeFields.compliance.euDigitalServicesAct
+if ($null -eq $euDsa) {
+    throw "App Store fields should include EU Digital Services Act release planning."
+}
+if ($euDsa.euStorefrontsIncludedInV1 -ne $true) {
+    throw "Version 1 should declare that EU storefronts are included unless intentionally excluded."
+}
+if ($euDsa.traderStatusDecisionRequired -ne $true) {
+    throw "EU DSA trader status decision should be required before App Review submission."
+}
+if ([string]::IsNullOrWhiteSpace($euDsa.sourcePath) -or -not (Test-Path $euDsa.sourcePath)) {
+    throw "EU DSA source document is missing: $($euDsa.sourcePath)"
+}
 $storePathFields = @(
     $storeFields.storeListing.descriptionPath,
     $storeFields.urls.privacyPolicyPath,
     $storeFields.urls.supportPath,
     $storeFields.review.notesPath,
-    $storeFields.review.demoFlowPath
+    $storeFields.review.demoFlowPath,
+    $euDsa.sourcePath
 )
 foreach ($pathField in $storePathFields) {
     if (-not (Test-Path $pathField)) {
@@ -431,6 +445,7 @@ $requiredReleaseDocs = @(
     "docs\app-store\metadata.md",
     "docs\app-store\privacy-questionnaire.md",
     "docs\app-store\review-contact.md",
+    "docs\app-store\eu-dsa-trader.md",
     "docs\app-store\monetization-plan.md"
 )
 foreach ($releaseDoc in $requiredReleaseDocs) {
@@ -439,6 +454,36 @@ foreach ($releaseDoc in $requiredReleaseDocs) {
     }
 }
 Write-Host "required release docs present"
+
+Write-Section "EU DSA release safeguards"
+$euDsaDocText = Get-Content "docs\app-store\eu-dsa-trader.md" -Raw
+$requiredEuDsaDocTerms = @(
+    "Digital Services Act",
+    "trader status",
+    "EU storefronts",
+    "Do not commit real contact details",
+    "Account Holder or Admin",
+    "not legal advice"
+)
+foreach ($euDsaDocTerm in $requiredEuDsaDocTerms) {
+    if (-not $euDsaDocText.Contains($euDsaDocTerm)) {
+        throw "EU DSA document should mention: $euDsaDocTerm"
+    }
+}
+foreach ($releaseDocPath in @(
+    "docs\app-store\account-setup.md",
+    "docs\app-store\app-store-checklist.md",
+    "docs\app-store\current-release-status.md",
+    "docs\app-store\launch-runbook.md",
+    "docs\app-store\monetization-plan.md",
+    "docs\app-store\fastlane-release.md"
+)) {
+    $releaseDocText = Get-Content $releaseDocPath -Raw
+    if (-not $releaseDocText.Contains("eu-dsa-trader.md")) {
+        throw "$releaseDocPath should link to the EU DSA trader status checklist."
+    }
+}
+Write-Host "EU DSA release safeguards present"
 
 Write-Section "App Review contact safeguards"
 if (-not (Test-Path "scripts\mac-validate-review-contact-env.sh")) {

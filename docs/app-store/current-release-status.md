@@ -17,6 +17,7 @@ Local repository status:
 - GitHub support issue template is present and warns users not to include private documents in public support requests.
 - App Store metadata, privacy, age rating, export compliance, review notes, screenshot plan, monetization plan, and launch runbook are drafted.
 - App Store account setup checklist is drafted in `docs/app-store/account-setup.md`.
+- EU Digital Services Act trader status checklist is drafted in `docs/app-store/eu-dsa-trader.md`.
 - Machine-readable App Store Connect fields are present in `docs/app-store/app-store-fields.json` and covered by Windows preflight.
 - Fastlane metadata files are present in `fastlane/metadata/` and covered by Windows preflight.
 - App Store metadata length and keyword byte limits are covered by `scripts/validate-app-store-metadata.ps1`.
@@ -60,6 +61,7 @@ These are still required before the goal is actually complete:
 
 - Apple Developer Program membership active.
 - Paid Apps Agreement, tax, and banking complete.
+- EU Digital Services Act trader status declared for EU storefronts, or EU storefronts intentionally excluded.
 - App Store Connect app record created with bundle ID `com.snaptable.reminder`.
 - Signing configured.
 - App Store Connect upload secrets configured in GitHub.
@@ -95,13 +97,15 @@ https://ahuxxly.github.io/snaptable-reminder-ios/support.html
 
 6. Add the Apple signing secrets with `scripts/github-set-apple-secrets.ps1`.
 
-7. Run `scripts/github-run-app-store-release.ps1` to upload metadata, screenshots, precheck, and a signed TestFlight build.
+7. Complete the EU DSA trader status decision in `docs/app-store/eu-dsa-trader.md`.
 
-8. Add App Review contact secrets with `scripts/github-set-apple-secrets.ps1 -ReviewOnly`.
+8. Run `scripts/github-run-app-store-release.ps1` to upload metadata, screenshots, precheck, and a signed TestFlight build.
 
-9. After App Store Connect shows the build is processed, run `scripts/github-submit-app-review.ps1 -ConfirmSubmitForReview YES -Wait`.
+9. Add App Review contact secrets with `scripts/github-set-apple-secrets.ps1 -ReviewOnly`.
 
-10. On a Mac, run:
+10. After App Store Connect shows the build is processed, run `scripts/github-submit-app-review.ps1 -ConfirmSubmitForReview YES -Wait`.
+
+11. On a Mac, run:
 
 ```bash
 brew install xcodegen
@@ -110,13 +114,13 @@ bash scripts/mac-verify.sh
 bash scripts/mac-release-readiness.sh
 ```
 
-11. Before final App Review submission, set the `APP_REVIEW_*` contact environment variables and run:
+12. Before final App Review submission, set the `APP_REVIEW_*` contact environment variables and run:
 
 ```bash
 bash scripts/mac-validate-review-contact-env.sh
 ```
 
-12. Continue with `docs/app-store/launch-runbook.md`.
+13. Continue with `docs/app-store/launch-runbook.md`.
 
 ## Release Boundaries
 
@@ -139,6 +143,7 @@ Do not mark the project complete until there is evidence for:
 - hosted privacy and support URLs;
 - uploaded build in App Store Connect;
 - completed App Store metadata, privacy, age rating, pricing, and availability;
+- completed EU DSA trader status decision for the chosen EU availability;
 - completed App Review contact fields;
 - App Store Connect fields copied from `docs/app-store/app-store-fields.json`;
 - App Review submission status in App Store Connect.

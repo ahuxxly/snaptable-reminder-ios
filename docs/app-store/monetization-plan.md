@@ -15,6 +15,7 @@ Recommended first release:
 - Backup price: USD 2.99 equivalent after early validation
 - Distribution method: Public App Store
 - Availability: all available countries and regions except China mainland for version 1
+- EU storefronts: included only after completing the DSA trader status decision
 
 Why:
 
@@ -73,13 +74,21 @@ Apple path:
 4. Under App Distribution Methods, use Public.
 5. Under App Availability, choose selected countries and regions.
 6. Exclude China mainland in version 1.
-7. If another country or region shows a tax or compliance warning, do not delay the whole release. Fix that market after the first launch unless it is strategically essential.
+7. Complete the EU DSA trader status decision before keeping EU countries selected.
+8. If another country or region shows a tax or compliance warning, do not delay the whole release. Fix that market after the first launch unless it is strategically essential.
 
 Official references:
 
 - Apple Set distribution methods: https://developer.apple.com/help/app-store-connect/manage-your-apps-availability/set-distribution-methods/
 - Apple Manage availability: https://developer.apple.com/help/app-store-connect/manage-your-apps-availability/manage-availability-for-your-app-on-the-app-store/
 - Apple app status notes for China mainland ICP and Brazil tax states: https://developer.apple.com/help/app-store-connect/reference/app-information/app-and-submission-statuses/
+- Apple EU Digital Services Act trader requirements: https://developer.apple.com/help/app-store-connect/manage-compliance-information/manage-european-union-digital-services-act-trader-requirements/
+
+## EU Storefront Decision
+
+The default version 1 plan is global outside China mainland, so EU countries stay selected after the Digital Services Act trader status is declared in App Store Connect. Use `docs/app-store/eu-dsa-trader.md` as the release checklist.
+
+If DSA status or verification is not ready at submission time, exclude EU countries for the first release and re-add them after compliance is complete. This narrows launch reach, but it is cleaner than letting a compliance requirement block the entire paid release.
 
 ## China Mainland Version 1 Decision
 

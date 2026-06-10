@@ -12,6 +12,7 @@ Use this checklist before attempting paid App Store upload, TestFlight upload, o
 - Banking information is submitted.
 - App Store Connect API access is available.
 - Bundle ID `com.snaptable.reminder` is available to this Apple Developer team.
+- EU Digital Services Act trader status is declared before distributing in EU storefronts.
 
 Why this matters:
 
@@ -19,6 +20,7 @@ Why this matters:
 - Apple requires the Paid Apps Agreement before selling paid apps.
 - Tax and banking must be completed before Apple can process paid proceeds.
 - Fastlane metadata and TestFlight upload use App Store Connect API credentials.
+- A global release outside China mainland still includes the EU unless those storefronts are explicitly excluded.
 
 Official references:
 
@@ -29,6 +31,7 @@ Official references:
 - Enter banking information: https://developer.apple.com/help/app-store-connect/manage-banking-information/enter-banking-information/
 - Role permissions: https://developer.apple.com/help/app-store-connect/reference/account-management/role-permissions/
 - App Store Connect API: https://developer.apple.com/help/app-store-connect/get-started/app-store-connect-api/
+- EU Digital Services Act trader requirements: https://developer.apple.com/help/app-store-connect/manage-compliance-information/manage-european-union-digital-services-act-trader-requirements/
 
 ## Role Notes
 
@@ -70,6 +73,14 @@ In App Store Connect:
 8. User Access: full access for the account holder.
 
 Use `docs/app-store/app-store-fields.json` as the field source.
+
+## EU Digital Services Act Trader Status
+
+Before submitting for App Review, complete the decision checklist in `docs/app-store/eu-dsa-trader.md`.
+
+For version 1, the target availability is global outside China mainland, so EU storefronts remain included unless you intentionally defer them in App Store Connect. Apple requires trader status to be declared, and trader accounts need verified contact information for EU product pages.
+
+Do not commit real DSA contact details, identity documents, business records, or address evidence to this repository.
 
 ## Generate App Store Connect API Key
 
@@ -243,5 +254,6 @@ Enter the same values in App Store Connect during final submission. Do not commi
 - Screenshot or note that banking is submitted.
 - Bundle ID exists and matches `project.yml`.
 - App Store Connect app record exists.
+- EU DSA trader status is declared, or EU storefronts are intentionally excluded.
 - API Key ID and Issuer ID are recorded outside the repository.
 - `.p8` file is stored outside the repository.

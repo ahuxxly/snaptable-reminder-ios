@@ -59,7 +59,12 @@
     "usesOnlyStandardApplePlatformEncryption": true,
     "containsLegalMedicalTaxFinancialInvestmentAdvice": false,
     "targetsChildren": false,
-    "requiresReviewerAccount": false
+    "requiresReviewerAccount": false,
+    "euDigitalServicesAct": {
+      "euStorefrontsIncludedInV1": true,
+      "traderStatusDecisionRequired": true,
+      "sourcePath": "docs/app-store/eu-dsa-trader.md"
+    }
   },
   "review": {
     "notesPath": "docs/app-store/review-notes.md",
