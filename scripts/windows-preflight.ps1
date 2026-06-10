@@ -14,7 +14,9 @@ if ($gitStatus) {
 Write-Host "clean"
 
 Write-Section "Marker scan"
-$markerOutput = rg "TODO|TBD|PLACEHOLDER|example\.com|YOUR_|your-domain" . 2>$null
+$markerTerms = @("TO" + "DO", "TB" + "D", "PLACE" + "HOLDER", "example" + "\.com", "YOUR_", "your-domain")
+$markerPattern = $markerTerms -join "|"
+$markerOutput = rg $markerPattern . 2>$null
 if ($LASTEXITCODE -eq 0) {
     Write-Host $markerOutput
     throw "Unfinished marker text found."
