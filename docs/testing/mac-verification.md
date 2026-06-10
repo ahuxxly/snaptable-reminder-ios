@@ -56,7 +56,7 @@ Before App Store Connect upload work, run:
 bash scripts/mac-release-readiness.sh
 ```
 
-This runs Mac verification, captures screenshots, stages Fastlane screenshot files, and prints the next upload commands.
+This runs Mac verification, captures screenshots, stages Fastlane screenshot files, and prints the next upload and submission checks.
 
 ## Archive for App Store Connect
 

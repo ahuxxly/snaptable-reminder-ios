@@ -475,6 +475,9 @@ if (-not $releaseReadinessWorkflowText.Contains("actions/upload-artifact")) {
 if (-not $releaseReadinessWorkflowText.Contains("fastlane-screenshots")) {
     throw "Release Readiness workflow should upload Fastlane screenshot artifacts."
 }
+if (-not $releaseReadinessWorkflowText.Contains("scripts/mac-validate-review-contact-env.sh")) {
+    throw "Release Readiness workflow should summarize review contact validation."
+}
 Write-Host "screenshot capture path present"
 
 Write-Section "Static site links"

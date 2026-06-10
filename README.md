@@ -46,7 +46,7 @@ This runs the screenshot UI test flow with demo data and exports Capture, Record
 bash scripts/mac-release-readiness.sh
 ```
 
-This runs Mac verification, captures screenshots, stages Fastlane screenshots, and prints the next upload commands.
+This runs Mac verification, captures screenshots, stages Fastlane screenshots, and prints the next upload and submission checks.
 
 Fastlane also includes a review-risk check after metadata is uploaded:
 
@@ -58,6 +58,12 @@ Before any Fastlane upload lane, check credentials with:
 
 ```bash
 bash scripts/mac-validate-upload-env.sh
+```
+
+Before final App Review submission, check reviewer contact readiness with:
+
+```bash
+bash scripts/mac-validate-review-contact-env.sh
 ```
 
 ## Windows Preflight
