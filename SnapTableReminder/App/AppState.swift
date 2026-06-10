@@ -49,4 +49,8 @@ final class AppState: ObservableObject {
             }
         }
     }
+
+    func cancelReminder(for recordID: UUID) {
+        reminderScheduler.cancelReminder(for: recordID)
+    }
 }

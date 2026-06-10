@@ -56,6 +56,7 @@ struct SettingsView: View {
             }
             .confirmationDialog("Delete all local data?", isPresented: $isConfirmingDelete, titleVisibility: .visible) {
                 Button("Delete All Data", role: .destructive) {
+                    store.records.forEach { appState.cancelReminder(for: $0.id) }
                     store.deleteAll()
                 }
             }

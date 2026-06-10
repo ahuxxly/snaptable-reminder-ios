@@ -27,7 +27,7 @@ final class DocumentParserTests: XCTestCase {
         let result = DocumentParser().parse(text)
 
         XCTAssertEqual(result.category, .school)
-        XCTAssertEqual(result.amount, Decimal(380))
+        XCTAssertEqual(result.amount, Decimal(string: "380"))
         XCTAssertEqual(result.currencyCode, "CNY")
         XCTAssertEqual(result.phoneNumber, "13800138000")
         XCTAssertEqual(result.confidence, .high)

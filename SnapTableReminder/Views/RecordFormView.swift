@@ -3,7 +3,7 @@ import SwiftUI
 struct RecordFormView: View {
     enum Mode {
         case add(defaultCurrencyCode: String)
-        case addFromDraft(ParsedDocumentDraft, defaultCurrencyCode: String)
+        case addFromDraft(ParsedDocumentDraft, defaultCurrencyCode: String, sourceType: DocumentSourceType)
         case edit(DocumentRecord)
     }
 
@@ -166,8 +166,8 @@ struct RecordFormView: View {
             record.createdAt = Date()
             record.updatedAt = Date()
             return record
-        case .addFromDraft(let draft, let defaultCurrencyCode):
-            return draft.makeRecord(defaultCurrencyCode: defaultCurrencyCode, sourceType: .pastedText)
+        case .addFromDraft(let draft, let defaultCurrencyCode, let sourceType):
+            return draft.makeRecord(defaultCurrencyCode: defaultCurrencyCode, sourceType: sourceType)
         }
     }
 }

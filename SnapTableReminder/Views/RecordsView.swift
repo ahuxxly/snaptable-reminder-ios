@@ -62,7 +62,9 @@ struct RecordsView: View {
                     }
                     .onDelete { offsets in
                         for index in offsets {
-                            store.delete(filteredRecords[index])
+                            let record = filteredRecords[index]
+                            appState.cancelReminder(for: record.id)
+                            store.delete(record)
                         }
                     }
                 }

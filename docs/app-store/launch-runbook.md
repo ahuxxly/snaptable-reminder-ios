@@ -66,6 +66,8 @@ Evidence:
 - Tests pass.
 - Simulator build passes.
 
+If any command fails, follow `docs/testing/ci-failure-playbook.md` and keep the failing command output.
+
 ## Phase 4: App Store Connect App Record
 
 1. Create a new iOS app record.

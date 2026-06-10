@@ -33,6 +33,8 @@ Expected result:
 
 The repository includes `.github/workflows/ios-ci.yml`. After pushing to GitHub, open the Actions tab and confirm the iOS CI workflow passes. This verifies the same project generation, test, and simulator build path on a hosted macOS runner.
 
+If the local Mac run or CI fails, use `docs/testing/ci-failure-playbook.md` before retrying.
+
 ## Archive for App Store Connect
 
 After tests and simulator build pass:

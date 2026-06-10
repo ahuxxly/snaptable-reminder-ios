@@ -16,12 +16,12 @@ struct CaptureView: View {
 
     private enum ActiveSheet: Identifiable {
         case manual
-        case draft(ParsedDocumentDraft)
+        case draft(ParsedDocumentDraft, DocumentSourceType)
 
         var id: String {
             switch self {
             case .manual: return "manual"
-            case .draft: return "draft"
+            case .draft(_, let sourceType): return "draft-\(sourceType.rawValue)"
             }
         }
     }
@@ -110,8 +110,8 @@ struct CaptureView: View {
                         store.add(record)
                         appState.scheduleReminderIfNeeded(for: record)
                     }
-                case .draft(let draft):
-                    RecordFormView(mode: .addFromDraft(draft, defaultCurrencyCode: appState.defaultCurrencyCode)) { record in
+                case .draft(let draft, let sourceType):
+                    RecordFormView(mode: .addFromDraft(draft, defaultCurrencyCode: appState.defaultCurrencyCode, sourceType: sourceType)) { record in
                         store.add(record)
                         appState.scheduleReminderIfNeeded(for: record)
                     }
@@ -133,7 +133,12 @@ struct CaptureView: View {
 
     private func parseText() {
         let parsed = appState.applyDefaultReminder(to: appState.parse(rawText))
-        activeSheet = .draft(parsed)
+        activeSheet = .draft(parsed, .pastedText)
+    }
+
+    private func reviewRecognizedText(sourceType: DocumentSourceType) {
+        let parsed = appState.applyDefaultReminder(to: appState.parse(rawText))
+        activeSheet = .draft(parsed, sourceType)
     }
 
     private func recognizeText(from item: PhotosPickerItem) {
@@ -149,7 +154,7 @@ struct CaptureView: View {
                     return
                 }
                 rawText = try await appState.ocrService.recognizeText(in: image)
-                parseText()
+                reviewRecognizedText(sourceType: .photoLibrary)
             } catch {
                 errorMessage = error.localizedDescription
             }
@@ -170,7 +175,7 @@ struct CaptureView: View {
                     recognizedPages.append(pageText)
                 }
                 rawText = recognizedPages.joined(separator: "\n\n")
-                parseText()
+                reviewRecognizedText(sourceType: .camera)
             } catch {
                 errorMessage = error.localizedDescription
             }
