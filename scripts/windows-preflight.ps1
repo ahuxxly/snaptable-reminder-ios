@@ -418,8 +418,21 @@ if (-not $githubPublishText.Contains("write-fastlane-store-urls.ps1")) {
 if (-not $githubPublishText.Contains("--enable-issues")) {
     throw "GitHub publish script should enable Issues for the public support link."
 }
+if (-not $githubPublishText.Contains("label create support")) {
+    throw "GitHub publish script should create the support issue label."
+}
 if (-not $githubPublishText.Contains("docs: add public support request links")) {
     throw "GitHub publish script should commit generated release URL updates."
+}
+if (-not (Test-Path ".github\ISSUE_TEMPLATE\support.yml")) {
+    throw "Missing GitHub support issue template for public support requests."
+}
+$supportIssueTemplateText = Get-Content ".github\ISSUE_TEMPLATE\support.yml" -Raw
+if (-not $supportIssueTemplateText.Contains("Do not include private screenshots")) {
+    throw "Support issue template should warn users not to include private documents."
+}
+if (-not $supportIssueTemplateText.Contains("privacy_confirmation")) {
+    throw "Support issue template should require privacy confirmation."
 }
 $siteSupportLinkWriterText = Get-Content "scripts\write-site-support-links.ps1" -Raw
 if (-not $siteSupportLinkWriterText.Contains("https://github.com/")) {

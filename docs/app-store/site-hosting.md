@@ -21,7 +21,7 @@ Replace `<github-user-or-org>` and `<repository-name>` with the actual GitHub ow
 
 Publishing helper: `docs/github-publishing.md`.
 
-The GitHub publishing helper also enables GitHub Issues and writes a public support request link into `site/support.html` and `site/privacy.html` after the final repository owner and name are known.
+The GitHub publishing helper also enables GitHub Issues, creates a `support` label, and writes a public support request link into `site/support.html` and `site/privacy.html` after the final repository owner and name are known.
 
 ## Other Static Hosts
 

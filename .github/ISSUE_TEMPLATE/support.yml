@@ -1,0 +1,74 @@
+name: SnapTable Reminder support
+description: Ask for help or report a product issue with SnapTable Reminder.
+title: "[Support]: "
+labels:
+  - support
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve SnapTable Reminder.
+
+        Do not include private screenshots, receipts, medical documents, legal documents, identity information, phone numbers, email addresses, addresses, or financial details in public support requests.
+  - type: dropdown
+    id: request_type
+    attributes:
+      label: Request type
+      options:
+        - Bug report
+        - OCR or parsing issue
+        - CSV export issue
+        - Reminder issue
+        - App Store or purchase question
+        - Privacy question
+        - Other support request
+    validations:
+      required: true
+  - type: input
+    id: app_version
+    attributes:
+      label: App version
+      description: Open Settings in the app and enter the version shown there.
+      placeholder: "1.0"
+    validations:
+      required: true
+  - type: input
+    id: ios_version
+    attributes:
+      label: iOS version and device
+      placeholder: "iOS 18.5, iPhone 16"
+    validations:
+      required: true
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happened?
+      description: Describe the issue without attaching private documents or personal data.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: List the steps if this is a bug. Use sample text instead of private document content.
+      placeholder: |
+        1. Open Capture
+        2. Paste sample text
+        3. Save the record
+        4. See the issue
+    validations:
+      required: false
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What did you expect SnapTable Reminder to do?
+    validations:
+      required: false
+  - type: checkboxes
+    id: privacy_confirmation
+    attributes:
+      label: Privacy confirmation
+      options:
+        - label: I did not include private screenshots, receipts, medical documents, legal documents, identity information, phone numbers, email addresses, addresses, or financial details.
+          required: true

@@ -75,6 +75,11 @@ if ($LASTEXITCODE -ne 0) {
     throw "Could not enable GitHub Issues for the support link."
 }
 Write-Host "GitHub Issues enabled"
+& $ghPath label create support --repo $repoFullName --description "SnapTable Reminder support requests" --color 2DA44E --force
+if ($LASTEXITCODE -ne 0) {
+    throw "Could not create or update the GitHub support label."
+}
+Write-Host "support label ready"
 
 Write-Section "Support links"
 $repoParts = $repoFullName -split "/", 2
