@@ -198,13 +198,27 @@ if (-not $willRunAppStoreConnectUpload -and -not $willRunTestFlight) {
 
 $missingUploadSecrets = Get-MissingSecrets $secretNames $uploadSecrets
 if ($willRunAppStoreConnectUpload -and $missingUploadSecrets.Count -gt 0) {
-    throw "Missing App Store Connect upload secrets: $($missingUploadSecrets -join ', '). Run scripts/github-set-apple-secrets.ps1 -UploadOnly first."
+    $missingUploadMessage = "Missing App Store Connect upload secrets: $($missingUploadSecrets -join ', '). Run scripts/github-set-apple-secrets.ps1 -UploadOnly first."
+    if ($DryRun) {
+        Write-Host ""
+        Write-Host $missingUploadMessage
+        Write-Host "Dry-run mode will continue so you can inspect the planned workflow command."
+    } else {
+        throw $missingUploadMessage
+    }
 }
 
 if ($willRunTestFlight) {
     $missingTestFlightSecrets = Get-MissingSecrets $secretNames ($uploadSecrets + $signingSecrets)
     if ($missingTestFlightSecrets.Count -gt 0) {
-        throw "Missing TestFlight upload secrets: $($missingTestFlightSecrets -join ', '). Run scripts/github-set-apple-secrets.ps1 first."
+        $missingTestFlightMessage = "Missing TestFlight upload secrets: $($missingTestFlightSecrets -join ', '). Run scripts/github-set-apple-secrets.ps1 first."
+        if ($DryRun) {
+            Write-Host ""
+            Write-Host $missingTestFlightMessage
+            Write-Host "Dry-run mode will continue so you can inspect the planned workflow command."
+        } else {
+            throw $missingTestFlightMessage
+        }
     }
 }
 

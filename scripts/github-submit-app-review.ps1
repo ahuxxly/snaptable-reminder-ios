@@ -149,7 +149,14 @@ if ($ConfirmSubmitForReview -ne "YES") {
 
 $missingSecrets = Get-MissingSecrets $secretNames $requiredSecrets
 if ($missingSecrets.Count -gt 0) {
-    throw "Missing App Review submission secrets: $($missingSecrets -join ', '). Configure them before submitting."
+    $missingReviewMessage = "Missing App Review submission secrets: $($missingSecrets -join ', '). Configure them before submitting."
+    if ($DryRun) {
+        Write-Host ""
+        Write-Host $missingReviewMessage
+        Write-Host "Dry-run mode will continue so you can inspect the planned workflow command."
+    } else {
+        throw $missingReviewMessage
+    }
 }
 
 $arguments = @(

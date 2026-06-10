@@ -42,6 +42,13 @@ powershell -ExecutionPolicy Bypass -File scripts/prepare-apple-materials-folder.
 powershell -ExecutionPolicy Bypass -File scripts/github-set-apple-secrets.ps1 -MaterialsDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials" -DryRun
 ```
 
+Before Apple secrets exist, you can also dry-run the two GitHub release triggers. These commands do not dispatch workflows; they print the exact workflow command and list the missing secrets:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/github-run-app-store-release.ps1 -SkipTestFlight -DryRun
+powershell -ExecutionPolicy Bypass -File scripts/github-submit-app-review.ps1 -ConfirmSubmitForReview YES -DryRun
+```
+
 ## Phase 1: Apple Account Readiness
 
 Use `docs/app-store/account-setup.md` for the detailed 0-basics checklist.
@@ -177,8 +184,9 @@ Evidence:
 GitHub Actions upload path:
 
 1. Add the repository secrets with `scripts/github-set-apple-secrets.ps1 -MaterialsDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials"`.
-2. Run `scripts/github-run-app-store-release.ps1 -SkipTestFlight`.
-3. Keep metadata, screenshots, and review check enabled unless you are intentionally rerunning only part of the upload.
+2. Preview the dispatch command with `scripts/github-run-app-store-release.ps1 -SkipTestFlight -DryRun`.
+3. Run `scripts/github-run-app-store-release.ps1 -SkipTestFlight`.
+4. Keep metadata, screenshots, and review check enabled unless you are intentionally rerunning only part of the upload.
 
 Evidence:
 
@@ -253,14 +261,16 @@ bundle exec fastlane ios testflight
 GitHub Actions TestFlight path:
 
 1. Add the upload and signing secrets with `scripts/github-set-apple-secrets.ps1 -MaterialsDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials"`.
-2. Run `scripts/github-run-app-store-release.ps1`.
-3. Wait for App Store Connect to finish processing the build.
+2. Preview the dispatch command with `scripts/github-run-app-store-release.ps1 -DryRun`.
+3. Run `scripts/github-run-app-store-release.ps1`.
+4. Wait for App Store Connect to finish processing the build.
 
 GitHub Actions metadata and screenshot path:
 
 1. Add the upload secrets with `scripts/github-set-apple-secrets.ps1 -UploadOnly -MaterialsDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials"`.
-2. Run `scripts/github-run-app-store-release.ps1 -SkipTestFlight`.
-3. Confirm the workflow summary says the requested upload steps ran.
+2. Preview the dispatch command with `scripts/github-run-app-store-release.ps1 -SkipTestFlight -DryRun`.
+3. Run `scripts/github-run-app-store-release.ps1 -SkipTestFlight`.
+4. Confirm the workflow summary says the requested upload steps ran.
 
 Evidence:
 
@@ -281,13 +291,19 @@ Evidence:
 powershell -ExecutionPolicy Bypass -File scripts/github-set-apple-secrets.ps1 -ReviewOnly -MaterialsDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials"
 ```
 
-7. Submit with explicit confirmation:
+7. Preview the protected submission dispatch:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/github-submit-app-review.ps1 -ConfirmSubmitForReview YES -DryRun
+```
+
+8. Submit with explicit confirmation:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/github-submit-app-review.ps1 -ConfirmSubmitForReview YES -Wait
 ```
 
-8. On the Mac used for submission, run:
+9. On the Mac used for submission, run:
 
 ```bash
 bash scripts/mac-validate-review-contact-env.sh

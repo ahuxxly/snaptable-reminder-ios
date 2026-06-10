@@ -36,6 +36,7 @@ Local repository status:
 - Windows App Store Connect entry packet exporter is present for generating paste-ready app record, metadata, privacy/compliance, and review fields from source files.
 - Windows GitHub App Store release helper is present for checking secrets and triggering upload workflows.
 - Windows GitHub App Review submit helper is present for checking review-contact secrets and triggering final submission with explicit confirmation.
+- Release workflow helpers support dry-run planning before Apple secrets exist, while real workflow dispatch still blocks missing secrets.
 - App Review contact checklist and Mac environment validation script are present.
 
 Verified on GitHub:
@@ -122,17 +123,32 @@ powershell -ExecutionPolicy Bypass -File scripts/export-app-store-connect-entry-
 
 5. Add the App Store Connect upload secrets with `scripts/github-set-apple-secrets.ps1 -UploadOnly -MaterialsDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials"`.
 
-6. Run `scripts/github-run-app-store-release.ps1 -SkipTestFlight` to upload metadata, screenshots, and precheck.
+6. Dry-run and then run `scripts/github-run-app-store-release.ps1 -SkipTestFlight` to upload metadata, screenshots, and precheck:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/github-run-app-store-release.ps1 -SkipTestFlight -DryRun
+powershell -ExecutionPolicy Bypass -File scripts/github-run-app-store-release.ps1 -SkipTestFlight -Wait
+```
 
 7. Add the Apple signing secrets with `scripts/github-set-apple-secrets.ps1 -SigningOnly -MaterialsDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials"`.
 
 8. Complete the EU DSA trader status decision in `docs/app-store/eu-dsa-trader.md`.
 
-9. Run `scripts/github-run-app-store-release.ps1` to upload metadata, screenshots, precheck, and a signed TestFlight build.
+9. Dry-run and then run `scripts/github-run-app-store-release.ps1` to upload metadata, screenshots, precheck, and a signed TestFlight build:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/github-run-app-store-release.ps1 -DryRun
+powershell -ExecutionPolicy Bypass -File scripts/github-run-app-store-release.ps1 -Wait
+```
 
 10. Add App Review contact secrets with `scripts/github-set-apple-secrets.ps1 -ReviewOnly -MaterialsDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials"`.
 
-11. After App Store Connect shows the build is processed, run `scripts/github-submit-app-review.ps1 -ConfirmSubmitForReview YES -Wait`.
+11. After App Store Connect shows the build is processed, dry-run and then run protected App Review submission:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/github-submit-app-review.ps1 -ConfirmSubmitForReview YES -DryRun
+powershell -ExecutionPolicy Bypass -File scripts/github-submit-app-review.ps1 -ConfirmSubmitForReview YES -Wait
+```
 
 12. On a Mac, run:
 

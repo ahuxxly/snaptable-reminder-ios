@@ -547,6 +547,9 @@ if (-not (Test-Path "tests\prepare-apple-materials-folder.tests.ps1")) {
 if (-not (Test-Path "tests\github-set-apple-secrets.tests.ps1")) {
     throw "Missing GitHub Apple secret helper tests."
 }
+if (-not (Test-Path "tests\github-release-workflow.tests.ps1")) {
+    throw "Missing GitHub release workflow helper tests."
+}
 if (-not (Test-Path "tests\export-app-store-connect-entry-pack.tests.ps1")) {
     throw "Missing App Store Connect entry packet exporter tests."
 }
@@ -608,6 +611,7 @@ if (-not $launchRunbookText.Contains("export-app-store-connect-entry-pack.ps1"))
 }
 powershell -NoProfile -ExecutionPolicy Bypass -File tests\prepare-apple-materials-folder.tests.ps1
 powershell -NoProfile -ExecutionPolicy Bypass -File tests\github-set-apple-secrets.tests.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File tests\github-release-workflow.tests.ps1
 powershell -NoProfile -ExecutionPolicy Bypass -File tests\export-app-store-connect-entry-pack.tests.ps1
 powershell -NoProfile -ExecutionPolicy Bypass -File tests\release-doctor-local-artifacts.tests.ps1
 $githubPublishText = Get-Content "scripts\github-publish.ps1" -Raw
@@ -685,6 +689,9 @@ if (-not $githubAppStoreReleaseText.Contains("testflight-upload.yml")) {
 if (-not $githubAppStoreReleaseText.Contains("StatusOnly") -or -not $githubAppStoreReleaseText.Contains("DryRun")) {
     throw "GitHub App Store release runner should support status-only and dry-run modes."
 }
+if (-not $githubAppStoreReleaseText.Contains("Dry-run mode will continue so you can inspect the planned workflow command")) {
+    throw "GitHub App Store release runner dry-run should show planned workflow commands before secrets exist."
+}
 if (-not $githubAppStoreReleaseText.Contains("SkipTestFlight")) {
     throw "GitHub App Store release runner should allow metadata/screenshot upload without TestFlight."
 }
@@ -705,6 +712,9 @@ if (-not $githubAppReviewSubmitText.Contains("ConfirmSubmitForReview")) {
 }
 if (-not $githubAppReviewSubmitText.Contains("app-review-submit.yml")) {
     throw "GitHub App Review submit helper should trigger the App Review workflow."
+}
+if (-not $githubAppReviewSubmitText.Contains("Dry-run mode will continue so you can inspect the planned workflow command")) {
+    throw "GitHub App Review submit helper dry-run should show the planned workflow command before secrets exist."
 }
 if (-not $githubAppReviewSubmitText.Contains("Could not list recent workflow runs")) {
     throw "GitHub App Review submit helper should fail clearly if recent workflow run listing fails."

@@ -113,12 +113,14 @@ powershell -ExecutionPolicy Bypass -File scripts/github-set-apple-secrets.ps1 -R
 - [ ] Metadata, screenshots, and precheck upload succeeds:
 
 ```powershell
+powershell -ExecutionPolicy Bypass -File scripts/github-run-app-store-release.ps1 -SkipTestFlight -DryRun
 powershell -ExecutionPolicy Bypass -File scripts/github-run-app-store-release.ps1 -SkipTestFlight -Wait
 ```
 
 - [ ] TestFlight upload succeeds:
 
 ```powershell
+powershell -ExecutionPolicy Bypass -File scripts/github-run-app-store-release.ps1 -DryRun
 powershell -ExecutionPolicy Bypass -File scripts/github-run-app-store-release.ps1 -Wait
 ```
 
@@ -127,6 +129,7 @@ powershell -ExecutionPolicy Bypass -File scripts/github-run-app-store-release.ps
 - [ ] App is submitted for review:
 
 ```powershell
+powershell -ExecutionPolicy Bypass -File scripts/github-submit-app-review.ps1 -ConfirmSubmitForReview YES -DryRun
 powershell -ExecutionPolicy Bypass -File scripts/github-submit-app-review.ps1 -ConfirmSubmitForReview YES -Wait
 ```
 
