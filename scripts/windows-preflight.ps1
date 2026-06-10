@@ -25,13 +25,19 @@ if ($LASTEXITCODE -gt 1) {
 Write-Host "no unfinished markers"
 
 Write-Section "Encoding damage scan"
-$encodingOutput = rg "鈧|楼|骞|鏈|鎴|瀛|鍖|棰|鑸|璐|搴|�" SnapTableReminder docs site README.md project.yml scripts .github 2>$null
-if ($LASTEXITCODE -eq 0) {
-    Write-Host $encodingOutput
-    throw "Potential mojibake text found."
+$encodingOutput = @()
+$mojibakeChars = @([char]0xFFFD, [char]0x00C3, [char]0x00C2)
+foreach ($char in $mojibakeChars) {
+    $scan = rg --fixed-strings ([string]$char) SnapTableReminder docs site README.md project.yml scripts .github 2>$null
+    if ($LASTEXITCODE -eq 0) {
+        $encodingOutput += $scan
+    } elseif ($LASTEXITCODE -gt 1) {
+        throw "Encoding scan failed."
+    }
 }
-if ($LASTEXITCODE -gt 1) {
-    throw "Encoding scan failed."
+if ($encodingOutput.Count -gt 0) {
+    Write-Host ($encodingOutput -join [Environment]::NewLine)
+    throw "Potential mojibake text found."
 }
 Write-Host "no common mojibake markers"
 
@@ -47,8 +53,18 @@ Write-Section "Static site links"
 $htmlFiles = Get-ChildItem site -Filter *.html
 foreach ($file in $htmlFiles) {
     $content = Get-Content $file.FullName -Raw
-    [regex]::Matches($content, 'href="([^"]+)"') | ForEach-Object {
-        $href = $_.Groups[1].Value
+    $parts = $content -split "href="
+    foreach ($part in $parts | Select-Object -Skip 1) {
+        $quoteCode = [int][char]$part.Substring(0, 1)
+        if ($quoteCode -ne 34 -and $quoteCode -ne 39) {
+            continue
+        }
+        $quote = [char]$quoteCode
+        $end = $part.IndexOf($quote, 1)
+        if ($end -lt 1) {
+            throw "Malformed href in $($file.Name)"
+        }
+        $href = $part.Substring(1, $end - 1)
         if ($href -notmatch '^https?:|^mailto:|^#') {
             $target = Join-Path $file.DirectoryName $href
             if (-not (Test-Path $target)) {
