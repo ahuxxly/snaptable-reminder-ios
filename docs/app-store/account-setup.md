@@ -132,6 +132,20 @@ The workflow can upload:
 
 It does not submit for review and does not upload the signed binary. TestFlight upload still requires Apple signing assets.
 
+Windows helper:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/github-set-apple-secrets.ps1 -UploadOnly `
+  -AppStoreConnectUsername "account-email" `
+  -AppleDeveloperTeamId "team-id" `
+  -AppStoreConnectApiKeyId "api-key-id" `
+  -AppStoreConnectApiIssuerId "issuer-id" `
+  -AppStoreConnectApiKeyPath "C:\path\outside\repo\AuthKey_KEYID.p8"
+```
+
+The helper writes GitHub repository secrets through the GitHub CLI and rejects key files stored inside this repository.
+Add `-DryRun` first if you want to validate paths and field shapes without changing GitHub.
+
 ## GitHub Actions Signing Secrets
 
 For the `TestFlight Upload` workflow, add the upload secrets above plus these signing secrets:
@@ -152,6 +166,19 @@ Use these values:
 
 The workflow installs the certificate into a temporary keychain, installs the provisioning profile, archives the app, and uploads the signed build to TestFlight.
 Do not commit `.p12` or `.mobileprovision` files to this repository.
+
+Windows helper:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/github-set-apple-secrets.ps1 -SigningOnly `
+  -AppleDistributionCertificatePath "C:\path\outside\repo\AppleDistribution.p12" `
+  -AppleAppStoreProfilePath "C:\path\outside\repo\SnapTable_AppStore.mobileprovision"
+```
+
+The helper prompts for the `.p12` password and a temporary CI keychain password without printing them.
+Add `-DryRun` first if you want to validate paths without changing GitHub.
+
+To configure upload and signing secrets in one run, omit `-UploadOnly` and `-SigningOnly` and provide all fields.
 
 ## App Review Contact
 

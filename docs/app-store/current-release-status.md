@@ -30,6 +30,7 @@ Local repository status:
 - Fastlane `review_check` lane and Precheckfile are present for App Review metadata risk checks.
 - Mac Fastlane upload environment validation script is present.
 - Mac Apple signing environment validation and installation scripts are present.
+- Windows GitHub Apple secret helper is present for configuring upload and signing secrets without committing private files.
 - App Review contact checklist and Mac environment validation script are present.
 
 Verified on GitHub:
@@ -85,11 +86,11 @@ https://ahuxxly.github.io/snaptable-reminder-ios/support.html
 
 3. Create the App Store Connect app record and API key.
 
-4. Add the App Store Connect upload secrets listed in `docs/app-store/account-setup.md`.
+4. Add the App Store Connect upload secrets with `scripts/github-set-apple-secrets.ps1`.
 
 5. Run the `App Store Connect Upload` workflow to upload metadata, screenshots, and precheck.
 
-6. Add the Apple signing secrets listed in `docs/app-store/account-setup.md`.
+6. Add the Apple signing secrets with `scripts/github-set-apple-secrets.ps1`.
 
 7. Run the `TestFlight Upload` workflow to upload a signed build.
 

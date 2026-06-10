@@ -464,6 +464,9 @@ if (-not (Test-Path "scripts\github-publish.ps1")) {
 if (-not (Test-Path "scripts\github-login-and-publish.ps1")) {
     throw "Missing GitHub login and publish helper script."
 }
+if (-not (Test-Path "scripts\github-set-apple-secrets.ps1")) {
+    throw "Missing GitHub Apple secret helper script."
+}
 if (-not (Test-Path "scripts\write-site-support-links.ps1")) {
     throw "Missing site support link writer script."
 }
@@ -492,6 +495,38 @@ if (-not $githubPublishText.Contains("label create support")) {
 }
 if (-not $githubPublishText.Contains("docs: add public support request links")) {
     throw "GitHub publish script should commit generated release URL updates."
+}
+$githubAppleSecretsText = Get-Content "scripts\github-set-apple-secrets.ps1" -Raw
+$requiredGitHubAppleSecretNames = @(
+    "APP_STORE_CONNECT_USERNAME",
+    "APPLE_DEVELOPER_TEAM_ID",
+    "APP_STORE_CONNECT_API_KEY_ID",
+    "APP_STORE_CONNECT_API_ISSUER_ID",
+    "APP_STORE_CONNECT_API_PRIVATE_KEY",
+    "APPLE_DISTRIBUTION_CERTIFICATE_BASE64",
+    "APPLE_DISTRIBUTION_CERTIFICATE_PASSWORD",
+    "APPLE_APP_STORE_PROFILE_BASE64",
+    "APPLE_CODESIGN_KEYCHAIN_PASSWORD"
+)
+foreach ($githubAppleSecretName in $requiredGitHubAppleSecretNames) {
+    if (-not $githubAppleSecretsText.Contains($githubAppleSecretName)) {
+        throw "GitHub Apple secret helper should set $githubAppleSecretName."
+    }
+}
+if (-not $githubAppleSecretsText.Contains("secret set")) {
+    throw "GitHub Apple secret helper should use GitHub CLI secrets."
+}
+if (-not $githubAppleSecretsText.Contains("Assert-FileOutsideRepository")) {
+    throw "GitHub Apple secret helper should reject Apple files stored inside the repository."
+}
+if (-not $githubAppleSecretsText.Contains("RedirectStandardInput")) {
+    throw "GitHub Apple secret helper should pass secret values through exact standard input."
+}
+if (-not $githubAppleSecretsText.Contains("UploadOnly") -or -not $githubAppleSecretsText.Contains("SigningOnly")) {
+    throw "GitHub Apple secret helper should support upload-only and signing-only modes."
+}
+if (-not $githubAppleSecretsText.Contains("DryRun")) {
+    throw "GitHub Apple secret helper should support a dry-run validation mode."
 }
 if (-not (Test-Path ".github\ISSUE_TEMPLATE\support.yml")) {
     throw "Missing GitHub support issue template for public support requests."

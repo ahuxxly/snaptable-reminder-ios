@@ -58,6 +58,14 @@ Then run:
 bundle exec fastlane ios testflight
 ```
 
+GitHub Actions alternative:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/github-set-apple-secrets.ps1
+```
+
+Then run the `TestFlight Upload` workflow. The helper writes upload and signing secrets to GitHub and refuses `.p8`, `.p12`, and `.mobileprovision` files stored inside this repository.
+
 ## Metadata Upload
 
 Fastlane metadata files live in `fastlane/metadata/`. They mirror the public listing copy from `docs/app-store/app-store-fields.json` and `docs/app-store/metadata.md`.
