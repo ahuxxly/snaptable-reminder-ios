@@ -31,6 +31,7 @@
 - Review notes draft: `docs/app-store/review-notes.md`.
 - Age rating draft: `docs/app-store/age-rating.md`.
 - Fastlane release notes: `docs/app-store/fastlane-release.md`.
+- Fastlane metadata files: `fastlane/metadata/`.
 - Screenshot plan: `docs/app-store/screenshot-plan.md`.
 - Launch runbook: `docs/app-store/launch-runbook.md`.
 - Monetization plan: `docs/app-store/monetization-plan.md`.
@@ -81,6 +82,7 @@ Fastlane alternative:
 
 ```bash
 bundle exec fastlane ios verify
+bundle exec fastlane ios metadata
 bundle exec fastlane ios archive
 bundle exec fastlane ios testflight
 ```

@@ -1,0 +1,17 @@
+SnapTable Reminder is a local-first utility for people who save important information as screenshots and document photos.
+
+Import an image or paste recognized text, review the extracted fields, and save the information as an editable record. SnapTable can help organize payment notices, school reminders, appointment screenshots, warranty cards, receipts, travel notes, and other personal documents.
+
+Key features:
+
+- On-device text recognition using Apple frameworks
+- Editable records for titles, categories, amounts, dates, notes, phone numbers, and email addresses
+- Local reminders for due dates and appointments
+- Searchable record list
+- Dashboard for upcoming and overdue records
+- CSV export through the iOS share sheet
+- Local-only storage in version 1
+
+SnapTable Reminder does not create accounts, track users, use third-party analytics, connect to a backend, or send your documents to a cloud AI parser.
+
+Important: SnapTable Reminder helps organize personal records and reminders. It does not provide legal, medical, tax, financial, or investment advice. Always review extracted text before saving or acting on it.

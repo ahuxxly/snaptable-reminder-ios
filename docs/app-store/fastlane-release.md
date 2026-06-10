@@ -45,8 +45,27 @@ Then run:
 bundle exec fastlane ios testflight
 ```
 
+## Metadata Upload
+
+Fastlane metadata files live in `fastlane/metadata/`. They mirror the public listing copy from `docs/app-store/app-store-fields.json` and `docs/app-store/metadata.md`.
+
+After the App Store Connect app record exists and the public privacy/support URLs are live, add these two files locally or through App Store Connect before final submission:
+
+```text
+fastlane/metadata/en-US/privacy_url.txt
+fastlane/metadata/en-US/support_url.txt
+```
+
+Then run:
+
+```bash
+bundle exec fastlane ios metadata
+```
+
+This uploads metadata only. It does not upload a binary, upload screenshots, or submit the app for review.
+
 ## Notes
 
 - The bundle identifier is `com.snaptable.reminder`.
-- The lane uploads to TestFlight only; final App Review submission still requires App Store Connect metadata, screenshots, privacy answers, pricing, and country/region availability.
+- The `testflight` lane uploads a build. The `metadata` lane uploads listing metadata. Final App Review submission still requires screenshots, privacy answers, pricing, and country/region availability.
 - Do not commit `.p8` API keys, certificates, provisioning profiles, or exported archives.

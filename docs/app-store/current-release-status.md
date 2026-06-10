@@ -14,6 +14,7 @@ Local repository status:
 - Fastlane lanes are present for verify, archive, and TestFlight upload.
 - App Store metadata, privacy, age rating, export compliance, review notes, screenshot plan, monetization plan, and launch runbook are drafted.
 - Machine-readable App Store Connect fields are present in `docs/app-store/app-store-fields.json` and covered by Windows preflight.
+- Fastlane metadata files are present in `fastlane/metadata/` and covered by Windows preflight.
 
 Verified on this Windows workspace:
 

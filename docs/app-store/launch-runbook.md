@@ -95,6 +95,7 @@ Use these repository files:
 
 - Machine-readable fields: `docs/app-store/app-store-fields.json`
 - Metadata: `docs/app-store/metadata.md`
+- Fastlane metadata files: `fastlane/metadata/`
 - Privacy answers: `docs/app-store/privacy-questionnaire.md`
 - Review notes: `docs/app-store/review-notes.md`
 - Export compliance: `docs/app-store/export-compliance.md`
@@ -137,6 +138,7 @@ export APPLE_DEVELOPER_TEAM_ID="team-id"
 export APP_STORE_CONNECT_API_KEY_ID="api-key-id"
 export APP_STORE_CONNECT_API_ISSUER_ID="issuer-id"
 export APP_STORE_CONNECT_API_KEY_PATH="/absolute/path/to/AuthKey.p8"
+bundle exec fastlane ios metadata
 bundle exec fastlane ios testflight
 ```
 

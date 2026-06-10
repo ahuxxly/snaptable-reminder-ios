@@ -1,0 +1,7 @@
+SnapTable Reminder is a local-first productivity utility for turning screenshots and document photos into editable records, local reminders, and CSV exports.
+
+Text recognition runs on device using Apple frameworks. Saved records, recognized OCR text, and reminder settings are stored locally on the user's device. Version 1 does not create accounts, connect to a backend, use third-party analytics, track users, or send document content to a cloud AI parser.
+
+Users can import an image, scan a document, paste text, or add a record manually. Parsed fields are always shown for user review and editing before saving.
+
+The app helps organize personal records and reminders. It does not provide legal, medical, tax, financial, or investment advice.

@@ -156,6 +156,47 @@ if ($storeFields.compliance.requiresReviewerAccount -ne $false -or $storeFields.
 }
 Write-Host "metadata, pricing, privacy, compliance, and availability align"
 
+Write-Section "Fastlane metadata"
+$fastlaneMetadataFiles = @(
+    "fastlane\metadata\primary_category.txt",
+    "fastlane\metadata\en-US\name.txt",
+    "fastlane\metadata\en-US\subtitle.txt",
+    "fastlane\metadata\en-US\promotional_text.txt",
+    "fastlane\metadata\en-US\description.txt",
+    "fastlane\metadata\en-US\keywords.txt",
+    "fastlane\metadata\en-US\release_notes.txt",
+    "fastlane\metadata\review_information\notes.txt"
+)
+foreach ($metadataFile in $fastlaneMetadataFiles) {
+    if (-not (Test-Path $metadataFile)) {
+        throw "Missing Fastlane metadata file: $metadataFile"
+    }
+}
+$fastlaneName = (Get-Content "fastlane\metadata\en-US\name.txt" -Raw).Trim()
+$fastlaneSubtitle = (Get-Content "fastlane\metadata\en-US\subtitle.txt" -Raw).Trim()
+$fastlanePromotionalText = (Get-Content "fastlane\metadata\en-US\promotional_text.txt" -Raw).Trim()
+$fastlaneKeywords = (Get-Content "fastlane\metadata\en-US\keywords.txt" -Raw).Trim()
+$fastlanePrimaryCategory = (Get-Content "fastlane\metadata\primary_category.txt" -Raw).Trim()
+if ($fastlaneName -ne $storeFields.app.name) {
+    throw "Fastlane metadata name does not match App Store fields."
+}
+if ($fastlaneSubtitle -ne $storeFields.storeListing.subtitle) {
+    throw "Fastlane metadata subtitle does not match App Store fields."
+}
+if ($fastlanePromotionalText -ne $storeFields.storeListing.promotionalText) {
+    throw "Fastlane metadata promotional text does not match App Store fields."
+}
+if ($fastlaneKeywords -ne (($storeFields.storeListing.keywords) -join ",")) {
+    throw "Fastlane metadata keywords do not match App Store fields."
+}
+if ($fastlanePrimaryCategory -ne "PRODUCTIVITY") {
+    throw "Fastlane primary category should be PRODUCTIVITY."
+}
+if (-not $fastfileText.Contains("lane :metadata")) {
+    throw "fastlane/Fastfile should include the metadata lane."
+}
+Write-Host "Fastlane metadata files align"
+
 Write-Section "Asset references"
 $appIconDirectory = "SnapTableReminder\Resources\Assets.xcassets\AppIcon.appiconset"
 foreach ($image in $appIconContents.images) {
