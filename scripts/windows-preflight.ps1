@@ -43,6 +43,18 @@ if ($encodingOutput.Count -gt 0) {
 }
 Write-Host "no common mojibake markers"
 
+Write-Section "Shell script line endings"
+$shellScripts = Get-ChildItem scripts -Filter *.sh
+foreach ($script in $shellScripts) {
+    $bytes = [System.IO.File]::ReadAllBytes($script.FullName)
+    for ($index = 0; $index -lt ($bytes.Length - 1); $index++) {
+        if ($bytes[$index] -eq 13 -and $bytes[$index + 1] -eq 10) {
+            throw "Shell script should use LF line endings: $($script.Name)"
+        }
+    }
+}
+Write-Host "shell scripts use LF line endings"
+
 Write-Section "Resource parsing"
 Get-Content "SnapTableReminder\Resources\Assets.xcassets\Contents.json" | ConvertFrom-Json | Out-Null
 $appIconContents = Get-Content "SnapTableReminder\Resources\Assets.xcassets\AppIcon.appiconset\Contents.json" | ConvertFrom-Json
@@ -80,6 +92,15 @@ if (-not $fastfileText.Contains("scheme: `"SnapTableReminder`"") -and -not $fast
 }
 if (-not $projectText.Contains("TARGETED_DEVICE_FAMILY: `"1`"")) {
     throw "project.yml should target iPhone only for version 1."
+}
+if (-not $projectText.Contains("SnapTableReminderUITests")) {
+    throw "project.yml should include the screenshot UI test target."
+}
+if (-not $projectText.Contains("SnapTableReminderScreenshots")) {
+    throw "project.yml should include the screenshot scheme."
+}
+if (-not $projectText.Contains("TEST_TARGET_NAME: SnapTableReminder")) {
+    throw "Screenshot UI test target should point at SnapTableReminder."
 }
 Write-Host "bundle id and release config align"
 
@@ -153,6 +174,9 @@ if ($storeFields.compliance.targetsChildren -ne $false) {
 }
 if ($storeFields.compliance.requiresReviewerAccount -ne $false -or $storeFields.review.testAccountRequired -ne $false) {
     throw "Version 1 should not require a reviewer account."
+}
+if ($storeFields.screenshots.requiredDevice -ne "6.9 inch iPhone") {
+    throw "App Store screenshot device should be 6.9 inch iPhone."
 }
 Write-Host "metadata, pricing, privacy, compliance, and availability align"
 
@@ -247,7 +271,8 @@ $requiredTestFiles = @(
     "SnapTableReminderTests\CSVExporterTests.swift",
     "SnapTableReminderTests\RecordDateLogicTests.swift",
     "SnapTableReminderTests\AppStateSettingsTests.swift",
-    "SnapTableReminderTests\ReminderDatePolicyTests.swift"
+    "SnapTableReminderTests\ReminderDatePolicyTests.swift",
+    "SnapTableReminderUITests\AppStoreScreenshotUITests.swift"
 )
 foreach ($testFile in $requiredTestFiles) {
     if (-not (Test-Path $testFile)) {
@@ -272,6 +297,25 @@ foreach ($releaseDoc in $requiredReleaseDocs) {
     }
 }
 Write-Host "required release docs present"
+
+Write-Section "Screenshot automation"
+if (-not (Test-Path "scripts\mac-capture-screenshots.sh")) {
+    throw "Missing Mac screenshot capture script."
+}
+$screenshotScriptText = Get-Content "scripts\mac-capture-screenshots.sh" -Raw
+if (-not $screenshotScriptText.Contains("SnapTableReminderScreenshots")) {
+    throw "Screenshot script should run the SnapTableReminderScreenshots scheme."
+}
+if (-not $screenshotScriptText.Contains("xcresulttool export attachments")) {
+    throw "Screenshot script should export XCTest screenshot attachments."
+}
+if (-not $screenshotScriptText.Contains("iPhone 16 Pro Max") -and -not $screenshotScriptText.Contains("iPhone 17 Pro Max")) {
+    throw "Screenshot script should prefer current App Store iPhone screenshot simulators."
+}
+if (-not $launchRunbookText.Contains("scripts/mac-capture-screenshots.sh")) {
+    throw "Launch runbook should mention the screenshot capture script."
+}
+Write-Host "screenshot capture path present"
 
 Write-Section "Static site links"
 $htmlFiles = Get-ChildItem site -Filter *.html

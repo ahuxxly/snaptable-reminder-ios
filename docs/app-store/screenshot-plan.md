@@ -1,16 +1,46 @@
 # App Store Screenshot Plan
 
-Use this plan after the app builds on a Mac. The app includes a screenshot data mode triggered by the launch argument `-demoData`.
+Use this plan after the app builds on a Mac. Apple currently accepts 6.9 inch iPhone screenshots for the primary iPhone screenshot set. The app includes a screenshot data mode triggered by the launch argument `-demoData`.
+
+Official reference:
+
+- https://developer.apple.com/help/app-store-connect/reference/app-information/screenshot-specifications/
+
+## Automated Capture
+
+Run on a Mac:
+
+```bash
+bash scripts/mac-capture-screenshots.sh
+```
+
+The script generates the Xcode project, runs `SnapTableReminderUITests`, and exports XCTest screenshot attachments to `build/app-store-screenshots`.
+
+Preferred simulators:
+
+- iPhone 17 Pro Max
+- iPhone Air
+- iPhone 16 Pro Max
+- iPhone 16 Plus
+- iPhone 15 Pro Max
+- iPhone 15 Plus
+- iPhone 14 Pro Max
+
+If the preferred simulator is not installed, install one in Xcode or set:
+
+```bash
+export SCREENSHOT_SIMULATOR_ID="simulator-uuid"
+```
 
 ## Prepare Demo Data
 
-In Xcode:
+Manual Xcode path:
 
 1. Open the generated project.
 2. Edit the active scheme.
 3. Go to Run > Arguments.
 4. Add launch argument `-demoData`.
-5. Run the app on a 6.7 inch iPhone simulator.
+5. Run the app on a 6.9 inch iPhone simulator.
 
 The app seeds three local records only when the store is empty.
 

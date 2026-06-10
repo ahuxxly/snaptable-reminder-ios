@@ -113,9 +113,17 @@ Evidence:
 
 ## Phase 6: Screenshots
 
+Preferred automated path:
+
+```bash
+bash scripts/mac-capture-screenshots.sh
+```
+
+Manual path:
+
 1. Generate project on Mac.
 2. Add launch argument `-demoData` to the Run scheme.
-3. Run on a 6.7 inch iPhone simulator.
+3. Run on a 6.9 inch iPhone simulator.
 4. Capture the four screenshots listed in `docs/app-store/screenshot-plan.md`.
 5. Remove `-demoData` before final manual QA.
 

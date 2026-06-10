@@ -68,7 +68,7 @@
     "demoPasteText": "Tuition payment notice. Total due $128.50. Deadline 2026-07-10. Contact billing@example.invalid"
   },
   "screenshots": {
-    "requiredDevice": "6.7 inch iPhone",
+    "requiredDevice": "6.9 inch iPhone",
     "requiredScreens": [
       "Capture",
       "Records",

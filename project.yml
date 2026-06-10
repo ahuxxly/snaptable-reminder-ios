@@ -41,3 +41,39 @@ targets:
       - SnapTableReminderTests
     dependencies:
       - target: SnapTableReminder
+  SnapTableReminderUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - SnapTableReminderUITests
+    dependencies:
+      - target: SnapTableReminder
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.snaptable.reminder.uitests
+        TEST_TARGET_NAME: SnapTableReminder
+        TARGETED_DEVICE_FAMILY: "1"
+schemes:
+  SnapTableReminder:
+    build:
+      targets:
+        SnapTableReminder: all
+        SnapTableReminderTests: [test]
+    test:
+      targets:
+        - SnapTableReminderTests
+    run:
+      config: Debug
+    archive:
+      config: Release
+  SnapTableReminderScreenshots:
+    build:
+      targets:
+        SnapTableReminder: all
+        SnapTableReminderUITests: [test]
+    test:
+      gatherCoverageData: false
+      targets:
+        - SnapTableReminderUITests
+    run:
+      config: Debug

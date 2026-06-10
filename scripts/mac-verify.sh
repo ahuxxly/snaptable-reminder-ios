@@ -27,4 +27,8 @@ xcodebuild build \
   -scheme SnapTableReminder \
   -destination "platform=iOS Simulator,id=${SIMULATOR_ID}"
 
+xcodebuild build-for-testing \
+  -scheme SnapTableReminderScreenshots \
+  -destination "platform=iOS Simulator,id=${SIMULATOR_ID}"
+
 echo "Mac verification completed."

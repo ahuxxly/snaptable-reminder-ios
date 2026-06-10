@@ -28,6 +28,17 @@ Expected result:
 - `xcodegen generate` succeeds.
 - `xcodebuild test` succeeds for `SnapTableReminderTests`.
 - `xcodebuild build` succeeds for the first available iPhone simulator destination.
+- `xcodebuild build-for-testing` succeeds for the screenshot UI test target.
+
+## Capture App Store Screenshots
+
+After full verification passes, run:
+
+```bash
+bash scripts/mac-capture-screenshots.sh
+```
+
+This uses demo data and exports screenshot attachments for Capture, Records, Dashboard, and Settings to `build/app-store-screenshots`.
 
 ## GitHub Actions
 

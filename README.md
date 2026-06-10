@@ -32,6 +32,14 @@ bash scripts/mac-verify.sh
 
 This generates the Xcode project, runs unit tests, and builds for the first available iPhone simulator.
 
+## App Store Screenshots on Mac
+
+```bash
+bash scripts/mac-capture-screenshots.sh
+```
+
+This runs the screenshot UI test flow with demo data and exports Capture, Records, Dashboard, and Settings screenshots for App Store preparation.
+
 ## Windows Preflight
 
 On this Windows workspace, run the static checks with:

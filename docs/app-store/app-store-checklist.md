@@ -39,14 +39,15 @@
 
 ## Screenshots
 
-- 6.7 inch iPhone Capture screenshot.
-- 6.7 inch iPhone Records screenshot.
-- 6.7 inch iPhone Dashboard screenshot.
-- 6.7 inch iPhone Settings screenshot.
+- Automated screenshot capture script: `scripts/mac-capture-screenshots.sh`.
+- 6.9 inch iPhone Capture screenshot.
+- 6.9 inch iPhone Records screenshot.
+- 6.9 inch iPhone Dashboard screenshot.
+- 6.9 inch iPhone Settings screenshot.
 
 ## Keywords
 
-screenshot OCR, document scanner, table export, reminder, receipt organizer, deadline tracker
+screenshot OCR, doc scanner, CSV, receipt log, deadline tracker, bill organizer, notice scanner, due date
 
 ## Review Notes
 
