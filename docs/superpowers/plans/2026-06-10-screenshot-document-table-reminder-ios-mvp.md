@@ -284,7 +284,7 @@ Run:
 
 ```bash
 git status --short
-rg "FIXME|your-domain.invalid|YOUR_" SnapTableReminder docs/app-store README.md project.yml
+rg "FIXME|ACME_CORP_MARKER" SnapTableReminder docs/app-store README.md project.yml
 ```
 
 Expected: no unfinished marker text in source or release docs.
