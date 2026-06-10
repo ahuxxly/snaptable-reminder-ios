@@ -17,6 +17,7 @@ final class DocumentParserTests: XCTestCase {
         XCTAssertEqual(result.amount, Decimal(string: "128.50"))
         XCTAssertEqual(result.currencyCode, "USD")
         XCTAssertEqual(result.emailAddress, "billing@example.invalid")
+        XCTAssertNil(result.phoneNumber)
         XCTAssertEqual(result.confidence, .high)
         XCTAssertDate(result.dueDate, year: 2026, month: 7, day: 10)
     }
@@ -44,6 +45,23 @@ final class DocumentParserTests: XCTestCase {
         XCTAssertEqual(result.emailAddress, "care@example.invalid")
         XCTAssertEqual(result.confidence, .high)
         XCTAssertDate(result.eventDate, year: 2026, month: 7, day: 18)
+    }
+
+    func testSkipsDateLikePhoneCandidateAndFindsLaterPhone() {
+        let text = "Invoice issued 2026-07-10. Support phone +1 415-555-0123."
+
+        let result = DocumentParser().parse(text)
+
+        XCTAssertEqual(result.phoneNumber, "+14155550123")
+    }
+
+    func testParsesLowercaseCurrencyCode() {
+        let text = "Membership renewal amount usd 9.99 due 2026-08-01"
+
+        let result = DocumentParser().parse(text)
+
+        XCTAssertEqual(result.amount, Decimal(string: "9.99"))
+        XCTAssertEqual(result.currencyCode, "USD")
     }
 
     func testSparseTextReturnsLowConfidence() {

@@ -6,11 +6,6 @@ struct DocumentParser {
         "截止", "到期", "缴费", "付款", "续费", "之前"
     ]
 
-    private let eventKeywords = [
-        "appointment", "booking", "reservation", "visit", "meeting", "event",
-        "预约", "会议", "活动", "就诊", "航班", "入住"
-    ]
-
     func parse(_ text: String, defaultCurrencyCode: String = "USD") -> ParsedDocumentDraft {
         let cleanText = text.trimmingCharacters(in: .whitespacesAndNewlines)
         let title = extractTitle(from: cleanText)
@@ -85,7 +80,7 @@ struct DocumentParser {
 
     private func extractCurrencyCode(from text: String) -> String? {
         let pattern = #"\b(USD|CNY|RMB|EUR|GBP|JPY|HKD|AUD|CAD)\b"#
-        guard let match = firstMatch(pattern: pattern, in: text) else { return nil }
+        guard let match = firstMatch(pattern: pattern, in: text, options: [.caseInsensitive]) else { return nil }
         let code = match.groups.first?.uppercased()
         return code == "RMB" ? "CNY" : code
     }
@@ -171,10 +166,19 @@ struct DocumentParser {
         let emailPattern = #"[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}"#
         let phonePattern = #"(?<!\d)(?:\+?\d[\d\s-]{7,}\d)(?!\d)"#
         let email = firstMatch(pattern: emailPattern, in: text, options: [.caseInsensitive])?.value
-        let phone = firstMatch(pattern: phonePattern, in: text)?.value
+        let phone = matches(pattern: phonePattern, in: text)
+            .compactMap { normalizedPhoneNumber(from: $0.value) }
+            .first
+        return (phone, email)
+    }
+
+    private func normalizedPhoneNumber(from text: String) -> String? {
+        let normalized = text
             .replacingOccurrences(of: " ", with: "")
             .replacingOccurrences(of: "-", with: "")
-        return (phone, email)
+        let digitCount = normalized.filter(\.isNumber).count
+        guard (10...15).contains(digitCount) else { return nil }
+        return normalized
     }
 
     private func inferCategory(from text: String) -> DocumentCategory {
@@ -244,15 +248,25 @@ struct DocumentParser {
         in text: String,
         options: NSRegularExpression.Options = []
     ) -> RegexMatch? {
-        guard let regex = try? NSRegularExpression(pattern: pattern, options: options) else { return nil }
+        matches(pattern: pattern, in: text, options: options).first
+    }
+
+    private func matches(
+        pattern: String,
+        in text: String,
+        options: NSRegularExpression.Options = []
+    ) -> [RegexMatch] {
+        guard let regex = try? NSRegularExpression(pattern: pattern, options: options) else { return [] }
         let nsText = text as NSString
-        guard let match = regex.firstMatch(in: text, range: NSRange(location: 0, length: nsText.length)) else { return nil }
-        let value = nsText.substring(with: match.range)
-        let groups = (1..<match.numberOfRanges).map { index -> String in
-            let range = match.range(at: index)
-            guard range.location != NSNotFound else { return "" }
-            return nsText.substring(with: range)
+        let found = regex.matches(in: text, range: NSRange(location: 0, length: nsText.length))
+        return found.map { match in
+            let value = nsText.substring(with: match.range)
+            let groups = (1..<match.numberOfRanges).map { index -> String in
+                let range = match.range(at: index)
+                guard range.location != NSNotFound else { return "" }
+                return nsText.substring(with: range)
+            }
+            return RegexMatch(value: value, groups: groups)
         }
-        return RegexMatch(value: value, groups: groups)
     }
 }

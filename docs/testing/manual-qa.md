@@ -20,7 +20,18 @@
 1. Paste: `Tuition payment notice. Total due $128.50. Deadline 2026-07-10. Contact billing@example.invalid`.
 2. Tap Parse.
 3. Confirm title, amount, currency, due date, email, and confidence appear.
-4. Save the record.
+4. Confirm `2026-07-10` is not detected as a phone number.
+5. Save the record.
+
+## Currency and Phone Edge Cases
+
+1. Paste: `Membership renewal amount usd 9.99 due 2026-08-01`.
+2. Tap Parse.
+3. Confirm amount is `9.99` and currency is `USD`.
+4. Paste: `Invoice issued 2026-07-10. Support phone +1 415-555-0123.`.
+5. Tap Parse.
+6. Confirm phone is detected as `+14155550123`, not `20260710`.
+7. Do not save these edge-case records unless needed.
 
 ## Chinese Notice Parsing
 
