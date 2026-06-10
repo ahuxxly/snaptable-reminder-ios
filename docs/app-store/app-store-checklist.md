@@ -28,6 +28,8 @@
 - Export compliance draft: `docs/app-store/export-compliance.md`.
 - Review notes draft: `docs/app-store/review-notes.md`.
 - Age rating draft: `docs/app-store/age-rating.md`.
+- Fastlane release notes: `docs/app-store/fastlane-release.md`.
+- Screenshot plan: `docs/app-store/screenshot-plan.md`.
 
 ## Screenshots
 
@@ -70,3 +72,11 @@ screenshot OCR, document scanner, table export, reminder, receipt organizer, dea
 8. Fill privacy details using `docs/app-store/privacy-questionnaire.md`.
 9. Complete age rating and export compliance using the drafts in `docs/app-store`.
 10. Submit for review.
+
+Fastlane alternative:
+
+```bash
+bundle exec fastlane ios verify
+bundle exec fastlane ios archive
+bundle exec fastlane ios testflight
+```

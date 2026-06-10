@@ -1,0 +1,5 @@
+app_identifier("com.snaptable.reminder")
+
+apple_id(ENV.fetch("APP_STORE_CONNECT_USERNAME", ""))
+
+team_id(ENV.fetch("APPLE_DEVELOPER_TEAM_ID", ""))

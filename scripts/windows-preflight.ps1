@@ -14,7 +14,7 @@ if ($gitStatus) {
 Write-Host "clean"
 
 Write-Section "Marker scan"
-$markerTerms = @("TO" + "DO", "TB" + "D", "PLACE" + "HOLDER", "example" + "\.com", "YOUR_", "your-domain")
+$markerTerms = @("TO" + "DO", "TB" + "D", "PLACE" + "HOLDER", "example" + "\.com", "YOU" + "R_", "your" + "-domain")
 $markerPattern = $markerTerms -join "|"
 $markerOutput = rg $markerPattern . 2>$null
 if ($LASTEXITCODE -eq 0) {
@@ -30,7 +30,7 @@ Write-Section "Encoding damage scan"
 $encodingOutput = @()
 $mojibakeChars = @([char]0xFFFD, [char]0x00C3, [char]0x00C2)
 foreach ($char in $mojibakeChars) {
-    $scan = rg --fixed-strings ([string]$char) SnapTableReminder docs site README.md project.yml scripts .github 2>$null
+    $scan = rg --fixed-strings ([string]$char) SnapTableReminder docs site README.md project.yml scripts .github fastlane Gemfile 2>$null
     if ($LASTEXITCODE -eq 0) {
         $encodingOutput += $scan
     } elseif ($LASTEXITCODE -gt 1) {

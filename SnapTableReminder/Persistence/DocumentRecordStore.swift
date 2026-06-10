@@ -46,6 +46,11 @@ final class DocumentRecordStore: ObservableObject {
         save()
     }
 
+    func replaceAll(_ newRecords: [DocumentRecord]) {
+        records = newRecords
+        save()
+    }
+
     func load() {
         guard fileManager.fileExists(atPath: storeURL.path) else {
             records = []

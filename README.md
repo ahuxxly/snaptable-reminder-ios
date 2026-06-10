@@ -52,6 +52,18 @@ This checks git cleanliness, unfinished markers, common encoding damage, resourc
 
 The repository includes `.github/workflows/ios-ci.yml`. After this project is pushed to GitHub, GitHub Actions can run XcodeGen, unit tests, and an iPhone simulator build on macOS. Signing and App Store upload still require Apple Developer account setup.
 
+## Fastlane on Mac
+
+Fastlane is available for repeatable Mac release commands:
+
+```bash
+bundle install
+bundle exec fastlane ios verify
+bundle exec fastlane ios archive
+```
+
+TestFlight upload is documented in `docs/app-store/fastlane-release.md` and requires App Store Connect API key environment variables.
+
 ## App Store Support Site
 
 The `site/` folder contains static privacy and support pages. The repository includes `.github/workflows/pages.yml`, which can publish those pages with GitHub Pages after the project is pushed to GitHub and Pages is enabled.

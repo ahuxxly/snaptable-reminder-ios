@@ -15,6 +15,8 @@ struct SnapTableReminderApp: App {
 }
 
 private struct RootView: View {
+    @EnvironmentObject private var store: DocumentRecordStore
+
     var body: some View {
         TabView {
             CaptureView()
@@ -36,6 +38,9 @@ private struct RootView: View {
                 .tabItem {
                     Label("Settings", systemImage: "gearshape")
                 }
+        }
+        .onAppear {
+            DemoData.seedIfRequested(into: store)
         }
     }
 }
