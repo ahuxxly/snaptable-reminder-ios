@@ -10,7 +10,7 @@ Local repository status:
 - XcodeGen project configuration is present in `project.yml`.
 - Unit test source files are present for parsing, CSV export, date logic, settings persistence, and reminder date policy.
 - App Store support site files are present in `site/`.
-- GitHub Actions workflows are present for iOS CI, GitHub Pages, App Store screenshots, and release readiness.
+- GitHub Actions workflows are present for iOS CI, GitHub Pages, App Store screenshots, release readiness, and App Store Connect metadata/screenshot upload.
 - Fastlane lanes are present for verify, archive, and TestFlight upload.
 - GitHub login and publish helper script is present in `scripts/github-login-and-publish.ps1`.
 - GitHub publish helper can enable GitHub Issues, prepare the support issue label, write public support request links, and write Fastlane store URL files after the repository URL is known.
@@ -31,6 +31,16 @@ Local repository status:
 - Mac Fastlane upload environment validation script is present.
 - App Review contact checklist and Mac environment validation script are present.
 
+Verified on GitHub:
+
+- Repository is public at `https://github.com/ahuxxly/snaptable-reminder-ios`.
+- `iOS CI` is passing on macOS.
+- `Release Readiness` is passing on macOS.
+- `Publish App Store Site` is passing.
+- Privacy URL is live: `https://ahuxxly.github.io/snaptable-reminder-ios/privacy.html`.
+- Support URL is live: `https://ahuxxly.github.io/snaptable-reminder-ios/support.html`.
+- Release Readiness generated `app-store-screenshots` and `fastlane-screenshots` artifacts.
+
 Verified on this Windows workspace:
 
 ```powershell
@@ -43,15 +53,13 @@ This verifies local static release gates only. It does not compile Swift or run 
 
 These are still required before the goal is actually complete:
 
-- Repository pushed to GitHub.
-- GitHub Actions `iOS CI` passing on a macOS runner.
-- GitHub Pages privacy and support URLs live.
-- Mac or CI Xcode build and unit tests passing.
 - Apple Developer Program membership active.
 - Paid Apps Agreement, tax, and banking complete.
 - App Store Connect app record created with bundle ID `com.snaptable.reminder`.
 - Signing configured.
-- App screenshots captured and uploaded.
+- App Store Connect upload secrets configured in GitHub.
+- App Store metadata, screenshots, and precheck uploaded through Fastlane.
+- App screenshots uploaded to App Store Connect.
 - App archived and uploaded to TestFlight/App Store Connect.
 - App Review contact details entered in App Store Connect.
 - App Review submission completed.
@@ -59,33 +67,25 @@ These are still required before the goal is actually complete:
 
 ## Fastest Next Path
 
-1. Install GitHub CLI on Windows if needed:
-
-```powershell
-winget install --id GitHub.cli -e --source winget
-```
-
-2. Log in and publish this repository:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts/github-login-and-publish.ps1 -RepoName snaptable-reminder-ios -Visibility public
-```
-
-3. In GitHub repository settings, enable Pages with Source set to GitHub Actions.
-
-4. Confirm these Actions pass:
+1. Confirm these Actions pass:
 
 - `iOS CI`
 - `Publish App Store Site`
 - `App Store Screenshots`
 - `Release Readiness`
 
-5. Copy live URLs into App Store Connect:
+2. Copy live URLs into App Store Connect:
 
 ```text
-https://<owner>.github.io/<repo>/privacy.html
-https://<owner>.github.io/<repo>/support.html
+https://ahuxxly.github.io/snaptable-reminder-ios/privacy.html
+https://ahuxxly.github.io/snaptable-reminder-ios/support.html
 ```
+
+3. Create the App Store Connect app record and API key.
+
+4. Add the App Store Connect upload secrets listed in `docs/app-store/account-setup.md`.
+
+5. Run the `App Store Connect Upload` workflow to upload metadata, screenshots, and precheck.
 
 6. On a Mac, run:
 
@@ -96,13 +96,15 @@ bash scripts/mac-verify.sh
 bash scripts/mac-release-readiness.sh
 ```
 
-7. Before final App Review submission, set the `APP_REVIEW_*` contact environment variables and run:
+7. Configure Apple signing and upload a signed build to TestFlight/App Store Connect.
+
+8. Before final App Review submission, set the `APP_REVIEW_*` contact environment variables and run:
 
 ```bash
 bash scripts/mac-validate-review-contact-env.sh
 ```
 
-8. Continue with `docs/app-store/launch-runbook.md`.
+9. Continue with `docs/app-store/launch-runbook.md`.
 
 ## Release Boundaries
 

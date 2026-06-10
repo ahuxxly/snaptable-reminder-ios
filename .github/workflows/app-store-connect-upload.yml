@@ -1,0 +1,92 @@
+name: App Store Connect Upload
+run-name: App Store Connect upload
+
+on:
+  workflow_dispatch:
+    inputs:
+      upload_metadata:
+        description: "Upload App Store metadata"
+        required: true
+        type: boolean
+        default: true
+      upload_screenshots:
+        description: "Capture and upload App Store screenshots"
+        required: true
+        type: boolean
+        default: true
+      run_review_check:
+        description: "Run Fastlane precheck against App Store Connect"
+        required: true
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  app-store-connect-upload:
+    runs-on: macos-15
+    env:
+      APP_STORE_CONNECT_USERNAME: ${{ secrets.APP_STORE_CONNECT_USERNAME }}
+      APPLE_DEVELOPER_TEAM_ID: ${{ secrets.APPLE_DEVELOPER_TEAM_ID }}
+      APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+      APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+      APP_STORE_CONNECT_API_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_API_PRIVATE_KEY }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+
+      - name: Install Ruby dependencies
+        run: bundle install
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Write App Store Connect API key
+        shell: bash
+        run: |
+          set -euo pipefail
+          key_dir="${RUNNER_TEMP}/app-store-connect"
+          mkdir -p "${key_dir}"
+          key_path="${key_dir}/AuthKey_${APP_STORE_CONNECT_API_KEY_ID}.p8"
+          printf '%s\n' "${APP_STORE_CONNECT_API_PRIVATE_KEY}" > "${key_path}"
+          chmod 600 "${key_path}"
+          echo "APP_STORE_CONNECT_API_KEY_PATH=${key_path}" >> "${GITHUB_ENV}"
+
+      - name: Validate upload environment
+        run: bash scripts/mac-validate-upload-env.sh
+
+      - name: Capture screenshots
+        if: ${{ inputs.upload_screenshots }}
+        run: bash scripts/mac-capture-screenshots.sh
+
+      - name: Upload metadata
+        if: ${{ inputs.upload_metadata }}
+        run: bundle exec fastlane ios metadata
+
+      - name: Upload screenshots
+        if: ${{ inputs.upload_screenshots }}
+        run: bundle exec fastlane ios screenshots
+
+      - name: Run review check
+        if: ${{ inputs.run_review_check }}
+        run: bundle exec fastlane ios review_check
+
+      - name: Summarize upload path
+        run: |
+          {
+            echo "### App Store Connect upload"
+            echo ""
+            echo "- Metadata upload requested: ${{ inputs.upload_metadata }}"
+            echo "- Screenshot upload requested: ${{ inputs.upload_screenshots }}"
+            echo "- Review check requested: ${{ inputs.run_review_check }}"
+            echo ""
+            echo "This workflow does not submit the app for review and does not upload a signed binary."
+            echo "Use the TestFlight path after Apple signing assets are configured."
+          } >> "$GITHUB_STEP_SUMMARY"

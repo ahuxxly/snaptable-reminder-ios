@@ -128,6 +128,18 @@ Evidence:
 - Export compliance is complete.
 - Review notes are saved.
 
+GitHub Actions upload path:
+
+1. Add the repository secrets listed in `docs/app-store/account-setup.md`.
+2. Run the `App Store Connect Upload` workflow.
+3. Keep metadata, screenshots, and review check enabled unless you are intentionally rerunning only part of the upload.
+
+Evidence:
+
+- The workflow completes successfully.
+- Metadata is visible in App Store Connect.
+- Fastlane precheck has no error-level findings.
+
 ## Phase 6: Screenshots
 
 Preferred automated path:
@@ -142,6 +154,12 @@ GitHub Actions alternative:
 2. Download the `app-store-screenshots` artifact for raw exports.
 3. Download the `fastlane-screenshots` artifact for the Fastlane upload folder.
 4. Upload the screenshots to App Store Connect.
+
+GitHub Actions upload path:
+
+1. Add the repository secrets listed in `docs/app-store/account-setup.md`.
+2. Run the `App Store Connect Upload` workflow with screenshot upload enabled.
+3. Confirm screenshots are visible in App Store Connect.
 
 Fastlane upload path:
 
@@ -185,6 +203,12 @@ bundle exec fastlane ios screenshots
 bundle exec fastlane ios review_check
 bundle exec fastlane ios testflight
 ```
+
+GitHub Actions metadata and screenshot path:
+
+1. Add the `APP_STORE_CONNECT_*` and `APPLE_DEVELOPER_TEAM_ID` secrets from `docs/app-store/account-setup.md`.
+2. Run the `App Store Connect Upload` workflow with metadata, screenshots, and review check enabled.
+3. Confirm the workflow summary says the requested upload steps ran.
 
 Evidence:
 

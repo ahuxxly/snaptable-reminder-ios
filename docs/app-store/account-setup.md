@@ -109,6 +109,29 @@ bundle exec fastlane ios review_check
 bundle exec fastlane ios testflight
 ```
 
+## GitHub Actions Upload Secrets
+
+For the `App Store Connect Upload` workflow, add these repository secrets in GitHub:
+
+```text
+APP_STORE_CONNECT_USERNAME
+APPLE_DEVELOPER_TEAM_ID
+APP_STORE_CONNECT_API_KEY_ID
+APP_STORE_CONNECT_API_ISSUER_ID
+APP_STORE_CONNECT_API_PRIVATE_KEY
+```
+
+Use the full `.p8` private key contents as `APP_STORE_CONNECT_API_PRIVATE_KEY`.
+The workflow writes it to a temporary file outside the repository before running Fastlane.
+
+The workflow can upload:
+
+- App Store metadata.
+- App Store screenshots.
+- Fastlane precheck results.
+
+It does not submit for review and does not upload the signed binary. TestFlight upload still requires Apple signing assets.
+
 ## App Review Contact
 
 Apple also requires reviewer contact information during final submission. Use `docs/app-store/review-contact.md` as the source checklist.

@@ -685,6 +685,35 @@ if (-not $releaseReadinessWorkflowText.Contains("fastlane-screenshots")) {
 if (-not $releaseReadinessWorkflowText.Contains("scripts/mac-validate-review-contact-env.sh")) {
     throw "Release Readiness workflow should summarize review contact validation."
 }
+$appStoreConnectUploadWorkflowPath = ".github\workflows\app-store-connect-upload.yml"
+if (-not (Test-Path $appStoreConnectUploadWorkflowPath)) {
+    throw "Missing App Store Connect upload workflow."
+}
+$appStoreConnectUploadWorkflowText = Get-Content $appStoreConnectUploadWorkflowPath -Raw
+if (-not $appStoreConnectUploadWorkflowText.Contains("workflow_dispatch")) {
+    throw "App Store Connect upload workflow should be manually runnable."
+}
+if (-not $appStoreConnectUploadWorkflowText.Contains("APP_STORE_CONNECT_API_PRIVATE_KEY")) {
+    throw "App Store Connect upload workflow should accept the private key from GitHub Secrets."
+}
+if (-not $appStoreConnectUploadWorkflowText.Contains("APP_STORE_CONNECT_API_KEY_PATH")) {
+    throw "App Store Connect upload workflow should write a temporary API key path for Fastlane."
+}
+if (-not $appStoreConnectUploadWorkflowText.Contains('${RUNNER_TEMP}/app-store-connect')) {
+    throw "App Store Connect upload workflow should store the temporary API key outside the repository."
+}
+if (-not $appStoreConnectUploadWorkflowText.Contains("scripts/mac-validate-upload-env.sh")) {
+    throw "App Store Connect upload workflow should validate upload credentials before Fastlane."
+}
+if (-not $appStoreConnectUploadWorkflowText.Contains("bundle exec fastlane ios metadata")) {
+    throw "App Store Connect upload workflow should upload metadata."
+}
+if (-not $appStoreConnectUploadWorkflowText.Contains("bundle exec fastlane ios screenshots")) {
+    throw "App Store Connect upload workflow should upload screenshots."
+}
+if (-not $appStoreConnectUploadWorkflowText.Contains("bundle exec fastlane ios review_check")) {
+    throw "App Store Connect upload workflow should run Fastlane precheck."
+}
 Write-Host "screenshot capture path present"
 
 Write-Section "Static site links"
