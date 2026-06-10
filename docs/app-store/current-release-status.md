@@ -26,6 +26,7 @@ Local repository status:
 - App Store screenshot UI test target and Mac capture script are present.
 - Manual GitHub Actions workflow is present for App Store screenshot artifact generation.
 - Windows Release Readiness artifact archive helper is present for downloading and verifying `fastlane-screenshots` and `app-store-screenshots` from a successful GitHub Actions run.
+- Windows App Store submission packet builder is present for combining the entry packet, verified screenshots, and Release Readiness evidence into one non-secret local folder.
 - Fastlane screenshot staging and upload lane are present.
 - Screenshot automation resets demo data to avoid stale simulator records.
 - Mac release readiness script is present for local build, test, and screenshot staging checks.
@@ -50,6 +51,7 @@ Verified on GitHub:
 - `iOS CI` is passing on macOS.
 - `Release Readiness` is passing on macOS.
 - Release Readiness screenshot artifacts can be archived and verified locally with `scripts/archive-release-readiness-artifacts.ps1`.
+- A public App Store submission packet can be built locally with `scripts/build-app-store-submission-packet.ps1`.
 - `Publish App Store Site` is passing.
 - Privacy URL is live: `https://ahuxxly.github.io/snaptable-reminder-ios/privacy.html`.
 - Support URL is live: `https://ahuxxly.github.io/snaptable-reminder-ios/support.html`.
@@ -112,6 +114,7 @@ These are still required before the goal is actually complete:
 
 You can run `scripts/release-doctor.ps1 -RunPreflight` to see this status plus the missing Apple account and GitHub secret gates in one place.
 After `Release Readiness` succeeds, archive its screenshots with `scripts/archive-release-readiness-artifacts.ps1 -RunId "<run-id>"`.
+Then build the public submission packet with `scripts/build-app-store-submission-packet.ps1`.
 
 2. Copy live URLs into App Store Connect:
 

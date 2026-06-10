@@ -538,6 +538,9 @@ if (-not (Test-Path "scripts\github-submit-app-review.ps1")) {
 if (-not (Test-Path "scripts\archive-release-readiness-artifacts.ps1")) {
     throw "Missing Release Readiness artifact archive helper script."
 }
+if (-not (Test-Path "scripts\build-app-store-submission-packet.ps1")) {
+    throw "Missing App Store submission packet builder script."
+}
 if (-not (Test-Path "scripts\prepare-apple-materials-folder.ps1")) {
     throw "Missing Apple private materials folder helper script."
 }
@@ -561,6 +564,9 @@ if (-not (Test-Path "tests\prepare-apple-materials-folder.tests.ps1")) {
 }
 if (-not (Test-Path "tests\archive-release-readiness-artifacts.tests.ps1")) {
     throw "Missing Release Readiness artifact archive helper tests."
+}
+if (-not (Test-Path "tests\build-app-store-submission-packet.tests.ps1")) {
+    throw "Missing App Store submission packet builder tests."
 }
 if (-not (Test-Path "tests\apple-release-next-actions.tests.ps1")) {
     throw "Missing Apple release next actions helper tests."
@@ -623,6 +629,25 @@ foreach ($archiveReleaseReadinessTerm in @(
 }
 if (-not $launchRunbookText.Contains("archive-release-readiness-artifacts.ps1")) {
     throw "Launch runbook should mention the Release Readiness artifact archive helper."
+}
+$submissionPacketText = Get-Content "scripts\build-app-store-submission-packet.ps1" -Raw
+foreach ($submissionPacketTerm in @(
+    "01-app-store-connect-entry-pack",
+    "02-fastlane-screenshots",
+    "03-raw-screenshots",
+    "04-release-readiness-evidence",
+    "SUBMISSION-PACKET-README.md",
+    "app-store-submission-packet.json",
+    "Do not add private Apple keys",
+    "China mainland",
+    "release-readiness-artifacts.json"
+)) {
+    if (-not $submissionPacketText.Contains($submissionPacketTerm)) {
+        throw "App Store submission packet builder should include: $submissionPacketTerm"
+    }
+}
+if (-not $launchRunbookText.Contains("build-app-store-submission-packet.ps1")) {
+    throw "Launch runbook should mention the App Store submission packet builder."
 }
 $prepareAppleMaterialsText = Get-Content "scripts\prepare-apple-materials-folder.ps1" -Raw
 foreach ($prepareAppleMaterialsTerm in @(
@@ -748,6 +773,7 @@ if (-not $launchRunbookText.Contains("export-app-store-connect-entry-pack.ps1"))
 }
 powershell -NoProfile -ExecutionPolicy Bypass -File tests\prepare-apple-materials-folder.tests.ps1
 powershell -NoProfile -ExecutionPolicy Bypass -File tests\archive-release-readiness-artifacts.tests.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File tests\build-app-store-submission-packet.tests.ps1
 powershell -NoProfile -ExecutionPolicy Bypass -File tests\apple-release-next-actions.tests.ps1
 powershell -NoProfile -ExecutionPolicy Bypass -File tests\stage-apple-release-materials.tests.ps1
 powershell -NoProfile -ExecutionPolicy Bypass -File tests\record-app-store-release-evidence.tests.ps1
@@ -903,6 +929,7 @@ foreach ($releaseIssueSyncTerm in @(
     "docs/app-store/eu-dsa-trader.md",
     "scripts/release-doctor.ps1 -RunPreflight",
     "scripts/archive-release-readiness-artifacts.ps1",
+    "scripts/build-app-store-submission-packet.ps1",
     "NextActionsOutputPath",
     "scripts/apple-release-next-actions.ps1",
     "scripts/stage-apple-release-materials.ps1",

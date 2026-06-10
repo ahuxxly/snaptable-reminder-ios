@@ -31,6 +31,15 @@ powershell -ExecutionPolicy Bypass -File scripts/archive-release-readiness-artif
   -OutputDirectory "C:\path\outside\repo\SnapTableReminder-ReleaseReadiness-27297816689"
 ```
 
+Then build a single public submission packet from the App Store Connect entry pack and verified screenshots:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/build-app-store-submission-packet.ps1 `
+  -EntryPackDirectory "C:\path\outside\repo\SnapTableReminder-AppStoreConnect-EntryPack" `
+  -ScreenshotArchiveDirectory "C:\path\outside\repo\SnapTableReminder-ReleaseReadiness-27297816689" `
+  -OutputDirectory "C:\path\outside\repo\SnapTableReminder-AppStoreSubmissionPacket"
+```
+
 To refresh the public GitHub tracking issue after release gates change:
 
 ```powershell
@@ -134,6 +143,7 @@ Evidence:
 - iOS CI workflow is green.
 - Release Readiness workflow is green.
 - Release Readiness artifacts are archived and verified with `scripts/archive-release-readiness-artifacts.ps1`.
+- The public App Store submission packet is built with `scripts/build-app-store-submission-packet.ps1`.
 - GitHub Pages URL opens in a browser.
 - Privacy URL and Support URL are copied into App Store Connect.
 
