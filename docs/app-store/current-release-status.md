@@ -43,6 +43,7 @@ Verified on GitHub:
 - Privacy URL is live: `https://ahuxxly.github.io/snaptable-reminder-ios/privacy.html`.
 - Support URL is live: `https://ahuxxly.github.io/snaptable-reminder-ios/support.html`.
 - Release Readiness generated `app-store-screenshots` and `fastlane-screenshots` artifacts.
+- Remaining Apple account materials are tracked in `https://github.com/ahuxxly/snaptable-reminder-ios/issues/1`.
 
 Verified on this Windows workspace:
 
