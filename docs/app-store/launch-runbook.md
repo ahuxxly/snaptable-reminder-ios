@@ -24,6 +24,7 @@ To prepare a private local folder for Apple account, signing, DSA, and review-co
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/prepare-apple-materials-folder.ps1
+powershell -ExecutionPolicy Bypass -File scripts/export-app-store-connect-entry-pack.ps1
 ```
 
 Keep that folder outside this repository. After adding Apple materials, validate it with:
@@ -124,6 +125,7 @@ If any command fails, follow `docs/testing/ci-failure-playbook.md` and keep the 
 ## Phase 4: App Store Connect App Record
 
 Use `docs/app-store/app-store-fields.json` as the single source for fields that must match the app build.
+Run `scripts/export-app-store-connect-entry-pack.ps1` to generate paste-ready local files for this phase.
 
 1. Create a new iOS app record.
 2. Use bundle ID `com.snaptable.reminder`.

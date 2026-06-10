@@ -49,6 +49,7 @@ This issue tracks the private Apple-account work required before SnapTable Remin
 - Local release doctor: `powershell -ExecutionPolicy Bypass -File scripts/release-doctor.ps1 -RunPreflight`
 - Windows preflight: `powershell -ExecutionPolicy Bypass -File scripts/windows-preflight.ps1`
 - Private Apple material folder helper: `powershell -ExecutionPolicy Bypass -File scripts/prepare-apple-materials-folder.ps1`
+- App Store Connect entry packet exporter: `powershell -ExecutionPolicy Bypass -File scripts/export-app-store-connect-entry-pack.ps1`
 - Main release docs:
   - `docs/app-store/current-release-status.md`
   - `docs/app-store/launch-runbook.md`
@@ -81,6 +82,7 @@ This issue tracks the private Apple-account work required before SnapTable Remin
 powershell -ExecutionPolicy Bypass -File scripts/prepare-apple-materials-folder.ps1
 powershell -ExecutionPolicy Bypass -File scripts/prepare-apple-materials-folder.ps1 -OutputDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials" -ValidateOnly
 powershell -ExecutionPolicy Bypass -File scripts/github-set-apple-secrets.ps1 -MaterialsDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials" -DryRun
+powershell -ExecutionPolicy Bypass -File scripts/export-app-store-connect-entry-pack.ps1
 ```
 
 - [ ] App Store Connect API key is generated and stored outside the repository.

@@ -20,6 +20,12 @@ The same folder can drive GitHub secret setup:
 powershell -ExecutionPolicy Bypass -File scripts/github-set-apple-secrets.ps1 -MaterialsDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials" -DryRun
 ```
 
+For App Store Connect copy/paste fields, export the entry packet:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/export-app-store-connect-entry-pack.ps1
+```
+
 ## Required Account State
 
 - Apple Developer Program membership is active.
@@ -91,6 +97,7 @@ In App Store Connect:
 8. User Access: full access for the account holder.
 
 Use `docs/app-store/app-store-fields.json` as the field source.
+For a local paste-ready packet generated from the same source, run `scripts/export-app-store-connect-entry-pack.ps1`.
 
 ## EU Digital Services Act Trader Status
 

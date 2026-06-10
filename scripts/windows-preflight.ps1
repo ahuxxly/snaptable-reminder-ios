@@ -538,11 +538,17 @@ if (-not (Test-Path "scripts\github-submit-app-review.ps1")) {
 if (-not (Test-Path "scripts\prepare-apple-materials-folder.ps1")) {
     throw "Missing Apple private materials folder helper script."
 }
+if (-not (Test-Path "scripts\export-app-store-connect-entry-pack.ps1")) {
+    throw "Missing App Store Connect entry packet exporter script."
+}
 if (-not (Test-Path "tests\prepare-apple-materials-folder.tests.ps1")) {
     throw "Missing Apple private materials folder helper tests."
 }
 if (-not (Test-Path "tests\github-set-apple-secrets.tests.ps1")) {
     throw "Missing GitHub Apple secret helper tests."
+}
+if (-not (Test-Path "tests\export-app-store-connect-entry-pack.tests.ps1")) {
+    throw "Missing App Store Connect entry packet exporter tests."
 }
 if (-not (Test-Path "scripts\release-doctor.ps1")) {
     throw "Missing release doctor script."
@@ -581,8 +587,25 @@ foreach ($prepareAppleMaterialsTerm in @(
 if (-not $launchRunbookText.Contains("prepare-apple-materials-folder.ps1")) {
     throw "Launch runbook should mention the Apple private materials folder helper."
 }
+$entryPackExporterText = Get-Content "scripts\export-app-store-connect-entry-pack.ps1" -Raw
+foreach ($entryPackTerm in @(
+    "app-store-connect-entry-pack.json",
+    "00-app-record.txt",
+    "02-version-metadata.txt",
+    "03-privacy-compliance.txt",
+    "04-review.txt",
+    "docs/app-store/app-store-fields.json"
+)) {
+    if (-not $entryPackExporterText.Contains($entryPackTerm)) {
+        throw "App Store Connect entry packet exporter should include: $entryPackTerm"
+    }
+}
+if (-not $launchRunbookText.Contains("export-app-store-connect-entry-pack.ps1")) {
+    throw "Launch runbook should mention the App Store Connect entry packet exporter."
+}
 powershell -NoProfile -ExecutionPolicy Bypass -File tests\prepare-apple-materials-folder.tests.ps1
 powershell -NoProfile -ExecutionPolicy Bypass -File tests\github-set-apple-secrets.tests.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File tests\export-app-store-connect-entry-pack.tests.ps1
 $githubPublishText = Get-Content "scripts\github-publish.ps1" -Raw
 if (-not $githubPublishText.Contains("write-site-support-links.ps1")) {
     throw "GitHub publish script should write public support links after repo creation."
