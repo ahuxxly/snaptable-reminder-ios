@@ -56,11 +56,19 @@ $projectText = Get-Content "project.yml" -Raw
 $appfileText = Get-Content "fastlane\Appfile" -Raw
 $fastfileText = Get-Content "fastlane\Fastfile" -Raw
 $launchRunbookText = Get-Content "docs\app-store\launch-runbook.md" -Raw
+$storeFieldsPath = "docs\app-store\app-store-fields.json"
+if (-not (Test-Path $storeFieldsPath)) {
+    throw "Missing App Store fields file: $storeFieldsPath"
+}
+$storeFields = Get-Content $storeFieldsPath -Raw | ConvertFrom-Json
 $bundleMatch = [regex]::Match($projectText, "PRODUCT_BUNDLE_IDENTIFIER:\s*([A-Za-z0-9\.\-]+)")
 if (-not $bundleMatch.Success) {
     throw "PRODUCT_BUNDLE_IDENTIFIER was not found in project.yml."
 }
 $bundleId = $bundleMatch.Groups[1].Value
+if ($storeFields.app.bundleId -ne $bundleId) {
+    throw "App Store fields bundle id '$($storeFields.app.bundleId)' does not match project bundle id $bundleId."
+}
 if (-not $appfileText.Contains("app_identifier(`"$bundleId`")")) {
     throw "fastlane/Appfile does not match project bundle id $bundleId."
 }
@@ -74,6 +82,79 @@ if (-not $projectText.Contains("TARGETED_DEVICE_FAMILY: `"1`"")) {
     throw "project.yml should target iPhone only for version 1."
 }
 Write-Host "bundle id and release config align"
+
+Write-Section "App Store fields"
+if ($storeFields.schemaVersion -ne 1) {
+    throw "App Store fields schemaVersion must be 1."
+}
+if ($storeFields.app.name -ne "SnapTable Reminder") {
+    throw "App Store app name should be SnapTable Reminder."
+}
+if ($storeFields.app.displayName -ne "SnapTable") {
+    throw "App display name should be SnapTable."
+}
+if ($storeFields.app.primaryLanguage -ne "en-US") {
+    throw "Primary language should be en-US for version 1."
+}
+if ($storeFields.app.category -ne "Productivity") {
+    throw "Primary category should be Productivity."
+}
+if ($storeFields.pricing.model -ne "paidUpfront") {
+    throw "Version 1 pricing model should be paidUpfront."
+}
+if ($storeFields.pricing.startingPrice.currency -ne "USD" -or [decimal]$storeFields.pricing.startingPrice.amount -ne [decimal]1.99) {
+    throw "Version 1 starting price should be USD 1.99."
+}
+if ($storeFields.availability.distributionMethod -ne "Public") {
+    throw "Distribution method should be Public."
+}
+if ($storeFields.availability.strategy -ne "selectedCountriesOrRegions") {
+    throw "Availability strategy should be selectedCountriesOrRegions."
+}
+$excludedRegions = @($storeFields.availability.excludeCountriesOrRegions)
+if (-not ($excludedRegions -contains "China mainland")) {
+    throw "China mainland must be excluded for version 1 availability."
+}
+$storePathFields = @(
+    $storeFields.storeListing.descriptionPath,
+    $storeFields.urls.privacyPolicyPath,
+    $storeFields.urls.supportPath,
+    $storeFields.review.notesPath,
+    $storeFields.review.demoFlowPath
+)
+foreach ($pathField in $storePathFields) {
+    if (-not (Test-Path $pathField)) {
+        throw "App Store fields reference a missing path: $pathField"
+    }
+}
+if ($storeFields.privacy.tracking -ne $false) {
+    throw "Version 1 should not enable tracking."
+}
+if ($storeFields.privacy.thirdPartyAnalytics -ne $false) {
+    throw "Version 1 should not use third-party analytics."
+}
+if ($storeFields.privacy.userAccount -ne $false) {
+    throw "Version 1 should not require user accounts."
+}
+if ($storeFields.privacy.backendTransmission -ne $false) {
+    throw "Version 1 should not transmit records to a backend."
+}
+if ($storeFields.privacy.cloudAiParsing -ne $false) {
+    throw "Version 1 should not use cloud AI parsing."
+}
+if ($storeFields.compliance.usesOnlyStandardApplePlatformEncryption -ne $true) {
+    throw "Export compliance should declare only standard Apple platform encryption for version 1."
+}
+if ($storeFields.compliance.containsLegalMedicalTaxFinancialInvestmentAdvice -ne $false) {
+    throw "Version 1 must not claim legal, medical, tax, financial, or investment advice."
+}
+if ($storeFields.compliance.targetsChildren -ne $false) {
+    throw "Version 1 should not target children."
+}
+if ($storeFields.compliance.requiresReviewerAccount -ne $false -or $storeFields.review.testAccountRequired -ne $false) {
+    throw "Version 1 should not require a reviewer account."
+}
+Write-Host "metadata, pricing, privacy, compliance, and availability align"
 
 Write-Section "Asset references"
 $appIconDirectory = "SnapTableReminder\Resources\Assets.xcassets\AppIcon.appiconset"
@@ -121,6 +202,7 @@ Write-Host "required test files present"
 
 Write-Section "Release docs"
 $requiredReleaseDocs = @(
+    "docs\app-store\app-store-fields.json",
     "docs\app-store\current-release-status.md",
     "docs\app-store\launch-runbook.md",
     "docs\app-store\metadata.md",

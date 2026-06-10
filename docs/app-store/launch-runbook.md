@@ -72,6 +72,8 @@ If any command fails, follow `docs/testing/ci-failure-playbook.md` and keep the 
 
 ## Phase 4: App Store Connect App Record
 
+Use `docs/app-store/app-store-fields.json` as the single source for fields that must match the app build.
+
 1. Create a new iOS app record.
 2. Use bundle ID `com.snaptable.reminder`.
 3. App name candidate: `SnapTable Reminder`.
@@ -91,6 +93,7 @@ Evidence:
 
 Use these repository files:
 
+- Machine-readable fields: `docs/app-store/app-store-fields.json`
 - Metadata: `docs/app-store/metadata.md`
 - Privacy answers: `docs/app-store/privacy-questionnaire.md`
 - Review notes: `docs/app-store/review-notes.md`

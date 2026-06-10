@@ -13,6 +13,7 @@ Local repository status:
 - GitHub Actions workflows are present for iOS CI and GitHub Pages.
 - Fastlane lanes are present for verify, archive, and TestFlight upload.
 - App Store metadata, privacy, age rating, export compliance, review notes, screenshot plan, monetization plan, and launch runbook are drafted.
+- Machine-readable App Store Connect fields are present in `docs/app-store/app-store-fields.json` and covered by Windows preflight.
 
 Verified on this Windows workspace:
 
@@ -99,4 +100,5 @@ Do not mark the project complete until there is evidence for:
 - hosted privacy and support URLs;
 - uploaded build in App Store Connect;
 - completed App Store metadata, privacy, age rating, pricing, and availability;
+- App Store Connect fields copied from `docs/app-store/app-store-fields.json`;
 - App Review submission status in App Store Connect.

@@ -15,6 +15,7 @@
 
 ## Metadata
 
+- Machine-readable App Store fields: `docs/app-store/app-store-fields.json`.
 - App name candidate: SnapTable Reminder.
 - Display name: SnapTable.
 - Subtitle: Screenshots to tables.

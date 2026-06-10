@@ -1,8 +1,16 @@
 # App Store Metadata Draft
 
+Machine-readable App Store Connect fields are kept in `docs/app-store/app-store-fields.json`. Use this page for the longer copy blocks and paste-ready text.
+
 ## App Name
 
 SnapTable Reminder
+
+Bundle ID: `com.snaptable.reminder`
+
+SKU: `SNAPTABLE-REMINDER-IOS-V1`
+
+Primary language: `en-US`
 
 ## Subtitle
 
@@ -58,8 +66,8 @@ Detailed pricing and availability plan: `docs/app-store/monetization-plan.md`.
 
 ## Support URL
 
-Use the hosted URL for `site/support.html`.
+Use the hosted URL for `site/support.html`. The path is also tracked in `docs/app-store/app-store-fields.json`.
 
 ## Privacy Policy URL
 
-Use the hosted URL for `site/privacy.html`.
+Use the hosted URL for `site/privacy.html`. The path is also tracked in `docs/app-store/app-store-fields.json`.

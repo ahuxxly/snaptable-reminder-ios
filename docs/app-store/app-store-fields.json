@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "app": {
+    "name": "SnapTable Reminder",
+    "displayName": "SnapTable",
+    "bundleId": "com.snaptable.reminder",
+    "sku": "SNAPTABLE-REMINDER-IOS-V1",
+    "primaryLanguage": "en-US",
+    "category": "Productivity",
+    "contentRights": "first-party app content and user-provided documents"
+  },
+  "storeListing": {
+    "subtitle": "Screenshots to tables",
+    "promotionalText": "Turn screenshots, notices, bills, and appointment photos into editable records, CSV exports, and local reminders.",
+    "keywords": [
+      "screenshot OCR",
+      "document scanner",
+      "table export",
+      "reminder",
+      "receipt organizer",
+      "deadline tracker",
+      "bill reminder",
+      "notice scanner"
+    ],
+    "descriptionPath": "docs/app-store/metadata.md"
+  },
+  "pricing": {
+    "model": "paidUpfront",
+    "startingPrice": {
+      "currency": "USD",
+      "amount": 1.99
+    },
+    "backupPrice": {
+      "currency": "USD",
+      "amount": 2.99
+    }
+  },
+  "availability": {
+    "distributionMethod": "Public",
+    "strategy": "selectedCountriesOrRegions",
+    "includeAllOtherSupportedRegions": true,
+    "excludeCountriesOrRegions": [
+      "China mainland"
+    ]
+  },
+  "urls": {
+    "privacyPolicyPath": "site/privacy.html",
+    "supportPath": "site/support.html"
+  },
+  "privacy": {
+    "dataCollected": "none",
+    "tracking": false,
+    "thirdPartyAnalytics": false,
+    "userAccount": false,
+    "backendTransmission": false,
+    "cloudAiParsing": false
+  },
+  "compliance": {
+    "usesOnlyStandardApplePlatformEncryption": true,
+    "containsLegalMedicalTaxFinancialInvestmentAdvice": false,
+    "targetsChildren": false,
+    "requiresReviewerAccount": false
+  },
+  "review": {
+    "notesPath": "docs/app-store/review-notes.md",
+    "demoFlowPath": "docs/app-store/review-notes.md",
+    "testAccountRequired": false,
+    "demoPasteText": "Tuition payment notice. Total due $128.50. Deadline 2026-07-10. Contact billing@example.invalid"
+  },
+  "screenshots": {
+    "requiredDevice": "6.7 inch iPhone",
+    "requiredScreens": [
+      "Capture",
+      "Records",
+      "Dashboard",
+      "Settings"
+    ]
+  }
+}
