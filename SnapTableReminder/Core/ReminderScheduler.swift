@@ -10,6 +10,7 @@ protocol ReminderScheduling {
 enum ReminderError: LocalizedError {
     case permissionDenied
     case missingReminderDate
+    case reminderDateInPast
 
     var errorDescription: String? {
         switch self {
@@ -17,6 +18,8 @@ enum ReminderError: LocalizedError {
             return "Notification permission was not granted."
         case .missingReminderDate:
             return "This record has no reminder date."
+        case .reminderDateInPast:
+            return "This record's reminder date has already passed."
         }
     }
 }
@@ -42,6 +45,7 @@ struct ReminderScheduler: ReminderScheduling {
             return
         }
         guard let reminderDate = record.reminderDate else { throw ReminderError.missingReminderDate }
+        guard ReminderDatePolicy.isSchedulable(reminderDate) else { throw ReminderError.reminderDateInPast }
         guard await requestAuthorization() else { throw ReminderError.permissionDenied }
 
         let content = UNMutableNotificationContent()

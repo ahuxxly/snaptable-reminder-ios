@@ -54,10 +54,12 @@
 2. Enable reminder.
 3. Add a title and clear both event and due dates.
 4. Confirm Save is disabled if Reminder is on but no event, due, or custom reminder date exists.
-5. Add a due date again and leave Custom reminder date off.
-6. Confirm a default reminder date is created from the saved due date when no custom reminder date is selected.
-7. Deny notification permission and confirm the app shows a non-blocking message.
-8. Enable notification permission in Settings and schedule again.
+5. Turn on Custom reminder date and choose a past reminder time.
+6. Confirm Save is disabled and the app asks for a future reminder time.
+7. Add a due date again and leave Custom reminder date off.
+8. Confirm a default reminder date is created from the saved due date when no custom reminder date is selected.
+9. Deny notification permission and confirm the app shows a non-blocking message.
+10. Enable notification permission in Settings and schedule again.
 
 ## Export
 

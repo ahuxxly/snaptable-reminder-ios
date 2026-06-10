@@ -78,8 +78,17 @@ struct RecordFormView: View {
                         Toggle("Custom reminder date", isOn: $hasReminderDate)
                         if hasReminderDate {
                             DatePicker("Reminder", selection: $reminderDate, displayedComponents: [.date, .hourAndMinute])
+                            if !ReminderDatePolicy.isSchedulable(reminderDate) {
+                                Text("Choose a future reminder time.")
+                                    .font(.footnote)
+                                    .foregroundStyle(.secondary)
+                            }
                         } else if !hasEventDate && !hasDueDate {
                             Text("Add an event or due date, or choose a custom reminder date.")
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                        } else if automaticReminderDate() == nil {
+                            Text("Choose a future event or due date, or turn reminders off.")
                                 .font(.footnote)
                                 .foregroundStyle(.secondary)
                         }
@@ -136,8 +145,16 @@ struct RecordFormView: View {
     private var isValid: Bool {
         !draft.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
         !draft.currencyCode.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
-        (!draft.reminderEnabled || hasReminderDate || hasEventDate || hasDueDate) &&
+        reminderSelectionIsValid &&
         (amountText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || Decimal(string: amountText) != nil)
+    }
+
+    private var reminderSelectionIsValid: Bool {
+        guard draft.reminderEnabled else { return true }
+        if hasReminderDate {
+            return ReminderDatePolicy.isSchedulable(reminderDate)
+        }
+        return automaticReminderDate() != nil
     }
 
     private func makeSavedRecord() -> DocumentRecord {
@@ -158,11 +175,12 @@ struct RecordFormView: View {
     private func automaticReminderDate(now: Date = Date(), calendar: Calendar = .current) -> Date? {
         let displayDate = hasDueDate ? dueDate : (hasEventDate ? eventDate : nil)
         guard let displayDate else { return nil }
-        let candidate = calendar.date(byAdding: .day, value: -defaultReminderLeadDays, to: displayDate)
-        if let candidate, candidate >= now {
-            return candidate
-        }
-        return displayDate >= now ? displayDate : nil
+        return ReminderDatePolicy.automaticReminderDate(
+            for: displayDate,
+            leadDays: defaultReminderLeadDays,
+            now: now,
+            calendar: calendar
+        )
     }
 
     private static func makeInitialRecord(from mode: Mode) -> DocumentRecord {

@@ -74,6 +74,8 @@ final class AppState: ObservableObject {
                 statusMessage = "Notifications are off. You can enable them in Settings."
             } catch ReminderError.missingReminderDate {
                 statusMessage = "No reminder date was set."
+            } catch ReminderError.reminderDateInPast {
+                statusMessage = "Reminder date has already passed."
             } catch {
                 statusMessage = "Reminder could not be scheduled."
             }
@@ -102,11 +104,12 @@ final class AppState: ObservableObject {
     }
 
     private func defaultReminderDate(for displayDate: Date, now: Date, calendar: Calendar) -> Date? {
-        let candidate = calendar.date(byAdding: .day, value: -defaultReminderLeadDays, to: displayDate)
-        if let candidate, candidate >= now {
-            return candidate
-        }
-        return displayDate >= now ? displayDate : nil
+        ReminderDatePolicy.automaticReminderDate(
+            for: displayDate,
+            leadDays: defaultReminderLeadDays,
+            now: now,
+            calendar: calendar
+        )
     }
 
     private enum SettingsKey {
