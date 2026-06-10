@@ -46,6 +46,12 @@ export APP_STORE_CONNECT_API_ISSUER_ID="issuer-id"
 export APP_STORE_CONNECT_API_KEY_PATH="/absolute/path/to/AuthKey.p8"
 ```
 
+Check that the upload environment is ready:
+
+```bash
+bash scripts/mac-validate-upload-env.sh
+```
+
 Then run:
 
 ```bash
@@ -78,6 +84,7 @@ powershell -ExecutionPolicy Bypass -File scripts/write-fastlane-store-urls.ps1 -
 Then run:
 
 ```bash
+bash scripts/mac-validate-upload-env.sh
 bundle exec fastlane ios metadata
 ```
 
@@ -94,6 +101,7 @@ bash scripts/mac-capture-screenshots.sh
 This creates `fastlane/screenshots/en-US`. Then run:
 
 ```bash
+bash scripts/mac-validate-upload-env.sh
 bundle exec fastlane ios screenshots
 ```
 
@@ -104,6 +112,7 @@ This uploads screenshots only. It does not upload a binary, upload metadata, or 
 After metadata and screenshots are uploaded, run:
 
 ```bash
+bash scripts/mac-validate-upload-env.sh
 bundle exec fastlane ios review_check
 ```
 

@@ -169,6 +169,7 @@ export APPLE_DEVELOPER_TEAM_ID="team-id"
 export APP_STORE_CONNECT_API_KEY_ID="api-key-id"
 export APP_STORE_CONNECT_API_ISSUER_ID="issuer-id"
 export APP_STORE_CONNECT_API_KEY_PATH="/absolute/path/to/AuthKey.p8"
+bash scripts/mac-validate-upload-env.sh
 bundle exec fastlane ios metadata
 bundle exec fastlane ios screenshots
 bundle exec fastlane ios review_check

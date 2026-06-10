@@ -306,12 +306,37 @@ if (-not (Test-Path "scripts\mac-capture-screenshots.sh")) {
 if (-not (Test-Path "scripts\mac-release-readiness.sh")) {
     throw "Missing Mac release readiness script."
 }
+if (-not (Test-Path "scripts\mac-validate-upload-env.sh")) {
+    throw "Missing Mac Fastlane upload environment validation script."
+}
 $releaseReadinessText = Get-Content "scripts\mac-release-readiness.sh" -Raw
 if (-not $releaseReadinessText.Contains("scripts/mac-verify.sh")) {
     throw "Mac release readiness script should run Mac verification."
 }
 if (-not $releaseReadinessText.Contains("scripts/mac-capture-screenshots.sh")) {
     throw "Mac release readiness script should capture screenshots."
+}
+if (-not $releaseReadinessText.Contains("scripts/mac-validate-upload-env.sh")) {
+    throw "Mac release readiness script should print upload environment validation."
+}
+$uploadEnvText = Get-Content "scripts\mac-validate-upload-env.sh" -Raw
+$requiredUploadEnvVars = @(
+    "APP_STORE_CONNECT_USERNAME",
+    "APPLE_DEVELOPER_TEAM_ID",
+    "APP_STORE_CONNECT_API_KEY_ID",
+    "APP_STORE_CONNECT_API_ISSUER_ID",
+    "APP_STORE_CONNECT_API_KEY_PATH"
+)
+foreach ($uploadEnvVar in $requiredUploadEnvVars) {
+    if (-not $uploadEnvText.Contains($uploadEnvVar)) {
+        throw "Upload environment validation script should check $uploadEnvVar."
+    }
+}
+if (-not $uploadEnvText.Contains("Do not store the App Store Connect .p8 key inside this repository.")) {
+    throw "Upload environment validation script should reject .p8 keys stored in the repository."
+}
+if (-not $uploadEnvText.Contains("BEGIN PRIVATE KEY")) {
+    throw "Upload environment validation script should inspect the .p8 key header."
 }
 $screenshotScriptText = Get-Content "scripts\mac-capture-screenshots.sh" -Raw
 if (-not $screenshotScriptText.Contains("SnapTableReminderScreenshots")) {

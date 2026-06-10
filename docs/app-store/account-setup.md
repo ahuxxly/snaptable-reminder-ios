@@ -102,7 +102,10 @@ export APP_STORE_CONNECT_API_KEY_PATH="/absolute/path/to/AuthKey.p8"
 Then run:
 
 ```bash
+bash scripts/mac-validate-upload-env.sh
 bundle exec fastlane ios metadata
+bundle exec fastlane ios screenshots
+bundle exec fastlane ios review_check
 bundle exec fastlane ios testflight
 ```
 

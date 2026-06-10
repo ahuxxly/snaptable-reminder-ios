@@ -54,6 +54,12 @@ Fastlane also includes a review-risk check after metadata is uploaded:
 bundle exec fastlane ios review_check
 ```
 
+Before any Fastlane upload lane, check credentials with:
+
+```bash
+bash scripts/mac-validate-upload-env.sh
+```
+
 ## Windows Preflight
 
 On this Windows workspace, run the static checks with:
