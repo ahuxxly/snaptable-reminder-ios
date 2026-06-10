@@ -37,9 +37,10 @@ struct ParsedDocumentDraft: Equatable {
 
     func makeRecord(defaultCurrencyCode: String = "USD", sourceType: DocumentSourceType = .pastedText) -> DocumentRecord {
         let now = Date()
+        let cleanedTitle = title?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         return DocumentRecord(
             id: UUID(),
-            title: title?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false ? title! : "Untitled Record",
+            title: cleanedTitle.isEmpty ? "Untitled Record" : cleanedTitle,
             category: category,
             amount: amount,
             currencyCode: currencyCode ?? defaultCurrencyCode,
