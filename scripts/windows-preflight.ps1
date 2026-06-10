@@ -299,6 +299,25 @@ foreach ($releaseDoc in $requiredReleaseDocs) {
 }
 Write-Host "required release docs present"
 
+Write-Section "GitHub publishing helpers"
+if (-not (Test-Path "scripts\github-publish.ps1")) {
+    throw "Missing GitHub publish script."
+}
+if (-not (Test-Path "scripts\github-login-and-publish.ps1")) {
+    throw "Missing GitHub login and publish helper script."
+}
+$githubLoginPublishText = Get-Content "scripts\github-login-and-publish.ps1" -Raw
+if (-not $githubLoginPublishText.Contains("auth login")) {
+    throw "GitHub login helper should run gh auth login."
+}
+if (-not $githubLoginPublishText.Contains("github-publish.ps1")) {
+    throw "GitHub login helper should call github-publish.ps1."
+}
+if (-not $launchRunbookText.Contains("github-login-and-publish.ps1")) {
+    throw "Launch runbook should mention the GitHub login and publish helper."
+}
+Write-Host "GitHub publishing helpers present"
+
 Write-Section "Screenshot automation"
 if (-not (Test-Path "scripts\mac-capture-screenshots.sh")) {
     throw "Missing Mac screenshot capture script."

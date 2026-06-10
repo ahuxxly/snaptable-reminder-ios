@@ -12,6 +12,7 @@ Local repository status:
 - App Store support site files are present in `site/`.
 - GitHub Actions workflows are present for iOS CI and GitHub Pages.
 - Fastlane lanes are present for verify, archive, and TestFlight upload.
+- GitHub login and publish helper script is present in `scripts/github-login-and-publish.ps1`.
 - App Store metadata, privacy, age rating, export compliance, review notes, screenshot plan, monetization plan, and launch runbook are drafted.
 - App Store account setup checklist is drafted in `docs/app-store/account-setup.md`.
 - Machine-readable App Store Connect fields are present in `docs/app-store/app-store-fields.json` and covered by Windows preflight.
@@ -53,17 +54,16 @@ These are still required before the goal is actually complete:
 
 ## Fastest Next Path
 
-1. Install and log in to GitHub CLI on Windows:
+1. Install GitHub CLI on Windows if needed:
 
 ```powershell
 winget install --id GitHub.cli -e --source winget
-gh auth login
 ```
 
-2. Publish this repository:
+2. Log in and publish this repository:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts/github-publish.ps1 -RepoName snaptable-reminder-ios -Visibility public
+powershell -ExecutionPolicy Bypass -File scripts/github-login-and-publish.ps1 -RepoName snaptable-reminder-ios -Visibility public
 ```
 
 3. In GitHub repository settings, enable Pages with Source set to GitHub Actions.
@@ -72,6 +72,7 @@ powershell -ExecutionPolicy Bypass -File scripts/github-publish.ps1 -RepoName sn
 
 - `iOS CI`
 - `Publish App Store Site`
+- `App Store Screenshots`
 
 5. Copy live URLs into App Store Connect:
 
@@ -86,6 +87,7 @@ https://<owner>.github.io/<repo>/support.html
 brew install xcodegen
 bundle install
 bash scripts/mac-verify.sh
+bash scripts/mac-release-readiness.sh
 ```
 
 7. Continue with `docs/app-store/launch-runbook.md`.

@@ -8,6 +8,19 @@ On Windows:
 
 ```powershell
 winget install --id GitHub.cli -e --source winget
+```
+
+Recommended one-command path after GitHub CLI is installed:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/github-login-and-publish.ps1 -RepoName snaptable-reminder-ios -Visibility public
+```
+
+This starts GitHub browser login when needed, then calls `scripts/github-publish.ps1`.
+
+Manual login alternative:
+
+```powershell
 gh auth login
 ```
 

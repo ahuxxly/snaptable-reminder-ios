@@ -24,7 +24,14 @@ Evidence:
 
 ## Phase 2: Repository Hosting
 
-1. Push this repository to GitHub.
+1. Push this repository to GitHub. Recommended Windows command:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/github-login-and-publish.ps1 -RepoName snaptable-reminder-ios -Visibility public
+```
+
+Then:
+
 2. Open GitHub Actions.
 3. Confirm `iOS CI` runs.
 4. Enable GitHub Pages using GitHub Actions.
