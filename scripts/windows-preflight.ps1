@@ -51,6 +51,30 @@ Get-Content "SnapTableReminder\Resources\Localizable.xcstrings" | ConvertFrom-Js
 $privacyManifest = [xml](Get-Content "SnapTableReminder\Resources\PrivacyInfo.xcprivacy" -Raw)
 Write-Host "resources parse"
 
+Write-Section "Release configuration consistency"
+$projectText = Get-Content "project.yml" -Raw
+$appfileText = Get-Content "fastlane\Appfile" -Raw
+$fastfileText = Get-Content "fastlane\Fastfile" -Raw
+$launchRunbookText = Get-Content "docs\app-store\launch-runbook.md" -Raw
+$bundleMatch = [regex]::Match($projectText, "PRODUCT_BUNDLE_IDENTIFIER:\s*([A-Za-z0-9\.\-]+)")
+if (-not $bundleMatch.Success) {
+    throw "PRODUCT_BUNDLE_IDENTIFIER was not found in project.yml."
+}
+$bundleId = $bundleMatch.Groups[1].Value
+if (-not $appfileText.Contains("app_identifier(`"$bundleId`")")) {
+    throw "fastlane/Appfile does not match project bundle id $bundleId."
+}
+if (-not $launchRunbookText.Contains($bundleId)) {
+    throw "Launch runbook does not mention project bundle id $bundleId."
+}
+if (-not $fastfileText.Contains("scheme: `"SnapTableReminder`"") -and -not $fastfileText.Contains("-scheme SnapTableReminder")) {
+    throw "fastlane/Fastfile does not reference the SnapTableReminder scheme."
+}
+if (-not $projectText.Contains("TARGETED_DEVICE_FAMILY: `"1`"")) {
+    throw "project.yml should target iPhone only for version 1."
+}
+Write-Host "bundle id and release config align"
+
 Write-Section "Asset references"
 $appIconDirectory = "SnapTableReminder\Resources\Assets.xcassets\AppIcon.appiconset"
 foreach ($image in $appIconContents.images) {
