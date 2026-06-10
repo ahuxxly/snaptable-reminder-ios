@@ -119,6 +119,21 @@ foreach ($testFile in $requiredTestFiles) {
 }
 Write-Host "required test files present"
 
+Write-Section "Release docs"
+$requiredReleaseDocs = @(
+    "docs\app-store\current-release-status.md",
+    "docs\app-store\launch-runbook.md",
+    "docs\app-store\metadata.md",
+    "docs\app-store\privacy-questionnaire.md",
+    "docs\app-store\monetization-plan.md"
+)
+foreach ($releaseDoc in $requiredReleaseDocs) {
+    if (-not (Test-Path $releaseDoc)) {
+        throw "Missing required release document: $releaseDoc"
+    }
+}
+Write-Host "required release docs present"
+
 Write-Section "Static site links"
 $htmlFiles = Get-ChildItem site -Filter *.html
 foreach ($file in $htmlFiles) {
