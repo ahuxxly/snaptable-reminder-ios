@@ -10,9 +10,19 @@ struct SettingsView: View {
         NavigationStack {
             Form {
                 Section("Defaults") {
-                    TextField("Currency", text: $appState.defaultCurrencyCode)
+                    TextField("Currency", text: Binding(
+                        get: { appState.defaultCurrencyCode },
+                        set: { appState.setDefaultCurrencyCode($0) }
+                    ))
                         .textInputAutocapitalization(.characters)
-                    Stepper("Reminder lead: \(appState.defaultReminderLeadDays) day(s)", value: $appState.defaultReminderLeadDays, in: 0...30)
+                    Stepper(
+                        "Reminder lead: \(appState.defaultReminderLeadDays) day(s)",
+                        value: Binding(
+                            get: { appState.defaultReminderLeadDays },
+                            set: { appState.setDefaultReminderLeadDays($0) }
+                        ),
+                        in: 0...30
+                    )
                 }
 
                 Section("Data") {

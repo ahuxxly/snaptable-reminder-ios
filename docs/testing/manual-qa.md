@@ -63,6 +63,14 @@
 4. Confirm the share sheet appears.
 5. Confirm CSV includes title, category, amount, currency, dates, reminder state, status, notes, and raw text.
 
+## Settings Persistence
+
+1. Open Settings.
+2. Change Currency to `EUR`.
+3. Change Reminder lead to 3 days.
+4. Force quit and relaunch the app.
+5. Confirm Currency is still `EUR` and Reminder lead is still 3 days.
+
 ## Reset
 
 1. Use Settings to delete all local data.
