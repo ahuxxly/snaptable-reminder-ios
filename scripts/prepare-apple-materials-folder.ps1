@@ -165,6 +165,12 @@ From the repository root, validate this private folder:
 powershell -ExecutionPolicy Bypass -File scripts/prepare-apple-materials-folder.ps1 -OutputDirectory "$materialsRoot" -ValidateOnly
 ```
 
+If all Apple files and private values are ready, the staging helper can copy and write the required private files for you:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/stage-apple-release-materials.ps1 -OutputDirectory "$materialsRoot" -AppStoreConnectApiKeyPath "C:\path\to\AuthKey_KEYID1234.p8" -AppleDistributionCertificatePath "C:\path\to\apple-distribution.p12" -AppleAppStoreProfilePath "C:\path\to\SnapTableReminder_AppStore.mobileprovision" -DsaEvidencePath "C:\path\to\dsa-private-evidence.md" -AppStoreConnectUsername "account@example.invalid" -AppleDeveloperTeamId "TEAMID1234" -AppStoreConnectApiKeyId "KEYID1234" -AppStoreConnectApiIssuerId "00000000-0000-0000-0000-000000000000" -AppleDistributionCertificatePassword "p12-export-password" -AppleCodesignKeychainPassword "temporary-ci-keychain-password" -ReviewFirstName "App" -ReviewLastName "Reviewer" -ReviewEmail "reviewer@example.invalid" -ReviewPhone "+1 555 010 1000" -AppleDeveloperProgramActive -PaidAppsAgreementActive -TaxComplete -BankingComplete -AppStoreConnectAppCreated -DryRun
+```
+
 Then set GitHub secrets:
 
 ```powershell

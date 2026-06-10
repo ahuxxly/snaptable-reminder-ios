@@ -227,7 +227,7 @@ function Test-Materials($gates, $materialsDirectory, $explicitPath) {
     }
 
     if ($validationExitCode -ne 0) {
-        Add-Gate $gates "Apple private material folder" "BLOCKED" "Materials folder validation failed." "Open $materialsPath and add the missing Apple files listed by scripts/prepare-apple-materials-folder.ps1 -ValidateOnly."
+        Add-Gate $gates "Apple private material folder" "BLOCKED" "Materials folder validation failed." "Use scripts/stage-apple-release-materials.ps1 after downloading Apple files, or open $materialsPath and add the missing files listed by scripts/prepare-apple-materials-folder.ps1 -ValidateOnly."
         if ($validationOutput) {
             Write-Host $validationOutput.Trim()
         }

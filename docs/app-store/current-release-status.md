@@ -33,6 +33,7 @@ Local repository status:
 - Mac Apple signing environment validation and installation scripts are present.
 - Windows GitHub Apple secret helper is present for configuring upload, signing, and App Review contact secrets without committing private files.
 - Windows private Apple materials folder helper is present for preparing and validating account, API key, signing, DSA, and review-contact evidence outside the repository.
+- Windows Apple release material staging helper is present for copying downloaded Apple files into the private materials folder and writing private release JSON from command parameters.
 - Windows App Store Connect entry packet exporter is present for generating paste-ready app record, metadata, privacy/compliance, and review fields from source files.
 - Windows GitHub App Store release helper is present for checking secrets and triggering upload workflows.
 - Windows GitHub App Review submit helper is present for checking review-contact secrets and triggering final submission with explicit confirmation.
@@ -117,9 +118,12 @@ https://ahuxxly.github.io/snaptable-reminder-ios/support.html
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/prepare-apple-materials-folder.ps1
+powershell -ExecutionPolicy Bypass -File scripts/stage-apple-release-materials.ps1 -OutputDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials" -AppStoreConnectApiKeyPath "C:\path\to\AuthKey_KEYID1234.p8" -AppleDistributionCertificatePath "C:\path\to\apple-distribution.p12" -AppleAppStoreProfilePath "C:\path\to\SnapTableReminder_AppStore.mobileprovision" -DsaEvidencePath "C:\path\to\dsa-private-evidence.md" -AppStoreConnectUsername "account@example.invalid" -AppleDeveloperTeamId "TEAMID1234" -AppStoreConnectApiKeyId "KEYID1234" -AppStoreConnectApiIssuerId "00000000-0000-0000-0000-000000000000" -AppleDistributionCertificatePassword "p12-export-password" -AppleCodesignKeychainPassword "temporary-ci-keychain-password" -ReviewFirstName "App" -ReviewLastName "Reviewer" -ReviewEmail "reviewer@example.invalid" -ReviewPhone "+1 555 010 1000" -AppleDeveloperProgramActive -PaidAppsAgreementActive -TaxComplete -BankingComplete -AppStoreConnectAppCreated -DryRun
 powershell -ExecutionPolicy Bypass -File scripts/prepare-apple-materials-folder.ps1 -OutputDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials" -ValidateOnly
 powershell -ExecutionPolicy Bypass -File scripts/export-app-store-connect-entry-pack.ps1
 ```
+
+Remove `-DryRun` from `scripts/stage-apple-release-materials.ps1` only after the preview shows the right source and destination paths.
 
 5. Add the App Store Connect upload secrets with `scripts/github-set-apple-secrets.ps1 -UploadOnly -MaterialsDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials"`.
 
