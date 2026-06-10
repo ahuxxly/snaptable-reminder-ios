@@ -27,16 +27,10 @@ open SnapTableReminder.xcodeproj
 ## Build on Mac
 
 ```bash
-xcodegen generate
-xcodebuild test -scheme SnapTableReminder -destination 'platform=iOS Simulator,id=<available iPhone simulator id>'
-xcodebuild build -scheme SnapTableReminder -destination 'platform=iOS Simulator,id=<available iPhone simulator id>'
-```
-
-Or run:
-
-```bash
 bash scripts/mac-verify.sh
 ```
+
+This generates the Xcode project, runs unit tests, and builds for the first available iPhone simulator.
 
 ## Windows Preflight
 
@@ -46,7 +40,7 @@ On this Windows workspace, run the static checks with:
 powershell -ExecutionPolicy Bypass -File scripts/windows-preflight.ps1
 ```
 
-This checks git cleanliness, unfinished markers, common encoding damage, resource parsing, static site links, and reports whether the iOS toolchain is available.
+This checks git cleanliness, unfinished markers, common encoding damage, resource parsing, release configuration consistency, app icon references, privacy manifest coverage, required test files, static site links, and reports whether the iOS toolchain is available.
 
 ## GitHub CI
 
