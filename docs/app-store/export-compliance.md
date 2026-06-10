@@ -18,6 +18,13 @@ SnapTable Reminder version 1:
 
 If asked whether the app uses encryption, the practical answer is expected to be that the app does not use custom or non-exempt encryption. If Apple asks about standard encryption provided by the operating system, follow the current App Store Connect wording.
 
+The app Info.plist declares `ITSAppUsesNonExemptEncryption` as `false` for version 1. Apple documents this key as the way to provide export compliance information in the app's information property list so App Store Connect can avoid asking the encryption questions on every submission when the app does not use non-exempt encryption.
+
+Official references:
+
+- https://developer.apple.com/help/app-store-connect/manage-app-information/overview-of-export-compliance/
+- https://developer.apple.com/documentation/bundleresources/information-property-list/itsappusesnonexemptencryption
+
 ## Re-check Required If Added Later
 
 Revisit export compliance if a future version adds:

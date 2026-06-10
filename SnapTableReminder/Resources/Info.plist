@@ -17,5 +17,7 @@
     <string>SnapTable imports images you select for on-device text recognition.</string>
     <key>NSUserNotificationsUsageDescription</key>
     <string>SnapTable sends local reminders for dates you save.</string>
+    <key>ITSAppUsesNonExemptEncryption</key>
+    <false/>
 </dict>
 </plist>

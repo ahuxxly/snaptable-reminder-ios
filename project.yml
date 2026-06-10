@@ -34,6 +34,7 @@ targets:
         NSCameraUsageDescription: SnapTable uses the camera to scan documents when you choose to capture one.
         NSPhotoLibraryUsageDescription: SnapTable imports images you select for on-device text recognition.
         NSUserNotificationsUsageDescription: SnapTable sends local reminders for dates you save.
+        ITSAppUsesNonExemptEncryption: false
   SnapTableReminderTests:
     type: bundle.unit-test
     platform: iOS

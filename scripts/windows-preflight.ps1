@@ -81,7 +81,7 @@ Write-Section "Resource parsing"
 Get-Content "SnapTableReminder\Resources\Assets.xcassets\Contents.json" | ConvertFrom-Json | Out-Null
 $appIconContents = Get-Content "SnapTableReminder\Resources\Assets.xcassets\AppIcon.appiconset\Contents.json" | ConvertFrom-Json
 Get-Content "SnapTableReminder\Resources\Localizable.xcstrings" | ConvertFrom-Json | Out-Null
-[xml](Get-Content "SnapTableReminder\Resources\Info.plist" -Raw) | Out-Null
+$infoPlist = [xml](Get-Content "SnapTableReminder\Resources\Info.plist" -Raw)
 $privacyManifest = [xml](Get-Content "SnapTableReminder\Resources\PrivacyInfo.xcprivacy" -Raw)
 Write-Host "resources parse"
 
@@ -193,6 +193,26 @@ if ($storeFields.privacy.cloudAiParsing -ne $false) {
 }
 if ($storeFields.compliance.usesOnlyStandardApplePlatformEncryption -ne $true) {
     throw "Export compliance should declare only standard Apple platform encryption for version 1."
+}
+if (-not $projectText.Contains("ITSAppUsesNonExemptEncryption: false")) {
+    throw "project.yml should declare ITSAppUsesNonExemptEncryption false for version 1 export compliance."
+}
+if ($infoPlist.plist.dict.key -notcontains "ITSAppUsesNonExemptEncryption") {
+    throw "Info.plist should declare ITSAppUsesNonExemptEncryption."
+}
+$nonExemptEncryptionValue = $null
+for ($index = 0; $index -lt ($infoPlist.plist.dict.ChildNodes.Count - 1); $index++) {
+    $node = $infoPlist.plist.dict.ChildNodes[$index]
+    if ($node.Name -eq "key" -and $node.InnerText -eq "ITSAppUsesNonExemptEncryption") {
+        $nonExemptEncryptionValue = $infoPlist.plist.dict.ChildNodes[$index + 1]
+        break
+    }
+}
+if ($null -eq $nonExemptEncryptionValue) {
+    throw "Info.plist ITSAppUsesNonExemptEncryption value was not found."
+}
+if ($nonExemptEncryptionValue.Name -ne "false") {
+    throw "Info.plist ITSAppUsesNonExemptEncryption should be false for version 1."
 }
 if ($storeFields.compliance.containsLegalMedicalTaxFinancialInvestmentAdvice -ne $false) {
     throw "Version 1 must not claim legal, medical, tax, financial, or investment advice."
