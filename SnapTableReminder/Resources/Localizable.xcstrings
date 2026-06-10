@@ -1,0 +1,30 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "Capture": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Capture" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "采集" } }
+      }
+    },
+    "Records": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Records" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "记录" } }
+      }
+    },
+    "Dashboard": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Dashboard" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "看板" } }
+      }
+    },
+    "Settings": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Settings" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "设置" } }
+      }
+    }
+  },
+  "version": "1.0"
+}

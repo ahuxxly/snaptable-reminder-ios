@@ -44,6 +44,15 @@ screenshot OCR, document scanner, table export, reminder, receipt organizer, dea
 - The app does not provide legal, medical, tax, financial, or investment advice.
 - Parsed fields require user review and confirmation before saving.
 
+## Privacy Answers
+
+- Data collected: none in version 1.
+- Tracking: no.
+- Third-party analytics: no.
+- User account: no.
+- Backend transmission: no.
+- Photos/camera use: user-selected images only, processed on device.
+
 ## Mac Submission Steps
 
 1. Generate the Xcode project with `xcodegen generate`.
