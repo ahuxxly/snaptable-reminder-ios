@@ -22,4 +22,14 @@ final class CSVExporterTests: XCTestCase {
         XCTAssertTrue(csv.contains("\"needs, review\""))
         XCTAssertTrue(csv.contains("\"line 1\nline \"\"2\"\"\""))
     }
+
+    func testWritesTemporaryCSVFile() throws {
+        let record = DocumentRecord.sample(title: "Notice")
+        let url = try CSVExporter().writeTemporaryCSV([record], fileName: "snaptable-test.csv")
+        defer { try? FileManager.default.removeItem(at: url) }
+
+        let content = try String(contentsOf: url, encoding: .utf8)
+        XCTAssertTrue(content.contains("Notice"))
+        XCTAssertEqual(url.pathExtension, "csv")
+    }
 }

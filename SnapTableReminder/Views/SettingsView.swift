@@ -4,6 +4,7 @@ struct SettingsView: View {
     @EnvironmentObject private var appState: AppState
     @EnvironmentObject private var store: DocumentRecordStore
     @State private var isConfirmingDelete = false
+    @State private var csvExportURL: URL?
 
     var body: some View {
         NavigationStack {
@@ -15,8 +16,16 @@ struct SettingsView: View {
                 }
 
                 Section("Data") {
-                    ShareLink(item: appState.csvExporter.export(store.records)) {
-                        Label("Export CSV", systemImage: "square.and.arrow.up")
+                    if let csvExportURL {
+                        ShareLink(item: csvExportURL) {
+                            Label("Export CSV", systemImage: "square.and.arrow.up")
+                        }
+                    } else {
+                        Button {
+                            prepareCSVExport()
+                        } label: {
+                            Label("Prepare CSV", systemImage: "doc.badge.plus")
+                        }
                     }
 
                     Button(role: .destructive) {
@@ -39,11 +48,26 @@ struct SettingsView: View {
                 }
             }
             .navigationTitle("Settings")
+            .onAppear {
+                prepareCSVExport()
+            }
+            .onChange(of: store.records) { _, _ in
+                prepareCSVExport()
+            }
             .confirmationDialog("Delete all local data?", isPresented: $isConfirmingDelete, titleVisibility: .visible) {
                 Button("Delete All Data", role: .destructive) {
                     store.deleteAll()
                 }
             }
+        }
+    }
+
+    private func prepareCSVExport() {
+        do {
+            csvExportURL = try appState.csvExporter.writeTemporaryCSV(store.records)
+        } catch {
+            csvExportURL = nil
+            appState.statusMessage = error.localizedDescription
         }
     }
 }

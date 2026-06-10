@@ -51,6 +51,15 @@ struct CSVExporter {
             .joined(separator: "\n")
     }
 
+    func writeTemporaryCSV(_ records: [DocumentRecord], fileName: String = "snaptable-records.csv") throws -> URL {
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
+        guard let data = export(records).data(using: .utf8) else {
+            throw CSVExportError.encodingFailed
+        }
+        try data.write(to: url, options: [.atomic])
+        return url
+    }
+
     private func decimalString(_ decimal: Decimal?) -> String {
         guard let decimal else { return "" }
         return NSDecimalNumber(decimal: decimal).stringValue
@@ -67,5 +76,16 @@ struct CSVExporter {
             return "\"\(escaped)\""
         }
         return escaped
+    }
+}
+
+enum CSVExportError: LocalizedError {
+    case encodingFailed
+
+    var errorDescription: String? {
+        switch self {
+        case .encodingFailed:
+            return "The CSV file could not be encoded."
+        }
     }
 }
