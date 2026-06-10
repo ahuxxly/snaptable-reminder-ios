@@ -46,24 +46,24 @@ $encodedHref = [System.Net.WebUtility]::HtmlEncode($contactHref)
 $encodedLabel = [System.Net.WebUtility]::HtmlEncode($contactLabel)
 $encodedPhrase = [System.Net.WebUtility]::HtmlEncode($contactPhrase)
 
-function Replace-ExactBlock($Path, $OldBlock, $NewBlock, $Description) {
+function Replace-ContactBlock($Path, $Pattern, $NewBlock, $Description) {
     $content = Get-Content $Path -Raw
     if ($content.Contains($NewBlock)) {
         Write-Host "$Description already current"
         return
     }
-    if (-not $content.Contains($OldBlock)) {
+    if (-not [regex]::IsMatch($content, $Pattern)) {
         throw "Could not find expected $Description block in $Path"
     }
-    $updated = $content.Replace($OldBlock, $NewBlock)
+    $updated = [regex]::Replace(
+        $content,
+        $Pattern,
+        [System.Text.RegularExpressions.MatchEvaluator] { param($match) $NewBlock },
+        1
+    )
     Set-Content -Path $Path -Value $updated -NoNewline
     Write-Host "$Description updated"
 }
-
-$oldSupportBlock = @'
-      <h2>Contact</h2>
-      <p>Use the support contact published with the app's App Store listing for app help, privacy questions, and bug reports.</p>
-'@
 
 $newSupportBlock = @"
       <h2>Contact</h2>
@@ -71,17 +71,15 @@ $newSupportBlock = @"
       <p>Do not include private screenshots, receipts, medical documents, legal documents, or identity information in public support requests.</p>
 "@
 
-$oldPrivacyBlock = @'
-      <h2>Contact</h2>
-      <p>For support or privacy questions, use the support contact published with the app's App Store listing.</p>
-'@
-
 $newPrivacyBlock = @"
       <h2>Contact</h2>
       <p>For support or privacy questions, use the <a href="support.html">support page</a> or <a href="$encodedHref">$encodedPhrase</a>.</p>
 "@
 
-Replace-ExactBlock -Path $supportPath -OldBlock $oldSupportBlock -NewBlock $newSupportBlock -Description "support contact"
-Replace-ExactBlock -Path $privacyPath -OldBlock $oldPrivacyBlock -NewBlock $newPrivacyBlock -Description "privacy contact"
+$supportContactPattern = '(?s)      <h2>Contact</h2>\r?\n      <p>.*?</p>(?:\r?\n      <p>Do not include private screenshots.*?</p>)?'
+$privacyContactPattern = '(?s)      <h2>Contact</h2>\r?\n      <p>.*?</p>'
+
+Replace-ContactBlock -Path $supportPath -Pattern $supportContactPattern -NewBlock $newSupportBlock -Description "support contact"
+Replace-ContactBlock -Path $privacyPath -Pattern $privacyContactPattern -NewBlock $newPrivacyBlock -Description "privacy contact"
 
 Write-Host "support_contact_url=$contactHref"
