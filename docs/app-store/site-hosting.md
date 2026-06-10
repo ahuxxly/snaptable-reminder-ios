@@ -10,7 +10,7 @@ App Store Connect requires a public Privacy Policy URL for iOS apps and expects 
 4. Set the source to GitHub Actions.
 5. Run or wait for the `Publish App Store Site` workflow.
 
-After deployment, use:
+After deployment, open the workflow run summary. It prints the exact App Store URLs:
 
 ```text
 https://<github-user-or-org>.github.io/<repository-name>/privacy.html

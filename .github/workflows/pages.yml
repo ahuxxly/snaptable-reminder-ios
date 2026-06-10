@@ -40,3 +40,12 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+      - name: Summarize App Store URLs
+        run: |
+          {
+            echo "### App Store URLs"
+            echo ""
+            echo "- Privacy Policy URL: ${{ steps.deployment.outputs.page_url }}privacy.html"
+            echo "- Support URL: ${{ steps.deployment.outputs.page_url }}support.html"
+          } >> "$GITHUB_STEP_SUMMARY"

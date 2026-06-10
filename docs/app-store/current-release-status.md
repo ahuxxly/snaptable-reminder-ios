@@ -17,6 +17,7 @@ Local repository status:
 - Machine-readable App Store Connect fields are present in `docs/app-store/app-store-fields.json` and covered by Windows preflight.
 - Fastlane metadata files are present in `fastlane/metadata/` and covered by Windows preflight.
 - App Store metadata length and keyword byte limits are covered by `scripts/validate-app-store-metadata.ps1`.
+- GitHub Pages workflow prints the exact Privacy Policy and Support URLs after deployment.
 
 Verified on this Windows workspace:
 

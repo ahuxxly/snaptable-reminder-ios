@@ -299,6 +299,16 @@ foreach ($file in $htmlFiles) {
 }
 Write-Host "site links valid"
 
+Write-Section "GitHub Pages workflow"
+$pagesWorkflowText = Get-Content ".github\workflows\pages.yml" -Raw
+if (-not $pagesWorkflowText.Contains("privacy.html")) {
+    throw "GitHub Pages workflow should summarize the Privacy Policy URL."
+}
+if (-not $pagesWorkflowText.Contains("support.html")) {
+    throw "GitHub Pages workflow should summarize the Support URL."
+}
+Write-Host "Pages workflow summarizes App Store URLs"
+
 Write-Section "Toolchain report"
 $tools = "swift", "xcodebuild", "xcodegen", "bash"
 foreach ($tool in $tools) {
