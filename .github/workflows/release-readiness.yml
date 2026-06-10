@@ -1,4 +1,5 @@
 name: Release Readiness
+run-name: Release readiness
 
 on:
   workflow_dispatch:

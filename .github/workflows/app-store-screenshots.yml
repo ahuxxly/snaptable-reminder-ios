@@ -1,4 +1,5 @@
 name: App Store Screenshots
+run-name: App Store screenshots
 
 on:
   workflow_dispatch:
