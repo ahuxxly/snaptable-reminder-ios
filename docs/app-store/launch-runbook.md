@@ -2,6 +2,8 @@
 
 This is the end-to-end launch path for a first App Store release outside China mainland.
 
+For a short current-state view, start with `docs/app-store/current-release-status.md`.
+
 ## Phase 1: Apple Account Readiness
 
 Complete these before expecting upload or paid sales to work:

@@ -73,4 +73,6 @@ Use the hosted URLs for:
 
 Version 1 is planned as a paid upfront Productivity app distributed outside China mainland at launch. See `docs/app-store/app-store-checklist.md`.
 
+Current release status: `docs/app-store/current-release-status.md`.
+
 For the full launch sequence, follow `docs/app-store/launch-runbook.md`.
