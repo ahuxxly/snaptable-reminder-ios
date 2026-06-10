@@ -3,6 +3,7 @@ param(
 
     [switch]$UploadOnly,
     [switch]$SigningOnly,
+    [switch]$ReviewOnly,
     [switch]$DryRun,
 
     [string]$AppStoreConnectUsername = "",
@@ -14,7 +15,12 @@ param(
     [string]$AppleDistributionCertificatePath = "",
     [string]$AppleDistributionCertificatePassword = "",
     [string]$AppleAppStoreProfilePath = "",
-    [string]$AppleCodesignKeychainPassword = ""
+    [string]$AppleCodesignKeychainPassword = "",
+
+    [string]$AppReviewFirstName = "",
+    [string]$AppReviewLastName = "",
+    [string]$AppReviewEmail = "",
+    [string]$AppReviewPhone = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -130,12 +136,13 @@ function Set-GitHubSecret($ghPath, $repoFullName, $name, $value, $dryRun) {
     }
 }
 
-if ($UploadOnly -and $SigningOnly) {
-    throw "Use either -UploadOnly or -SigningOnly, not both."
+if ((@($UploadOnly, $SigningOnly, $ReviewOnly) | Where-Object { $_ }).Count -gt 1) {
+    throw "Use only one of -UploadOnly, -SigningOnly, or -ReviewOnly."
 }
 
-$configureUploadSecrets = -not $SigningOnly
-$configureSigningSecrets = -not $UploadOnly
+$configureUploadSecrets = -not $SigningOnly -and -not $ReviewOnly
+$configureSigningSecrets = -not $UploadOnly -and -not $ReviewOnly
+$configureReviewSecrets = -not $UploadOnly -and -not $SigningOnly
 
 $ghPath = Resolve-GitHubCli
 
@@ -214,6 +221,26 @@ if ($configureSigningSecrets) {
     Set-GitHubSecret $ghPath $RepoFullName "APPLE_DISTRIBUTION_CERTIFICATE_PASSWORD" $AppleDistributionCertificatePassword $DryRun
     Set-GitHubSecret $ghPath $RepoFullName "APPLE_APP_STORE_PROFILE_BASE64" (Convert-FileToBase64 $AppleAppStoreProfilePath) $DryRun
     Set-GitHubSecret $ghPath $RepoFullName "APPLE_CODESIGN_KEYCHAIN_PASSWORD" $AppleCodesignKeychainPassword $DryRun
+}
+
+if ($configureReviewSecrets) {
+    Write-Section "App Review contact secrets"
+    $AppReviewFirstName = Read-RequiredText "App Review first name" $AppReviewFirstName
+    $AppReviewLastName = Read-RequiredText "App Review last name" $AppReviewLastName
+    $AppReviewEmail = Read-RequiredText "App Review email" $AppReviewEmail
+    $AppReviewPhone = Read-RequiredSecretText "App Review phone with country code" $AppReviewPhone
+
+    if ($AppReviewEmail -notmatch "^[^@\s]+@[^@\s]+\.[^@\s]+$") {
+        throw "App Review email should look like a valid email address."
+    }
+    if ($AppReviewPhone -notmatch "^\+?[0-9][0-9\s().-]{6,}$") {
+        throw "App Review phone should look like a review-reachable phone number."
+    }
+
+    Set-GitHubSecret $ghPath $RepoFullName "APP_REVIEW_FIRST_NAME" $AppReviewFirstName $DryRun
+    Set-GitHubSecret $ghPath $RepoFullName "APP_REVIEW_LAST_NAME" $AppReviewLastName $DryRun
+    Set-GitHubSecret $ghPath $RepoFullName "APP_REVIEW_EMAIL" $AppReviewEmail $DryRun
+    Set-GitHubSecret $ghPath $RepoFullName "APP_REVIEW_PHONE" $AppReviewPhone $DryRun
 }
 
 if ($DryRun) {

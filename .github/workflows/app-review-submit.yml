@@ -1,0 +1,76 @@
+name: App Review Submit
+run-name: App Review submit
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_submit_for_review:
+        description: "Type YES to submit the latest processed build for App Review"
+        required: true
+        default: "NO"
+
+permissions:
+  contents: read
+
+jobs:
+  app-review-submit:
+    runs-on: macos-15
+    timeout-minutes: 30
+    env:
+      APP_STORE_CONNECT_USERNAME: ${{ secrets.APP_STORE_CONNECT_USERNAME }}
+      APPLE_DEVELOPER_TEAM_ID: ${{ secrets.APPLE_DEVELOPER_TEAM_ID }}
+      APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+      APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+      APP_STORE_CONNECT_API_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_API_PRIVATE_KEY }}
+      APP_REVIEW_FIRST_NAME: ${{ secrets.APP_REVIEW_FIRST_NAME }}
+      APP_REVIEW_LAST_NAME: ${{ secrets.APP_REVIEW_LAST_NAME }}
+      APP_REVIEW_EMAIL: ${{ secrets.APP_REVIEW_EMAIL }}
+      APP_REVIEW_PHONE: ${{ secrets.APP_REVIEW_PHONE }}
+      CONFIRM_SUBMIT_FOR_REVIEW: ${{ inputs.confirm_submit_for_review }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Confirm protected submission
+        if: ${{ inputs.confirm_submit_for_review != 'YES' }}
+        run: |
+          echo "Type YES in confirm_submit_for_review to submit for App Review."
+          exit 1
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+
+      - name: Install Ruby dependencies
+        run: bundle install
+
+      - name: Write App Store Connect API key
+        shell: bash
+        run: |
+          set -euo pipefail
+          key_dir="${RUNNER_TEMP}/app-store-connect"
+          mkdir -p "${key_dir}"
+          key_path="${key_dir}/AuthKey_${APP_STORE_CONNECT_API_KEY_ID}.p8"
+          printf '%s\n' "${APP_STORE_CONNECT_API_PRIVATE_KEY}" > "${key_path}"
+          chmod 600 "${key_path}"
+          echo "APP_STORE_CONNECT_API_KEY_PATH=${key_path}" >> "${GITHUB_ENV}"
+
+      - name: Validate upload environment
+        run: bash scripts/mac-validate-upload-env.sh
+
+      - name: Validate App Review contact
+        run: bash scripts/mac-validate-review-contact-env.sh
+
+      - name: Submit for App Review
+        run: bundle exec fastlane ios submit_review
+
+      - name: Summarize submission
+        run: |
+          {
+            echo "### App Review submission"
+            echo ""
+            echo "Submitted the latest processed SnapTable Reminder build for App Review."
+            echo "Automatic release is disabled; confirm release manually after approval."
+          } >> "$GITHUB_STEP_SUMMARY"

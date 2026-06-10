@@ -178,7 +178,30 @@ powershell -ExecutionPolicy Bypass -File scripts/github-set-apple-secrets.ps1 -S
 The helper prompts for the `.p12` password and a temporary CI keychain password without printing them.
 Add `-DryRun` first if you want to validate paths without changing GitHub.
 
-To configure upload and signing secrets in one run, omit `-UploadOnly` and `-SigningOnly` and provide all fields.
+To configure upload, signing, and App Review contact secrets in one run, omit `-UploadOnly`, `-SigningOnly`, and `-ReviewOnly`, then provide all fields.
+
+## GitHub Actions App Review Secrets
+
+For the `App Review Submit` workflow, add the upload secrets above plus these review contact secrets:
+
+```text
+APP_REVIEW_FIRST_NAME
+APP_REVIEW_LAST_NAME
+APP_REVIEW_EMAIL
+APP_REVIEW_PHONE
+```
+
+Windows helper:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/github-set-apple-secrets.ps1 -ReviewOnly `
+  -AppReviewFirstName "first-name" `
+  -AppReviewLastName "last-name" `
+  -AppReviewEmail "review-contact@app-review.invalid"
+```
+
+The helper prompts for the review phone number without printing it.
+Do not store personal review contact details in repository files or public GitHub issues.
 
 ## App Review Contact
 

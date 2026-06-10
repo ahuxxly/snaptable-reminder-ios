@@ -10,7 +10,7 @@ Local repository status:
 - XcodeGen project configuration is present in `project.yml`.
 - Unit test source files are present for parsing, CSV export, date logic, settings persistence, and reminder date policy.
 - App Store support site files are present in `site/`.
-- GitHub Actions workflows are present for iOS CI, GitHub Pages, App Store screenshots, release readiness, App Store Connect metadata/screenshot upload, and TestFlight upload.
+- GitHub Actions workflows are present for iOS CI, GitHub Pages, App Store screenshots, release readiness, App Store Connect metadata/screenshot upload, TestFlight upload, and protected App Review submission.
 - Fastlane lanes are present for verify, archive, and TestFlight upload.
 - GitHub login and publish helper script is present in `scripts/github-login-and-publish.ps1`.
 - GitHub publish helper can enable GitHub Issues, prepare the support issue label, write public support request links, and write Fastlane store URL files after the repository URL is known.
@@ -32,6 +32,7 @@ Local repository status:
 - Mac Apple signing environment validation and installation scripts are present.
 - Windows GitHub Apple secret helper is present for configuring upload and signing secrets without committing private files.
 - Windows GitHub App Store release helper is present for checking secrets and triggering upload workflows.
+- Windows GitHub App Review submit helper is present for checking review-contact secrets and triggering final submission with explicit confirmation.
 - App Review contact checklist and Mac environment validation script are present.
 
 Verified on GitHub:
@@ -67,6 +68,7 @@ These are still required before the goal is actually complete:
 - App screenshots uploaded to App Store Connect.
 - App archived and uploaded to TestFlight/App Store Connect.
 - App Review contact details entered in App Store Connect.
+- App Review contact secrets configured in GitHub.
 - App Review submission completed.
 - App status reaches Waiting for Review, then Ready for Distribution after approval.
 
@@ -95,7 +97,11 @@ https://ahuxxly.github.io/snaptable-reminder-ios/support.html
 
 7. Run `scripts/github-run-app-store-release.ps1` to upload metadata, screenshots, precheck, and a signed TestFlight build.
 
-8. On a Mac, run:
+8. Add App Review contact secrets with `scripts/github-set-apple-secrets.ps1 -ReviewOnly`.
+
+9. After App Store Connect shows the build is processed, run `scripts/github-submit-app-review.ps1 -ConfirmSubmitForReview YES -Wait`.
+
+10. On a Mac, run:
 
 ```bash
 brew install xcodegen
@@ -104,13 +110,13 @@ bash scripts/mac-verify.sh
 bash scripts/mac-release-readiness.sh
 ```
 
-9. Before final App Review submission, set the `APP_REVIEW_*` contact environment variables and run:
+11. Before final App Review submission, set the `APP_REVIEW_*` contact environment variables and run:
 
 ```bash
 bash scripts/mac-validate-review-contact-env.sh
 ```
 
-10. Continue with `docs/app-store/launch-runbook.md`.
+12. Continue with `docs/app-store/launch-runbook.md`.
 
 ## Release Boundaries
 

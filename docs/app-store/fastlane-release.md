@@ -68,6 +68,15 @@ powershell -ExecutionPolicy Bypass -File scripts/github-run-app-store-release.ps
 The first helper writes upload and signing secrets to GitHub and refuses `.p8`, `.p12`, and `.mobileprovision` files stored inside this repository.
 The second helper checks the configured secrets, triggers App Store Connect metadata/screenshot/precheck upload, and triggers TestFlight upload.
 
+After App Store Connect finishes processing the uploaded build, submit for review with:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/github-set-apple-secrets.ps1 -ReviewOnly
+powershell -ExecutionPolicy Bypass -File scripts/github-submit-app-review.ps1 -ConfirmSubmitForReview YES -Wait
+```
+
+The submit helper refuses to run unless review contact secrets are configured and `-ConfirmSubmitForReview YES` is provided.
+
 ## Metadata Upload
 
 Fastlane metadata files live in `fastlane/metadata/`. They mirror the public listing copy from `docs/app-store/app-store-fields.json` and `docs/app-store/metadata.md`.

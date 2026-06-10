@@ -307,6 +307,23 @@ foreach ($uploadValidationLane in $requiredUploadValidationLanes) {
         throw "Fastlane lane '$uploadValidationLane' should validate the upload environment before using App Store Connect."
     }
 }
+$requiredSubmitReviewTerms = @(
+    "lane :submit_review",
+    "validate_review_submission_environment",
+    "CONFIRM_SUBMIT_FOR_REVIEW",
+    "submit_for_review: true",
+    "automatic_release: false",
+    "skip_binary_upload: true",
+    "skip_metadata: true",
+    "skip_screenshots: true",
+    "app_review_information",
+    "export_compliance_uses_encryption"
+)
+foreach ($submitReviewTerm in $requiredSubmitReviewTerms) {
+    if (-not $fastfileText.Contains($submitReviewTerm)) {
+        throw "fastlane/Fastfile should include protected App Review submission term: $submitReviewTerm"
+    }
+}
 Write-Host "Fastlane metadata files align"
 
 Write-Section "App Store metadata limits"
@@ -470,6 +487,9 @@ if (-not (Test-Path "scripts\github-set-apple-secrets.ps1")) {
 if (-not (Test-Path "scripts\github-run-app-store-release.ps1")) {
     throw "Missing GitHub App Store release runner script."
 }
+if (-not (Test-Path "scripts\github-submit-app-review.ps1")) {
+    throw "Missing GitHub App Review submit helper script."
+}
 if (-not (Test-Path "scripts\write-site-support-links.ps1")) {
     throw "Missing site support link writer script."
 }
@@ -500,17 +520,26 @@ if (-not $githubPublishText.Contains("docs: add public support request links")) 
     throw "GitHub publish script should commit generated release URL updates."
 }
 $githubAppleSecretsText = Get-Content "scripts\github-set-apple-secrets.ps1" -Raw
-$requiredGitHubAppleSecretNames = @(
+$requiredGitHubUploadSecretNames = @(
     "APP_STORE_CONNECT_USERNAME",
     "APPLE_DEVELOPER_TEAM_ID",
     "APP_STORE_CONNECT_API_KEY_ID",
     "APP_STORE_CONNECT_API_ISSUER_ID",
-    "APP_STORE_CONNECT_API_PRIVATE_KEY",
+    "APP_STORE_CONNECT_API_PRIVATE_KEY"
+)
+$requiredGitHubSigningSecretNames = @(
     "APPLE_DISTRIBUTION_CERTIFICATE_BASE64",
     "APPLE_DISTRIBUTION_CERTIFICATE_PASSWORD",
     "APPLE_APP_STORE_PROFILE_BASE64",
     "APPLE_CODESIGN_KEYCHAIN_PASSWORD"
 )
+$requiredGitHubReviewSecretNames = @(
+    "APP_REVIEW_FIRST_NAME",
+    "APP_REVIEW_LAST_NAME",
+    "APP_REVIEW_EMAIL",
+    "APP_REVIEW_PHONE"
+)
+$requiredGitHubAppleSecretNames = $requiredGitHubUploadSecretNames + $requiredGitHubSigningSecretNames + $requiredGitHubReviewSecretNames
 foreach ($githubAppleSecretName in $requiredGitHubAppleSecretNames) {
     if (-not $githubAppleSecretsText.Contains($githubAppleSecretName)) {
         throw "GitHub Apple secret helper should set $githubAppleSecretName."
@@ -525,14 +554,14 @@ if (-not $githubAppleSecretsText.Contains("Assert-FileOutsideRepository")) {
 if (-not $githubAppleSecretsText.Contains("RedirectStandardInput")) {
     throw "GitHub Apple secret helper should pass secret values through exact standard input."
 }
-if (-not $githubAppleSecretsText.Contains("UploadOnly") -or -not $githubAppleSecretsText.Contains("SigningOnly")) {
-    throw "GitHub Apple secret helper should support upload-only and signing-only modes."
+if (-not $githubAppleSecretsText.Contains("UploadOnly") -or -not $githubAppleSecretsText.Contains("SigningOnly") -or -not $githubAppleSecretsText.Contains("ReviewOnly")) {
+    throw "GitHub Apple secret helper should support upload-only, signing-only, and review-only modes."
 }
 if (-not $githubAppleSecretsText.Contains("DryRun")) {
     throw "GitHub Apple secret helper should support a dry-run validation mode."
 }
 $githubAppStoreReleaseText = Get-Content "scripts\github-run-app-store-release.ps1" -Raw
-foreach ($githubAppleSecretName in $requiredGitHubAppleSecretNames) {
+foreach ($githubAppleSecretName in ($requiredGitHubUploadSecretNames + $requiredGitHubSigningSecretNames)) {
     if (-not $githubAppStoreReleaseText.Contains($githubAppleSecretName)) {
         throw "GitHub App Store release runner should check $githubAppleSecretName."
     }
@@ -551,6 +580,44 @@ if (-not $githubAppStoreReleaseText.Contains("SkipTestFlight")) {
 }
 if (-not $githubAppStoreReleaseText.Contains("run watch")) {
     throw "GitHub App Store release runner should optionally wait for workflow completion."
+}
+$githubAppReviewSubmitText = Get-Content "scripts\github-submit-app-review.ps1" -Raw
+foreach ($reviewSubmitSecretName in ($requiredGitHubUploadSecretNames + $requiredGitHubReviewSecretNames)) {
+    if (-not $githubAppReviewSubmitText.Contains($reviewSubmitSecretName)) {
+        throw "GitHub App Review submit helper should check $reviewSubmitSecretName."
+    }
+}
+if (-not $githubAppReviewSubmitText.Contains("ConfirmSubmitForReview")) {
+    throw "GitHub App Review submit helper should require explicit confirmation."
+}
+if (-not $githubAppReviewSubmitText.Contains("app-review-submit.yml")) {
+    throw "GitHub App Review submit helper should trigger the App Review workflow."
+}
+$appReviewWorkflowPath = ".github\workflows\app-review-submit.yml"
+if (-not (Test-Path $appReviewWorkflowPath)) {
+    throw "Missing App Review submit workflow."
+}
+$appReviewWorkflowText = Get-Content $appReviewWorkflowPath -Raw
+foreach ($reviewWorkflowSecretName in ($requiredGitHubUploadSecretNames + $requiredGitHubReviewSecretNames)) {
+    if (-not $appReviewWorkflowText.Contains($reviewWorkflowSecretName)) {
+        throw "App Review submit workflow should reference $reviewWorkflowSecretName."
+    }
+}
+$requiredReviewWorkflowTerms = @(
+    "workflow_dispatch",
+    "confirm_submit_for_review",
+    "CONFIRM_SUBMIT_FOR_REVIEW",
+    "bundle exec fastlane ios submit_review",
+    "scripts/mac-validate-review-contact-env.sh",
+    "timeout-minutes: 30"
+)
+foreach ($reviewWorkflowTerm in $requiredReviewWorkflowTerms) {
+    if (-not $appReviewWorkflowText.Contains($reviewWorkflowTerm)) {
+        throw "App Review submit workflow should include $reviewWorkflowTerm."
+    }
+}
+if (-not $launchRunbookText.Contains("github-submit-app-review.ps1")) {
+    throw "Launch runbook should mention the GitHub App Review submit helper."
 }
 if (-not (Test-Path ".github\ISSUE_TEMPLATE\support.yml")) {
     throw "Missing GitHub support issue template for public support requests."

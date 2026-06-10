@@ -224,17 +224,29 @@ Evidence:
 
 ## Phase 8: Final Submission
 
-1. Select the processed build.
+1. Select or confirm the processed build in App Store Connect.
 2. Confirm screenshots, metadata, privacy, age rating, pricing, and availability.
 3. Confirm review notes explain local-only OCR and no advice claims.
 4. Enter App Review contact details from `docs/app-store/review-contact.md`.
-5. On the Mac used for submission, run:
+5. Configure review contact secrets with:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/github-set-apple-secrets.ps1 -ReviewOnly
+```
+
+6. Submit with explicit confirmation:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/github-submit-app-review.ps1 -ConfirmSubmitForReview YES -Wait
+```
+
+7. On the Mac used for submission, run:
 
 ```bash
 bash scripts/mac-validate-review-contact-env.sh
 ```
 
-6. Submit for review.
+Manual fallback: Submit for review in App Store Connect.
 
 Evidence:
 
