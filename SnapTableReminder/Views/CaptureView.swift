@@ -10,16 +10,17 @@ struct CaptureView: View {
     @State private var rawText = ""
     @State private var selectedPhotoItem: PhotosPickerItem?
     @State private var activeSheet: ActiveSheet?
-    @State private var isShowingScanner = false
     @State private var isRecognizing = false
     @State private var errorMessage: String?
 
     private enum ActiveSheet: Identifiable {
+        case scanner
         case manual
         case draft(ParsedDocumentDraft, DocumentSourceType)
 
         var id: String {
             switch self {
+            case .scanner: return "scanner"
             case .manual: return "manual"
             case .draft(_, let sourceType): return "draft-\(sourceType.rawValue)"
             }
@@ -32,7 +33,7 @@ struct CaptureView: View {
                 VStack(alignment: .leading, spacing: 16) {
                     HStack(spacing: 12) {
                         Button {
-                            isShowingScanner = true
+                            activeSheet = .scanner
                         } label: {
                             Label("Scan", systemImage: "doc.viewfinder")
                                 .frame(maxWidth: .infinity)
@@ -105,6 +106,16 @@ struct CaptureView: View {
             }
             .sheet(item: $activeSheet) { sheet in
                 switch sheet {
+                case .scanner:
+                    DocumentCameraView { images in
+                        activeSheet = nil
+                        recognizeText(from: images)
+                    } onCancel: {
+                        activeSheet = nil
+                    } onError: { error in
+                        errorMessage = error.localizedDescription
+                        activeSheet = nil
+                    }
                 case .manual:
                     RecordFormView(mode: .add(defaultCurrencyCode: appState.defaultCurrencyCode)) { record in
                         store.add(record)
@@ -115,17 +126,6 @@ struct CaptureView: View {
                         store.add(record)
                         appState.scheduleReminderIfNeeded(for: record)
                     }
-                }
-            }
-            .sheet(isPresented: $isShowingScanner) {
-                DocumentCameraView { images in
-                    isShowingScanner = false
-                    recognizeText(from: images)
-                } onCancel: {
-                    isShowingScanner = false
-                } onError: { error in
-                    errorMessage = error.localizedDescription
-                    isShowingScanner = false
                 }
             }
         }
