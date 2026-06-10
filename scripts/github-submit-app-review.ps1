@@ -131,7 +131,11 @@ foreach ($requiredSecret in $requiredSecrets) {
 }
 
 Write-Section "Recent workflow runs"
-& $ghPath run list --repo $RepoFullName --limit 8
+$recentRuns = & $ghPath run list --repo $RepoFullName --limit 8
+if ($LASTEXITCODE -ne 0) {
+    throw "Could not list recent workflow runs for $RepoFullName."
+}
+$recentRuns | ForEach-Object { Write-Host $_ }
 
 if ($StatusOnly) {
     Write-Host ""

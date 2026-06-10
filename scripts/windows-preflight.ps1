@@ -626,6 +626,9 @@ if (-not $githubAppStoreReleaseText.Contains("SkipTestFlight")) {
 if (-not $githubAppStoreReleaseText.Contains("run watch")) {
     throw "GitHub App Store release runner should optionally wait for workflow completion."
 }
+if (-not $githubAppStoreReleaseText.Contains("Could not list recent workflow runs")) {
+    throw "GitHub App Store release runner should fail clearly if recent workflow run listing fails."
+}
 $githubAppReviewSubmitText = Get-Content "scripts\github-submit-app-review.ps1" -Raw
 foreach ($reviewSubmitSecretName in ($requiredGitHubUploadSecretNames + $requiredGitHubReviewSecretNames)) {
     if (-not $githubAppReviewSubmitText.Contains($reviewSubmitSecretName)) {
@@ -637,6 +640,9 @@ if (-not $githubAppReviewSubmitText.Contains("ConfirmSubmitForReview")) {
 }
 if (-not $githubAppReviewSubmitText.Contains("app-review-submit.yml")) {
     throw "GitHub App Review submit helper should trigger the App Review workflow."
+}
+if (-not $githubAppReviewSubmitText.Contains("Could not list recent workflow runs")) {
+    throw "GitHub App Review submit helper should fail clearly if recent workflow run listing fails."
 }
 $appReviewWorkflowPath = ".github\workflows\app-review-submit.yml"
 if (-not (Test-Path $appReviewWorkflowPath)) {
