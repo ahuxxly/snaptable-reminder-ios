@@ -16,9 +16,10 @@ if [[ ! -d "${SOURCE_DIR}" ]]; then
   exit 1
 fi
 
-mapfile -t image_files < <(
-  find "${SOURCE_DIR}" -type f \( -iname '*.png' -o -iname '*.jpg' -o -iname '*.jpeg' \) | sort
-)
+image_files=()
+while IFS= read -r image_file; do
+  image_files+=("${image_file}")
+done < <(find "${SOURCE_DIR}" -type f \( -iname '*.png' -o -iname '*.jpg' -o -iname '*.jpeg' \) | sort)
 
 if [[ "${#image_files[@]}" -lt 4 ]]; then
   echo "Expected at least four screenshot files in ${SOURCE_DIR}; found ${#image_files[@]}." >&2

@@ -622,6 +622,9 @@ $screenshotStagingText = Get-Content "scripts\mac-stage-fastlane-screenshots.sh"
 if (-not $screenshotStagingText.Contains("fastlane/screenshots/en-US")) {
     throw "Screenshot staging script should output fastlane/screenshots/en-US."
 }
+if ($screenshotStagingText.Contains("mapfile") -or $screenshotStagingText.Contains("readarray")) {
+    throw "Screenshot staging script should avoid Bash 4-only mapfile/readarray on macOS."
+}
 if (-not $fastfileText.Contains("lane :screenshots")) {
     throw "fastlane/Fastfile should include the screenshots lane."
 }
