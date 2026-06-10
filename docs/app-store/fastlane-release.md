@@ -62,9 +62,11 @@ GitHub Actions alternative:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/github-set-apple-secrets.ps1
+powershell -ExecutionPolicy Bypass -File scripts/github-run-app-store-release.ps1
 ```
 
-Then run the `TestFlight Upload` workflow. The helper writes upload and signing secrets to GitHub and refuses `.p8`, `.p12`, and `.mobileprovision` files stored inside this repository.
+The first helper writes upload and signing secrets to GitHub and refuses `.p8`, `.p12`, and `.mobileprovision` files stored inside this repository.
+The second helper checks the configured secrets, triggers App Store Connect metadata/screenshot/precheck upload, and triggers TestFlight upload.
 
 ## Metadata Upload
 

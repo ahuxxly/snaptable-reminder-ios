@@ -467,6 +467,9 @@ if (-not (Test-Path "scripts\github-login-and-publish.ps1")) {
 if (-not (Test-Path "scripts\github-set-apple-secrets.ps1")) {
     throw "Missing GitHub Apple secret helper script."
 }
+if (-not (Test-Path "scripts\github-run-app-store-release.ps1")) {
+    throw "Missing GitHub App Store release runner script."
+}
 if (-not (Test-Path "scripts\write-site-support-links.ps1")) {
     throw "Missing site support link writer script."
 }
@@ -527,6 +530,27 @@ if (-not $githubAppleSecretsText.Contains("UploadOnly") -or -not $githubAppleSec
 }
 if (-not $githubAppleSecretsText.Contains("DryRun")) {
     throw "GitHub Apple secret helper should support a dry-run validation mode."
+}
+$githubAppStoreReleaseText = Get-Content "scripts\github-run-app-store-release.ps1" -Raw
+foreach ($githubAppleSecretName in $requiredGitHubAppleSecretNames) {
+    if (-not $githubAppStoreReleaseText.Contains($githubAppleSecretName)) {
+        throw "GitHub App Store release runner should check $githubAppleSecretName."
+    }
+}
+if (-not $githubAppStoreReleaseText.Contains("app-store-connect-upload.yml")) {
+    throw "GitHub App Store release runner should trigger App Store Connect upload."
+}
+if (-not $githubAppStoreReleaseText.Contains("testflight-upload.yml")) {
+    throw "GitHub App Store release runner should trigger TestFlight upload."
+}
+if (-not $githubAppStoreReleaseText.Contains("StatusOnly") -or -not $githubAppStoreReleaseText.Contains("DryRun")) {
+    throw "GitHub App Store release runner should support status-only and dry-run modes."
+}
+if (-not $githubAppStoreReleaseText.Contains("SkipTestFlight")) {
+    throw "GitHub App Store release runner should allow metadata/screenshot upload without TestFlight."
+}
+if (-not $githubAppStoreReleaseText.Contains("run watch")) {
+    throw "GitHub App Store release runner should optionally wait for workflow completion."
 }
 if (-not (Test-Path ".github\ISSUE_TEMPLATE\support.yml")) {
     throw "Missing GitHub support issue template for public support requests."

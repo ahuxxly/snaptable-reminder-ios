@@ -131,7 +131,7 @@ Evidence:
 GitHub Actions upload path:
 
 1. Add the repository secrets with `scripts/github-set-apple-secrets.ps1`.
-2. Run the `App Store Connect Upload` workflow.
+2. Run `scripts/github-run-app-store-release.ps1 -SkipTestFlight`.
 3. Keep metadata, screenshots, and review check enabled unless you are intentionally rerunning only part of the upload.
 
 Evidence:
@@ -158,7 +158,7 @@ GitHub Actions alternative:
 GitHub Actions upload path:
 
 1. Add the repository secrets with `scripts/github-set-apple-secrets.ps1`.
-2. Run the `App Store Connect Upload` workflow with screenshot upload enabled.
+2. Run `scripts/github-run-app-store-release.ps1 -SkipTestFlight -SkipMetadata -SkipReviewCheck`.
 3. Confirm screenshots are visible in App Store Connect.
 
 Fastlane upload path:
@@ -207,13 +207,13 @@ bundle exec fastlane ios testflight
 GitHub Actions TestFlight path:
 
 1. Add the upload and signing secrets with `scripts/github-set-apple-secrets.ps1`.
-2. Run the `TestFlight Upload` workflow.
+2. Run `scripts/github-run-app-store-release.ps1`.
 3. Wait for App Store Connect to finish processing the build.
 
 GitHub Actions metadata and screenshot path:
 
 1. Add the upload secrets with `scripts/github-set-apple-secrets.ps1`.
-2. Run the `App Store Connect Upload` workflow with metadata, screenshots, and review check enabled.
+2. Run `scripts/github-run-app-store-release.ps1 -SkipTestFlight`.
 3. Confirm the workflow summary says the requested upload steps ran.
 
 Evidence:
