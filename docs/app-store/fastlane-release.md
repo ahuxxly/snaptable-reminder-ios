@@ -2,6 +2,8 @@
 
 This project includes Fastlane as an optional Mac release helper. It does not store Apple credentials in the repository.
 
+Before using Fastlane upload lanes, complete `docs/app-store/account-setup.md`.
+
 ## Install
 
 Run on macOS:

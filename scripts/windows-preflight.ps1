@@ -258,6 +258,7 @@ Write-Host "required test files present"
 
 Write-Section "Release docs"
 $requiredReleaseDocs = @(
+    "docs\app-store\account-setup.md",
     "docs\app-store\app-store-fields.json",
     "docs\app-store\current-release-status.md",
     "docs\app-store\launch-runbook.md",

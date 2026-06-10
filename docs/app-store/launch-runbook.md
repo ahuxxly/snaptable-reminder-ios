@@ -6,6 +6,8 @@ For a short current-state view, start with `docs/app-store/current-release-statu
 
 ## Phase 1: Apple Account Readiness
 
+Use `docs/app-store/account-setup.md` for the detailed 0-basics checklist.
+
 Complete these before expecting upload or paid sales to work:
 
 1. Join or renew Apple Developer Program.

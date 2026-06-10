@@ -2,6 +2,7 @@
 
 ## Account
 
+- Detailed account checklist: `docs/app-store/account-setup.md`.
 - Apple Developer Program membership is active.
 - Paid Apps Agreement is accepted in App Store Connect.
 - Tax and banking information is complete.
