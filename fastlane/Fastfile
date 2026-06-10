@@ -1,6 +1,10 @@
 default_platform(:ios)
 
 platform :ios do
+  private_lane :validate_upload_environment do
+    sh("bash scripts/mac-validate-upload-env.sh")
+  end
+
   desc "Run tests and simulator build"
   lane :verify do
     sh("bash scripts/mac-verify.sh")
@@ -21,6 +25,8 @@ platform :ios do
 
   desc "Upload a signed build to TestFlight"
   lane :testflight do
+    validate_upload_environment
+
     api_key = app_store_connect_api_key(
       key_id: ENV.fetch("APP_STORE_CONNECT_API_KEY_ID"),
       issuer_id: ENV.fetch("APP_STORE_CONNECT_API_ISSUER_ID"),
@@ -40,6 +46,8 @@ platform :ios do
 
   desc "Upload App Store metadata without submitting for review"
   lane :metadata do
+    validate_upload_environment
+
     api_key = app_store_connect_api_key(
       key_id: ENV.fetch("APP_STORE_CONNECT_API_KEY_ID"),
       issuer_id: ENV.fetch("APP_STORE_CONNECT_API_ISSUER_ID"),
@@ -61,6 +69,8 @@ platform :ios do
 
   desc "Upload App Store screenshots without submitting for review"
   lane :screenshots do
+    validate_upload_environment
+
     api_key = app_store_connect_api_key(
       key_id: ENV.fetch("APP_STORE_CONNECT_API_KEY_ID"),
       issuer_id: ENV.fetch("APP_STORE_CONNECT_API_ISSUER_ID"),
@@ -83,6 +93,8 @@ platform :ios do
 
   desc "Run App Store review risk checks against App Store Connect metadata"
   lane :review_check do
+    validate_upload_environment
+
     api_key = app_store_connect_api_key(
       key_id: ENV.fetch("APP_STORE_CONNECT_API_KEY_ID"),
       issuer_id: ENV.fetch("APP_STORE_CONNECT_API_ISSUER_ID"),

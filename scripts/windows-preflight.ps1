@@ -231,6 +231,18 @@ foreach ($urlFile in $optionalUrlFiles) {
 if (-not $fastfileText.Contains("lane :metadata")) {
     throw "fastlane/Fastfile should include the metadata lane."
 }
+if (-not $fastfileText.Contains("private_lane :validate_upload_environment")) {
+    throw "fastlane/Fastfile should include a private upload environment validation lane."
+}
+if (-not $fastfileText.Contains("sh(`"bash scripts/mac-validate-upload-env.sh`")")) {
+    throw "Fastlane upload environment validation should call scripts/mac-validate-upload-env.sh."
+}
+$requiredUploadValidationLanes = @("testflight", "metadata", "screenshots", "review_check")
+foreach ($uploadValidationLane in $requiredUploadValidationLanes) {
+    if ($fastfileText -notmatch "lane :$uploadValidationLane do\s+validate_upload_environment") {
+        throw "Fastlane lane '$uploadValidationLane' should validate the upload environment before using App Store Connect."
+    }
+}
 Write-Host "Fastlane metadata files align"
 
 Write-Section "App Store metadata limits"
