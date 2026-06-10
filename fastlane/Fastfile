@@ -1,19 +1,15 @@
 default_platform(:ios)
 
 platform :ios do
-  before_all do
-    sh("xcodegen generate")
-  end
-
   desc "Run tests and simulator build"
   lane :verify do
-    simulator_id = first_available_iphone_simulator
-    sh("xcodebuild test -scheme SnapTableReminder -destination 'platform=iOS Simulator,id=#{simulator_id}'")
-    sh("xcodebuild build -scheme SnapTableReminder -destination 'platform=iOS Simulator,id=#{simulator_id}'")
+    sh("bash scripts/mac-verify.sh")
   end
 
   desc "Create an App Store archive"
   lane :archive do
+    sh("xcodegen generate")
+
     build_app(
       scheme: "SnapTableReminder",
       export_method: "app-store",
@@ -42,9 +38,4 @@ platform :ios do
     )
   end
 
-  private_lane :first_available_iphone_simulator do
-    simulator_id = sh("xcrun simctl list devices available | grep -m 1 -E 'iPhone' | grep -Eo '[0-9A-F-]{36}' | head -n 1").strip
-    UI.user_error!("No available iPhone simulator was found.") if simulator_id.empty?
-    simulator_id
-  end
 end
