@@ -40,7 +40,7 @@ On this Windows workspace, run the static checks with:
 powershell -ExecutionPolicy Bypass -File scripts/windows-preflight.ps1
 ```
 
-This checks git cleanliness, unfinished markers, common encoding damage, resource parsing, release configuration consistency, app icon references, privacy manifest coverage, required test files, static site links, and reports whether the iOS toolchain is available.
+This checks git cleanliness, unfinished markers, common encoding damage, resource parsing, release configuration consistency, App Store metadata limits, app icon references, privacy manifest coverage, required test files, static site links, and reports whether the iOS toolchain is available.
 
 ## GitHub CI
 

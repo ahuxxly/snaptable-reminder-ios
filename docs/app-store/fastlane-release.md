@@ -49,6 +49,12 @@ bundle exec fastlane ios testflight
 
 Fastlane metadata files live in `fastlane/metadata/`. They mirror the public listing copy from `docs/app-store/app-store-fields.json` and `docs/app-store/metadata.md`.
 
+Check metadata limits before upload:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/validate-app-store-metadata.ps1
+```
+
 After the App Store Connect app record exists and the public privacy/support URLs are live, add these two files locally or through App Store Connect before final submission:
 
 ```text

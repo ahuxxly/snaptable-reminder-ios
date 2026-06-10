@@ -1,1 +1,1 @@
-screenshot OCR,document scanner,table export,reminder,receipt organizer,deadline tracker,bill reminder,notice scanner
+screenshot OCR,doc scanner,CSV,receipt log,deadline tracker,bill organizer,notice scanner,due date

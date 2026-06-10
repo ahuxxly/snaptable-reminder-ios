@@ -14,13 +14,13 @@
     "promotionalText": "Turn screenshots, notices, bills, and appointment photos into editable records, CSV exports, and local reminders.",
     "keywords": [
       "screenshot OCR",
-      "document scanner",
-      "table export",
-      "reminder",
-      "receipt organizer",
+      "doc scanner",
+      "CSV",
+      "receipt log",
       "deadline tracker",
-      "bill reminder",
-      "notice scanner"
+      "bill organizer",
+      "notice scanner",
+      "due date"
     ],
     "descriptionPath": "docs/app-store/metadata.md"
   },

@@ -209,6 +209,9 @@ if (-not $fastfileText.Contains("lane :metadata")) {
 }
 Write-Host "Fastlane metadata files align"
 
+Write-Section "App Store metadata limits"
+powershell -ExecutionPolicy Bypass -File scripts\validate-app-store-metadata.ps1
+
 Write-Section "Asset references"
 $appIconDirectory = "SnapTableReminder\Resources\Assets.xcassets\AppIcon.appiconset"
 foreach ($image in $appIconContents.images) {

@@ -15,6 +15,7 @@ Local repository status:
 - App Store metadata, privacy, age rating, export compliance, review notes, screenshot plan, monetization plan, and launch runbook are drafted.
 - Machine-readable App Store Connect fields are present in `docs/app-store/app-store-fields.json` and covered by Windows preflight.
 - Fastlane metadata files are present in `fastlane/metadata/` and covered by Windows preflight.
+- App Store metadata length and keyword byte limits are covered by `scripts/validate-app-store-metadata.ps1`.
 
 Verified on this Windows workspace:
 

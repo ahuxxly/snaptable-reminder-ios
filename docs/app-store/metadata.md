@@ -2,6 +2,20 @@
 
 Machine-readable App Store Connect fields are kept in `docs/app-store/app-store-fields.json`. Use this page for the longer copy blocks and paste-ready text.
 
+Fastlane metadata files in `fastlane/metadata/` are checked by `scripts/validate-app-store-metadata.ps1`. The limits follow Apple App Store Connect references for App Information and Platform Version Information:
+
+- App name: 2-30 characters.
+- Subtitle: up to 30 characters.
+- Promotional text: up to 170 characters.
+- Description: up to 4000 characters.
+- Keywords: up to 100 UTF-8 bytes.
+- App Review notes: up to 4000 UTF-8 bytes.
+
+Official references:
+
+- https://developer.apple.com/help/app-store-connect/reference/app-information/app-information/
+- https://developer.apple.com/help/app-store-connect/reference/app-information/platform-version-information/
+
 ## App Name
 
 SnapTable Reminder
@@ -46,7 +60,7 @@ Important: SnapTable Reminder helps organize personal records and reminders. It 
 
 ## Keywords
 
-screenshot OCR,document scanner,table export,reminder,receipt organizer,deadline tracker,bill reminder,notice scanner
+screenshot OCR,doc scanner,CSV,receipt log,deadline tracker,bill organizer,notice scanner,due date
 
 ## Review Notes
 
