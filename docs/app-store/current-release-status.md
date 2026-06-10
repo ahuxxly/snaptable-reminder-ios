@@ -55,6 +55,14 @@ powershell -ExecutionPolicy Bypass -File scripts/windows-preflight.ps1
 
 This verifies local static release gates only. It does not compile Swift or run iOS simulator tests.
 
+Release doctor command:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/release-doctor.ps1 -RunPreflight
+```
+
+This performs a read-only status sweep over local gates, GitHub workflows, hosted support URLs, GitHub secrets, and remaining Apple account blockers. It does not trigger uploads or App Review submission.
+
 ## Not Yet Complete
 
 These are still required before the goal is actually complete:
@@ -81,6 +89,8 @@ These are still required before the goal is actually complete:
 - `iOS CI`
 - `Publish App Store Site`
 - `Release Readiness`
+
+You can run `scripts/release-doctor.ps1 -RunPreflight` to see this status plus the missing Apple account and GitHub secret gates in one place.
 
 2. Copy live URLs into App Store Connect:
 

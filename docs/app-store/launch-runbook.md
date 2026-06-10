@@ -4,6 +4,14 @@ This is the end-to-end launch path for a first App Store release outside China m
 
 For a short current-state view, start with `docs/app-store/current-release-status.md`.
 
+For a one-command read-only release diagnosis on Windows:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/release-doctor.ps1 -RunPreflight
+```
+
+This command checks local release gates, GitHub workflows, hosted support URLs, GitHub secrets, and the remaining external Apple account gates. It does not upload builds, trigger workflows, or submit the app for review.
+
 ## Phase 1: Apple Account Readiness
 
 Use `docs/app-store/account-setup.md` for the detailed 0-basics checklist.

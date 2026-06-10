@@ -535,6 +535,9 @@ if (-not (Test-Path "scripts\github-run-app-store-release.ps1")) {
 if (-not (Test-Path "scripts\github-submit-app-review.ps1")) {
     throw "Missing GitHub App Review submit helper script."
 }
+if (-not (Test-Path "scripts\release-doctor.ps1")) {
+    throw "Missing release doctor script."
+}
 if (-not (Test-Path "scripts\write-site-support-links.ps1")) {
     throw "Missing site support link writer script."
 }
@@ -643,6 +646,29 @@ if (-not $githubAppReviewSubmitText.Contains("app-review-submit.yml")) {
 }
 if (-not $githubAppReviewSubmitText.Contains("Could not list recent workflow runs")) {
     throw "GitHub App Review submit helper should fail clearly if recent workflow run listing fails."
+}
+$releaseDoctorText = Get-Content "scripts\release-doctor.ps1" -Raw
+foreach ($releaseDoctorTerm in @(
+    "RunPreflight",
+    "App Store Connect upload secrets",
+    "Apple signing secrets",
+    "App Review contact secrets",
+    "EU DSA trader status",
+    "scripts/github-run-app-store-release.ps1 -Wait",
+    "scripts/github-submit-app-review.ps1 -ConfirmSubmitForReview YES -Wait"
+)) {
+    if (-not $releaseDoctorText.Contains($releaseDoctorTerm)) {
+        throw "Release doctor should include: $releaseDoctorTerm"
+    }
+}
+if ($releaseDoctorText.Contains("workflow run ")) {
+    throw "Release doctor should not trigger GitHub workflows."
+}
+if (-not $launchRunbookText.Contains("scripts/release-doctor.ps1")) {
+    throw "Launch runbook should mention the release doctor."
+}
+if (-not (Get-Content "docs\app-store\current-release-status.md" -Raw).Contains("scripts/release-doctor.ps1")) {
+    throw "Current release status should mention the release doctor."
 }
 $appReviewWorkflowPath = ".github\workflows\app-review-submit.yml"
 if (-not (Test-Path $appReviewWorkflowPath)) {
