@@ -24,7 +24,7 @@ final class AppStoreScreenshotUITests: XCTestCase {
         captureScreenshot(named: "03-Dashboard")
 
         try selectTab("Settings")
-        XCTAssertTrue(app.staticTexts["Privacy"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["SettingsPrivacySummary"].waitForExistence(timeout: 5))
         captureScreenshot(named: "04-Settings")
     }
 

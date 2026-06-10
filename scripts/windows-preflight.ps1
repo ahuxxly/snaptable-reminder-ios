@@ -601,8 +601,16 @@ if (-not $screenshotScriptText.Contains("xcresulttool export attachments")) {
 if (-not $screenshotScriptText.Contains("mac-stage-fastlane-screenshots.sh")) {
     throw "Screenshot script should stage screenshots for Fastlane."
 }
-if (-not (Get-Content "SnapTableReminderUITests\AppStoreScreenshotUITests.swift" -Raw).Contains("-resetDemoData")) {
+$screenshotTestText = Get-Content "SnapTableReminderUITests\AppStoreScreenshotUITests.swift" -Raw
+if (-not $screenshotTestText.Contains("-resetDemoData")) {
     throw "Screenshot UI tests should reset demo data for stable screenshots."
+}
+if (-not $screenshotTestText.Contains("SettingsPrivacySummary")) {
+    throw "Screenshot UI tests should wait for the stable Settings privacy summary identifier."
+}
+$settingsViewText = Get-Content "SnapTableReminder\Views\SettingsView.swift" -Raw
+if (-not $settingsViewText.Contains('accessibilityIdentifier("SettingsPrivacySummary")')) {
+    throw "SettingsView should expose a stable privacy summary accessibility identifier for screenshots."
 }
 if (-not $screenshotScriptText.Contains("iPhone 16 Pro Max") -and -not $screenshotScriptText.Contains("iPhone 17 Pro Max")) {
     throw "Screenshot script should prefer current App Store iPhone screenshot simulators."

@@ -60,6 +60,7 @@ struct SettingsView: View {
 
                 Section("Privacy") {
                     Text("Records, OCR text, and reminders are stored locally on this device. Version 1 has no account, tracking, backend, analytics, or cloud AI parser.")
+                        .accessibilityIdentifier("SettingsPrivacySummary")
                     Text("This app helps organize personal records and reminders. It does not provide legal, medical, tax, financial, or investment advice.")
                 }
 
