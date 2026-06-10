@@ -48,6 +48,7 @@ This issue tracks the private Apple-account work required before SnapTable Remin
 - Support URL: https://ahuxxly.github.io/snaptable-reminder-ios/support.html
 - Local release doctor: `powershell -ExecutionPolicy Bypass -File scripts/release-doctor.ps1 -RunPreflight`
 - Windows preflight: `powershell -ExecutionPolicy Bypass -File scripts/windows-preflight.ps1`
+- Private Apple material folder helper: `powershell -ExecutionPolicy Bypass -File scripts/prepare-apple-materials-folder.ps1`
 - Main release docs:
   - `docs/app-store/current-release-status.md`
   - `docs/app-store/launch-runbook.md`
@@ -73,6 +74,13 @@ This issue tracks the private Apple-account work required before SnapTable Remin
 - [ ] Privacy URL and Support URL are entered in App Store Connect.
 
 ## Private Apple Files and Secrets
+
+- [ ] Private Apple material folder is prepared and validated outside the repository:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/prepare-apple-materials-folder.ps1
+powershell -ExecutionPolicy Bypass -File scripts/prepare-apple-materials-folder.ps1 -OutputDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials" -ValidateOnly
+```
 
 - [ ] App Store Connect API key is generated and stored outside the repository.
 - [ ] Apple Distribution `.p12` certificate is exported and stored outside the repository.

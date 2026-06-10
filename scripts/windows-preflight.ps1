@@ -535,6 +535,12 @@ if (-not (Test-Path "scripts\github-run-app-store-release.ps1")) {
 if (-not (Test-Path "scripts\github-submit-app-review.ps1")) {
     throw "Missing GitHub App Review submit helper script."
 }
+if (-not (Test-Path "scripts\prepare-apple-materials-folder.ps1")) {
+    throw "Missing Apple private materials folder helper script."
+}
+if (-not (Test-Path "tests\prepare-apple-materials-folder.tests.ps1")) {
+    throw "Missing Apple private materials folder helper tests."
+}
 if (-not (Test-Path "scripts\release-doctor.ps1")) {
     throw "Missing release doctor script."
 }
@@ -554,6 +560,23 @@ if (-not $githubLoginPublishText.Contains("github-publish.ps1")) {
 if (-not $launchRunbookText.Contains("github-login-and-publish.ps1")) {
     throw "Launch runbook should mention the GitHub login and publish helper."
 }
+$prepareAppleMaterialsText = Get-Content "scripts\prepare-apple-materials-folder.ps1" -Raw
+foreach ($prepareAppleMaterialsTerm in @(
+    "Assert-PrivateFolderLocation",
+    "outside this repository",
+    "review-contact.private.json",
+    "dsa-private-evidence.md",
+    "Apple material folder is ready",
+    "github-set-apple-secrets.ps1"
+)) {
+    if (-not $prepareAppleMaterialsText.Contains($prepareAppleMaterialsTerm)) {
+        throw "Apple private materials helper should include: $prepareAppleMaterialsTerm"
+    }
+}
+if (-not $launchRunbookText.Contains("prepare-apple-materials-folder.ps1")) {
+    throw "Launch runbook should mention the Apple private materials folder helper."
+}
+powershell -NoProfile -ExecutionPolicy Bypass -File tests\prepare-apple-materials-folder.tests.ps1
 $githubPublishText = Get-Content "scripts\github-publish.ps1" -Raw
 if (-not $githubPublishText.Contains("write-site-support-links.ps1")) {
     throw "GitHub publish script should write public support links after repo creation."

@@ -8,6 +8,7 @@
 - Tax and banking information is complete.
 - Account Holder, Admin, or App Manager access is available for upload and submission.
 - EU Digital Services Act trader status is declared before including EU storefronts.
+- Private Apple release materials are stored outside the repository with `scripts/prepare-apple-materials-folder.ps1`.
 
 ## Availability
 
