@@ -538,6 +538,9 @@ if (-not (Test-Path "scripts\github-submit-app-review.ps1")) {
 if (-not (Test-Path "scripts\release-doctor.ps1")) {
     throw "Missing release doctor script."
 }
+if (-not (Test-Path "scripts\sync-release-issue.ps1")) {
+    throw "Missing release issue sync script."
+}
 if (-not (Test-Path "scripts\write-site-support-links.ps1")) {
     throw "Missing site support link writer script."
 }
@@ -669,6 +672,27 @@ if (-not $launchRunbookText.Contains("scripts/release-doctor.ps1")) {
 }
 if (-not (Get-Content "docs\app-store\current-release-status.md" -Raw).Contains("scripts/release-doctor.ps1")) {
     throw "Current release status should mention the release doctor."
+}
+$releaseIssueSyncText = Get-Content "scripts\sync-release-issue.ps1" -Raw
+foreach ($releaseIssueSyncTerm in @(
+    "Do not paste secrets",
+    "docs/app-store/eu-dsa-trader.md",
+    "scripts/release-doctor.ps1 -RunPreflight",
+    "scripts/github-set-apple-secrets.ps1 -UploadOnly",
+    "scripts/github-set-apple-secrets.ps1 -SigningOnly",
+    "scripts/github-set-apple-secrets.ps1 -ReviewOnly",
+    "scripts/github-run-app-store-release.ps1 -Wait",
+    "scripts/github-submit-app-review.ps1 -ConfirmSubmitForReview YES -Wait"
+)) {
+    if (-not $releaseIssueSyncText.Contains($releaseIssueSyncTerm)) {
+        throw "Release issue sync should include: $releaseIssueSyncTerm"
+    }
+}
+if (-not $launchRunbookText.Contains("scripts/sync-release-issue.ps1")) {
+    throw "Launch runbook should mention the release issue sync script."
+}
+if (-not (Get-Content "docs\app-store\current-release-status.md" -Raw).Contains("scripts/sync-release-issue.ps1")) {
+    throw "Current release status should mention the release issue sync script."
 }
 $appReviewWorkflowPath = ".github\workflows\app-review-submit.yml"
 if (-not (Test-Path $appReviewWorkflowPath)) {

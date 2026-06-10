@@ -12,6 +12,14 @@ powershell -ExecutionPolicy Bypass -File scripts/release-doctor.ps1 -RunPrefligh
 
 This command checks local release gates, GitHub workflows, hosted support URLs, GitHub secrets, and the remaining external Apple account gates. It does not upload builds, trigger workflows, or submit the app for review.
 
+To refresh the public GitHub tracking issue after release gates change:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/sync-release-issue.ps1
+```
+
+This updates Issue #1 with checklist items only. Do not put private Apple values in the issue.
+
 ## Phase 1: Apple Account Readiness
 
 Use `docs/app-store/account-setup.md` for the detailed 0-basics checklist.

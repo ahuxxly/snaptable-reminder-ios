@@ -101,6 +101,14 @@ function Test-Url($url, $requiredText) {
     }
 }
 
+function Invoke-GhJson($ghPath, $arguments, $failureMessage) {
+    $output = & $ghPath @arguments
+    if ($LASTEXITCODE -ne 0) {
+        throw $failureMessage
+    }
+    return $output
+}
+
 $gates = New-Object "System.Collections.Generic.List[object]"
 
 Write-Section "Local repository"
@@ -141,67 +149,84 @@ $authExitCode = $LASTEXITCODE
 $ErrorActionPreference = $previousErrorActionPreference
 if ($authExitCode -ne 0) {
     Write-Host $authOutput
-    throw "GitHub CLI is not authenticated. Run 'gh auth login' first."
+    Add-Gate $gates "GitHub CLI authentication" "BLOCKED" "gh auth status reports an invalid or missing GitHub session." "Run gh auth refresh -h github.com or gh auth login before setting secrets, updating issues, or triggering release workflows."
+} else {
+    Add-Gate $gates "GitHub CLI authentication" "OK" "GitHub CLI is authenticated."
 }
 
 if ([string]::IsNullOrWhiteSpace($RepoFullName)) {
-    $RepoFullName = (& $ghPath repo view --json nameWithOwner --jq ".nameWithOwner").Trim()
+    try {
+        $RepoFullName = (& $ghPath repo view --json nameWithOwner --jq ".nameWithOwner").Trim()
+    } catch {
+        $RepoFullName = ""
+    }
 }
 if (-not $RepoFullName -or -not $RepoFullName.Contains("/")) {
-    throw "RepoFullName must look like owner/repo."
-}
-Write-Host "repo=$RepoFullName"
-
-$repoInfo = & $ghPath repo view $RepoFullName --json isPrivate,url
-if ($LASTEXITCODE -ne 0) {
-    throw "Could not inspect GitHub repository $RepoFullName."
-}
-$repo = $repoInfo | ConvertFrom-Json
-if ($repo.isPrivate -eq $false) {
-    Add-Gate $gates "GitHub repository" "OK" "Public repository: $($repo.url)"
+    Add-Gate $gates "GitHub repository" "BLOCKED" "Could not resolve repository name." "Pass -RepoFullName owner/repo after GitHub CLI auth is healthy."
+    $RepoFullName = ""
 } else {
-    Add-Gate $gates "GitHub repository" "WARN" "Repository is private." "Use public visibility before relying on GitHub Pages support links."
+    Write-Host "repo=$RepoFullName"
 }
 
-$workflowJson = & $ghPath workflow list --repo $RepoFullName --json name,state
-if ($LASTEXITCODE -ne 0) {
-    throw "Could not list GitHub workflows."
-}
-$workflowRecords = ConvertFrom-JsonItems $workflowJson
-$workflowNames = New-Object "System.Collections.Generic.HashSet[string]" ([System.StringComparer]::Ordinal)
-foreach ($workflow in $workflowRecords) {
-    if ($workflow.state -eq "active") {
-        [void]$workflowNames.Add([string]$workflow.name)
+if (-not [string]::IsNullOrWhiteSpace($RepoFullName)) {
+    try {
+        $repoInfo = Invoke-GhJson $ghPath @("repo", "view", $RepoFullName, "--json", "isPrivate,url") "Could not inspect GitHub repository $RepoFullName."
+        $repo = $repoInfo | ConvertFrom-Json
+        if ($repo.isPrivate -eq $false) {
+            Add-Gate $gates "GitHub repository" "OK" "Public repository: $($repo.url)"
+        } else {
+            Add-Gate $gates "GitHub repository" "WARN" "Repository is private." "Use public visibility before relying on GitHub Pages support links."
+        }
+    } catch {
+        Add-Gate $gates "GitHub repository" "BLOCKED" $_.Exception.Message "Fix GitHub CLI auth or network access, then rerun the release doctor."
     }
 }
-$requiredWorkflows = @(
-    "iOS CI",
-    "Publish App Store Site",
-    "Release Readiness",
-    "App Store Screenshots",
-    "App Store Connect Upload",
-    "TestFlight Upload",
-    "App Review Submit"
-)
-$missingWorkflows = Get-MissingNames $workflowNames $requiredWorkflows
-if ($missingWorkflows.Count -eq 0) {
-    Add-Gate $gates "GitHub workflows" "OK" "All release workflows are active."
-} else {
-    Add-Gate $gates "GitHub workflows" "BLOCKED" "Missing or inactive workflows: $($missingWorkflows -join ', ')." "Push workflow fixes before release."
+
+if (-not [string]::IsNullOrWhiteSpace($RepoFullName)) {
+    try {
+        $workflowJson = Invoke-GhJson $ghPath @("workflow", "list", "--repo", $RepoFullName, "--json", "name,state") "Could not list GitHub workflows."
+        $workflowRecords = ConvertFrom-JsonItems $workflowJson
+        $workflowNames = New-Object "System.Collections.Generic.HashSet[string]" ([System.StringComparer]::Ordinal)
+        foreach ($workflow in $workflowRecords) {
+            if ($workflow.state -eq "active") {
+                [void]$workflowNames.Add([string]$workflow.name)
+            }
+        }
+        $requiredWorkflows = @(
+            "iOS CI",
+            "Publish App Store Site",
+            "Release Readiness",
+            "App Store Screenshots",
+            "App Store Connect Upload",
+            "TestFlight Upload",
+            "App Review Submit"
+        )
+        $missingWorkflows = Get-MissingNames $workflowNames $requiredWorkflows
+        if ($missingWorkflows.Count -eq 0) {
+            Add-Gate $gates "GitHub workflows" "OK" "All release workflows are active."
+        } else {
+            Add-Gate $gates "GitHub workflows" "BLOCKED" "Missing or inactive workflows: $($missingWorkflows -join ', ')." "Push workflow fixes before release."
+        }
+    } catch {
+        Add-Gate $gates "GitHub workflows" "BLOCKED" $_.Exception.Message "Fix GitHub CLI auth or network access, then rerun the release doctor."
+    }
 }
 
-foreach ($workflowName in @("iOS CI", "Publish App Store Site", "Release Readiness")) {
-    $runJson = & $ghPath run list --repo $RepoFullName --workflow $workflowName --limit 1 --json workflowName,status,conclusion,headSha,url
-    if ($LASTEXITCODE -ne 0) {
-        throw "Could not list GitHub workflow runs for $workflowName."
-    }
-    $latestRun = @(ConvertFrom-JsonItems $runJson) | Select-Object -First 1
-    if ($null -eq $latestRun) {
-        Add-Gate $gates $workflowName "BLOCKED" "No recent run found." "Run or push the workflow before release."
-    } elseif ($latestRun.status -eq "completed" -and $latestRun.conclusion -eq "success") {
-        Add-Gate $gates $workflowName "OK" "Latest run succeeded: $($latestRun.url)"
-    } else {
-        Add-Gate $gates $workflowName "BLOCKED" "Latest run status=$($latestRun.status), conclusion=$($latestRun.conclusion)." "Open $($latestRun.url) and fix before release."
+if (-not [string]::IsNullOrWhiteSpace($RepoFullName)) {
+    foreach ($workflowName in @("iOS CI", "Publish App Store Site", "Release Readiness")) {
+        try {
+            $runJson = Invoke-GhJson $ghPath @("run", "list", "--repo", $RepoFullName, "--workflow", $workflowName, "--limit", "1", "--json", "workflowName,status,conclusion,headSha,url") "Could not list GitHub workflow runs for $workflowName."
+            $latestRun = @(ConvertFrom-JsonItems $runJson) | Select-Object -First 1
+            if ($null -eq $latestRun) {
+                Add-Gate $gates $workflowName "BLOCKED" "No recent run found." "Run or push the workflow before release."
+            } elseif ($latestRun.status -eq "completed" -and $latestRun.conclusion -eq "success") {
+                Add-Gate $gates $workflowName "OK" "Latest run succeeded: $($latestRun.url)"
+            } else {
+                Add-Gate $gates $workflowName "BLOCKED" "Latest run status=$($latestRun.status), conclusion=$($latestRun.conclusion)." "Open $($latestRun.url) and fix before release."
+            }
+        } catch {
+            Add-Gate $gates $workflowName "BLOCKED" $_.Exception.Message "Fix GitHub CLI auth or network access, then rerun the release doctor."
+        }
     }
 }
 
@@ -217,7 +242,6 @@ if ($privacyStatus -eq "ok" -and $supportStatus -eq "ok") {
 }
 
 Write-Section "GitHub secrets"
-$secretNames = Get-SecretNames $ghPath $RepoFullName
 $uploadSecrets = @(
     "APP_STORE_CONNECT_USERNAME",
     "APPLE_DEVELOPER_TEAM_ID",
@@ -238,25 +262,35 @@ $reviewSecrets = @(
     "APP_REVIEW_PHONE"
 )
 
-$missingUploadSecrets = Get-MissingNames $secretNames $uploadSecrets
-if ($missingUploadSecrets.Count -eq 0) {
-    Add-Gate $gates "App Store Connect upload secrets" "OK" "Upload secrets are configured."
+if ([string]::IsNullOrWhiteSpace($RepoFullName)) {
+    Add-Gate $gates "GitHub secrets" "BLOCKED" "Repository is unresolved." "Pass -RepoFullName owner/repo after GitHub CLI auth is healthy."
 } else {
-    Add-Gate $gates "App Store Connect upload secrets" "BLOCKED" "Missing: $($missingUploadSecrets -join ', ')." "Run scripts/github-set-apple-secrets.ps1 -UploadOnly after the Apple API key exists."
-}
+    try {
+        $secretNames = Get-SecretNames $ghPath $RepoFullName
 
-$missingSigningSecrets = Get-MissingNames $secretNames $signingSecrets
-if ($missingSigningSecrets.Count -eq 0) {
-    Add-Gate $gates "Apple signing secrets" "OK" "Signing secrets are configured."
-} else {
-    Add-Gate $gates "Apple signing secrets" "BLOCKED" "Missing: $($missingSigningSecrets -join ', ')." "Run scripts/github-set-apple-secrets.ps1 -SigningOnly after the certificate and profile exist."
-}
+        $missingUploadSecrets = Get-MissingNames $secretNames $uploadSecrets
+        if ($missingUploadSecrets.Count -eq 0) {
+            Add-Gate $gates "App Store Connect upload secrets" "OK" "Upload secrets are configured."
+        } else {
+            Add-Gate $gates "App Store Connect upload secrets" "BLOCKED" "Missing: $($missingUploadSecrets -join ', ')." "Run scripts/github-set-apple-secrets.ps1 -UploadOnly after the Apple API key exists."
+        }
 
-$missingReviewSecrets = Get-MissingNames $secretNames $reviewSecrets
-if ($missingReviewSecrets.Count -eq 0) {
-    Add-Gate $gates "App Review contact secrets" "OK" "Review contact secrets are configured."
-} else {
-    Add-Gate $gates "App Review contact secrets" "BLOCKED" "Missing: $($missingReviewSecrets -join ', ')." "Run scripts/github-set-apple-secrets.ps1 -ReviewOnly after choosing private review contact details."
+        $missingSigningSecrets = Get-MissingNames $secretNames $signingSecrets
+        if ($missingSigningSecrets.Count -eq 0) {
+            Add-Gate $gates "Apple signing secrets" "OK" "Signing secrets are configured."
+        } else {
+            Add-Gate $gates "Apple signing secrets" "BLOCKED" "Missing: $($missingSigningSecrets -join ', ')." "Run scripts/github-set-apple-secrets.ps1 -SigningOnly after the certificate and profile exist."
+        }
+
+        $missingReviewSecrets = Get-MissingNames $secretNames $reviewSecrets
+        if ($missingReviewSecrets.Count -eq 0) {
+            Add-Gate $gates "App Review contact secrets" "OK" "Review contact secrets are configured."
+        } else {
+            Add-Gate $gates "App Review contact secrets" "BLOCKED" "Missing: $($missingReviewSecrets -join ', ')." "Run scripts/github-set-apple-secrets.ps1 -ReviewOnly after choosing private review contact details."
+        }
+    } catch {
+        Add-Gate $gates "GitHub secrets" "BLOCKED" $_.Exception.Message "Fix GitHub CLI auth or network access before configuring release secrets."
+    }
 }
 
 Write-Section "External Apple gates"
