@@ -535,6 +535,9 @@ if (-not (Test-Path "scripts\github-run-app-store-release.ps1")) {
 if (-not (Test-Path "scripts\github-submit-app-review.ps1")) {
     throw "Missing GitHub App Review submit helper script."
 }
+if (-not (Test-Path "scripts\archive-release-readiness-artifacts.ps1")) {
+    throw "Missing Release Readiness artifact archive helper script."
+}
 if (-not (Test-Path "scripts\prepare-apple-materials-folder.ps1")) {
     throw "Missing Apple private materials folder helper script."
 }
@@ -555,6 +558,9 @@ if (-not (Test-Path "scripts\export-app-store-connect-entry-pack.ps1")) {
 }
 if (-not (Test-Path "tests\prepare-apple-materials-folder.tests.ps1")) {
     throw "Missing Apple private materials folder helper tests."
+}
+if (-not (Test-Path "tests\archive-release-readiness-artifacts.tests.ps1")) {
+    throw "Missing Release Readiness artifact archive helper tests."
 }
 if (-not (Test-Path "tests\apple-release-next-actions.tests.ps1")) {
     throw "Missing Apple release next actions helper tests."
@@ -598,6 +604,25 @@ if (-not $githubLoginPublishText.Contains("github-publish.ps1")) {
 }
 if (-not $launchRunbookText.Contains("github-login-and-publish.ps1")) {
     throw "Launch runbook should mention the GitHub login and publish helper."
+}
+$archiveReleaseReadinessText = Get-Content "scripts\archive-release-readiness-artifacts.ps1" -Raw
+foreach ($archiveReleaseReadinessTerm in @(
+    "fastlane-screenshots",
+    "app-store-screenshots",
+    "1320",
+    "2868",
+    "release-readiness-artifacts-summary.md",
+    "release-readiness-artifacts.json",
+    "ghPath run download",
+    "SkipDownload",
+    "pngCount"
+)) {
+    if (-not $archiveReleaseReadinessText.Contains($archiveReleaseReadinessTerm)) {
+        throw "Release Readiness artifact archive helper should include: $archiveReleaseReadinessTerm"
+    }
+}
+if (-not $launchRunbookText.Contains("archive-release-readiness-artifacts.ps1")) {
+    throw "Launch runbook should mention the Release Readiness artifact archive helper."
 }
 $prepareAppleMaterialsText = Get-Content "scripts\prepare-apple-materials-folder.ps1" -Raw
 foreach ($prepareAppleMaterialsTerm in @(
@@ -722,6 +747,7 @@ if (-not $launchRunbookText.Contains("export-app-store-connect-entry-pack.ps1"))
     throw "Launch runbook should mention the App Store Connect entry packet exporter."
 }
 powershell -NoProfile -ExecutionPolicy Bypass -File tests\prepare-apple-materials-folder.tests.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File tests\archive-release-readiness-artifacts.tests.ps1
 powershell -NoProfile -ExecutionPolicy Bypass -File tests\apple-release-next-actions.tests.ps1
 powershell -NoProfile -ExecutionPolicy Bypass -File tests\stage-apple-release-materials.tests.ps1
 powershell -NoProfile -ExecutionPolicy Bypass -File tests\record-app-store-release-evidence.tests.ps1
@@ -876,6 +902,7 @@ foreach ($releaseIssueSyncTerm in @(
     "Do not paste secrets",
     "docs/app-store/eu-dsa-trader.md",
     "scripts/release-doctor.ps1 -RunPreflight",
+    "scripts/archive-release-readiness-artifacts.ps1",
     "NextActionsOutputPath",
     "scripts/apple-release-next-actions.ps1",
     "scripts/stage-apple-release-materials.ps1",

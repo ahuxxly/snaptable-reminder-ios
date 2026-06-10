@@ -22,6 +22,15 @@ powershell -ExecutionPolicy Bypass -File scripts/release-doctor.ps1 -LocalOnly `
   -NextActionsOutputPath "C:\path\outside\repo\SnapTableReminder-Apple-Next-Actions.md"
 ```
 
+After a `Release Readiness` run succeeds, archive and verify the screenshot artifacts locally:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/archive-release-readiness-artifacts.ps1 `
+  -RepoFullName ahuxxly/snaptable-reminder-ios `
+  -RunId "27297816689" `
+  -OutputDirectory "C:\path\outside\repo\SnapTableReminder-ReleaseReadiness-27297816689"
+```
+
 To refresh the public GitHub tracking issue after release gates change:
 
 ```powershell
@@ -124,6 +133,7 @@ Evidence:
 
 - iOS CI workflow is green.
 - Release Readiness workflow is green.
+- Release Readiness artifacts are archived and verified with `scripts/archive-release-readiness-artifacts.ps1`.
 - GitHub Pages URL opens in a browser.
 - Privacy URL and Support URL are copied into App Store Connect.
 

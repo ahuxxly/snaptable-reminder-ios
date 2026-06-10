@@ -25,6 +25,7 @@ Local repository status:
 - GitHub Pages workflow prints the exact Privacy Policy and Support URLs after deployment.
 - App Store screenshot UI test target and Mac capture script are present.
 - Manual GitHub Actions workflow is present for App Store screenshot artifact generation.
+- Windows Release Readiness artifact archive helper is present for downloading and verifying `fastlane-screenshots` and `app-store-screenshots` from a successful GitHub Actions run.
 - Fastlane screenshot staging and upload lane are present.
 - Screenshot automation resets demo data to avoid stale simulator records.
 - Mac release readiness script is present for local build, test, and screenshot staging checks.
@@ -48,6 +49,7 @@ Verified on GitHub:
 - Repository is public at `https://github.com/ahuxxly/snaptable-reminder-ios`.
 - `iOS CI` is passing on macOS.
 - `Release Readiness` is passing on macOS.
+- Release Readiness screenshot artifacts can be archived and verified locally with `scripts/archive-release-readiness-artifacts.ps1`.
 - `Publish App Store Site` is passing.
 - Privacy URL is live: `https://ahuxxly.github.io/snaptable-reminder-ios/privacy.html`.
 - Support URL is live: `https://ahuxxly.github.io/snaptable-reminder-ios/support.html`.
@@ -109,6 +111,7 @@ These are still required before the goal is actually complete:
 - `Release Readiness`
 
 You can run `scripts/release-doctor.ps1 -RunPreflight` to see this status plus the missing Apple account and GitHub secret gates in one place.
+After `Release Readiness` succeeds, archive its screenshots with `scripts/archive-release-readiness-artifacts.ps1 -RunId "<run-id>"`.
 
 2. Copy live URLs into App Store Connect:
 
