@@ -24,7 +24,7 @@
 - Price: paid upfront, suggested USD 1.99 or 2.99 equivalent.
 - Privacy policy URL: host `site/privacy.html` before submission.
 - Support URL: host `site/support.html` before submission.
-- Contact email: publish before submission.
+- Support contact: publish a public GitHub Issues link or support email before submission.
 - App Store metadata draft: `docs/app-store/metadata.md`.
 - Privacy questionnaire draft: `docs/app-store/privacy-questionnaire.md`.
 - Privacy manifest includes UserDefaults required reason API entry.

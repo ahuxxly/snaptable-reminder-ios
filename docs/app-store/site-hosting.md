@@ -21,6 +21,8 @@ Replace `<github-user-or-org>` and `<repository-name>` with the actual GitHub ow
 
 Publishing helper: `docs/github-publishing.md`.
 
+The GitHub publishing helper also writes a public support request link into `site/support.html` and `site/privacy.html` after the final repository owner and name are known.
+
 ## Other Static Hosts
 
 The same `site/` folder can be uploaded to any static host, including Vercel, Netlify, Cloudflare Pages, or an object storage bucket with public website hosting.

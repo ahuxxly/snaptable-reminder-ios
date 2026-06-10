@@ -341,6 +341,9 @@ if (-not (Test-Path "scripts\github-publish.ps1")) {
 if (-not (Test-Path "scripts\github-login-and-publish.ps1")) {
     throw "Missing GitHub login and publish helper script."
 }
+if (-not (Test-Path "scripts\write-site-support-links.ps1")) {
+    throw "Missing site support link writer script."
+}
 $githubLoginPublishText = Get-Content "scripts\github-login-and-publish.ps1" -Raw
 if (-not $githubLoginPublishText.Contains("auth login")) {
     throw "GitHub login helper should run gh auth login."
@@ -350,6 +353,20 @@ if (-not $githubLoginPublishText.Contains("github-publish.ps1")) {
 }
 if (-not $launchRunbookText.Contains("github-login-and-publish.ps1")) {
     throw "Launch runbook should mention the GitHub login and publish helper."
+}
+$githubPublishText = Get-Content "scripts\github-publish.ps1" -Raw
+if (-not $githubPublishText.Contains("write-site-support-links.ps1")) {
+    throw "GitHub publish script should write public support links after repo creation."
+}
+if (-not $githubPublishText.Contains("docs: add public support request links")) {
+    throw "GitHub publish script should commit generated support-page links."
+}
+$siteSupportLinkWriterText = Get-Content "scripts\write-site-support-links.ps1" -Raw
+if (-not $siteSupportLinkWriterText.Contains("https://github.com/")) {
+    throw "Site support link writer should generate a GitHub Issues URL."
+}
+if (-not $siteSupportLinkWriterText.Contains("support.html") -or -not $siteSupportLinkWriterText.Contains("privacy.html")) {
+    throw "Site support link writer should update support and privacy pages."
 }
 Write-Host "GitHub publishing helpers present"
 

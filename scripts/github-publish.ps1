@@ -63,7 +63,24 @@ if ($LASTEXITCODE -eq 0 -and $originUrl) {
 
 Write-Section "Repository"
 $repoFullName = & $ghPath repo view --json nameWithOwner --jq ".nameWithOwner"
+$repoFullName = ($repoFullName | Select-Object -First 1).Trim()
+if (-not $repoFullName -or -not $repoFullName.Contains("/")) {
+    throw "Could not determine GitHub repository name with owner."
+}
 Write-Host "repo=$repoFullName"
+
+Write-Section "Support links"
+$repoParts = $repoFullName -split "/", 2
+powershell -ExecutionPolicy Bypass -File scripts\write-site-support-links.ps1 -Owner $repoParts[0] -RepoName $repoParts[1]
+$siteStatus = git status --short -- site
+if ($siteStatus) {
+    Write-Host $siteStatus
+    git add site\support.html site\privacy.html
+    git commit -m "docs: add public support request links"
+    git push -u origin $branch
+} else {
+    Write-Host "site support links already current"
+}
 
 Write-Section "Recent workflow runs"
 & $ghPath run list --limit 10

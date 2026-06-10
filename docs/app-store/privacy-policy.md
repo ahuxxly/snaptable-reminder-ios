@@ -34,4 +34,4 @@ SnapTable Reminder helps organize personal records and reminders. It does not pr
 
 ## Contact
 
-For support or privacy questions, use the support contact published with the app's App Store listing.
+For support or privacy questions, use the hosted support page for SnapTable Reminder. The release helper writes the public support request link after the repository URL is known.

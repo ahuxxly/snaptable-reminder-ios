@@ -42,6 +42,8 @@ What the script does:
 - Requires a clean git working tree.
 - Creates a GitHub repository when `origin` is missing.
 - Pushes the current branch.
+- Writes a public support request link into `site/support.html` and `site/privacy.html` after the repository URL is known.
+- Commits and pushes that support-page update when needed.
 - Prints recent GitHub Actions runs.
 
 ## Existing Repository
@@ -68,6 +70,8 @@ After the first push:
 https://<owner>.github.io/<repo>/privacy.html
 https://<owner>.github.io/<repo>/support.html
 ```
+
+The publishing script updates the support and privacy pages so the hosted support page links to the public GitHub Issues page for this repository. Do not include private screenshots, receipts, or personal documents in public support issues.
 
 To write those URLs into Fastlane metadata after Pages is live:
 
