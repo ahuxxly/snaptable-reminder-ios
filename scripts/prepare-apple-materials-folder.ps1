@@ -162,6 +162,7 @@ Do not commit this folder, screenshots of private Apple pages, tax records, bank
 From the repository root, validate this private folder:
 
 ```powershell
+powershell -ExecutionPolicy Bypass -File scripts/apple-release-next-actions.ps1 -MaterialsDirectory "$materialsRoot"
 powershell -ExecutionPolicy Bypass -File scripts/prepare-apple-materials-folder.ps1 -OutputDirectory "$materialsRoot" -ValidateOnly
 ```
 

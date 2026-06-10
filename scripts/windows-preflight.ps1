@@ -538,6 +538,9 @@ if (-not (Test-Path "scripts\github-submit-app-review.ps1")) {
 if (-not (Test-Path "scripts\prepare-apple-materials-folder.ps1")) {
     throw "Missing Apple private materials folder helper script."
 }
+if (-not (Test-Path "scripts\apple-release-next-actions.ps1")) {
+    throw "Missing Apple release next actions helper script."
+}
 if (-not (Test-Path "scripts\stage-apple-release-materials.ps1")) {
     throw "Missing Apple release material staging helper script."
 }
@@ -552,6 +555,9 @@ if (-not (Test-Path "scripts\export-app-store-connect-entry-pack.ps1")) {
 }
 if (-not (Test-Path "tests\prepare-apple-materials-folder.tests.ps1")) {
     throw "Missing Apple private materials folder helper tests."
+}
+if (-not (Test-Path "tests\apple-release-next-actions.tests.ps1")) {
+    throw "Missing Apple release next actions helper tests."
 }
 if (-not (Test-Path "tests\stage-apple-release-materials.tests.ps1")) {
     throw "Missing Apple release material staging helper tests."
@@ -610,6 +616,26 @@ foreach ($prepareAppleMaterialsTerm in @(
 }
 if (-not $launchRunbookText.Contains("prepare-apple-materials-folder.ps1")) {
     throw "Launch runbook should mention the Apple private materials folder helper."
+}
+$appleReleaseNextActionsText = Get-Content "scripts\apple-release-next-actions.ps1" -Raw
+foreach ($nextActionsTerm in @(
+    "Create the private Apple materials folder",
+    "Complete Apple account and paid app setup",
+    "Download the App Store Connect API key",
+    "Create Apple signing assets",
+    "Record App Store Connect setup evidence",
+    "Upload metadata, screenshots, and TestFlight build",
+    "Record App Store release evidence",
+    "Run release doctor for final status",
+    "Do not paste private Apple values into GitHub issues",
+    "no China mainland availability"
+)) {
+    if (-not $appleReleaseNextActionsText.Contains($nextActionsTerm)) {
+        throw "Apple release next actions helper should include: $nextActionsTerm"
+    }
+}
+if (-not $launchRunbookText.Contains("apple-release-next-actions.ps1")) {
+    throw "Launch runbook should mention the Apple release next actions helper."
 }
 $stageAppleMaterialsText = Get-Content "scripts\stage-apple-release-materials.ps1" -Raw
 foreach ($stageAppleMaterialsTerm in @(
@@ -696,6 +722,7 @@ if (-not $launchRunbookText.Contains("export-app-store-connect-entry-pack.ps1"))
     throw "Launch runbook should mention the App Store Connect entry packet exporter."
 }
 powershell -NoProfile -ExecutionPolicy Bypass -File tests\prepare-apple-materials-folder.tests.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File tests\apple-release-next-actions.tests.ps1
 powershell -NoProfile -ExecutionPolicy Bypass -File tests\stage-apple-release-materials.tests.ps1
 powershell -NoProfile -ExecutionPolicy Bypass -File tests\record-app-store-release-evidence.tests.ps1
 powershell -NoProfile -ExecutionPolicy Bypass -File tests\record-app-store-connect-setup-evidence.tests.ps1
@@ -846,6 +873,7 @@ foreach ($releaseIssueSyncTerm in @(
     "Do not paste secrets",
     "docs/app-store/eu-dsa-trader.md",
     "scripts/release-doctor.ps1 -RunPreflight",
+    "scripts/apple-release-next-actions.ps1",
     "scripts/stage-apple-release-materials.ps1",
     "scripts/record-app-store-release-evidence.ps1",
     "scripts/record-app-store-connect-setup-evidence.ps1",

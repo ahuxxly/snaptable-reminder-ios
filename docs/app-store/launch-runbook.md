@@ -33,9 +33,12 @@ To prepare a private local folder for Apple account, signing, DSA, and review-co
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/prepare-apple-materials-folder.ps1
 powershell -ExecutionPolicy Bypass -File scripts/export-app-store-connect-entry-pack.ps1
+powershell -ExecutionPolicy Bypass -File scripts/apple-release-next-actions.ps1
 ```
 
-Keep that folder outside this repository. After you have the real Apple files and private contact values, stage them into the standard folder with:
+The next-actions helper writes a local Markdown checklist to your Documents folder and prints the next safest Apple action based on the private materials folder state.
+
+Keep the private materials folder outside this repository. After you have the real Apple files and private contact values, stage them into the standard folder with:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/stage-apple-release-materials.ps1 `
