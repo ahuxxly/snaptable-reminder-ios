@@ -25,6 +25,7 @@
 - Contact email: publish before submission.
 - App Store metadata draft: `docs/app-store/metadata.md`.
 - Privacy questionnaire draft: `docs/app-store/privacy-questionnaire.md`.
+- Privacy manifest includes UserDefaults required reason API entry.
 - Export compliance draft: `docs/app-store/export-compliance.md`.
 - Review notes draft: `docs/app-store/review-notes.md`.
 - Age rating draft: `docs/app-store/age-rating.md`.

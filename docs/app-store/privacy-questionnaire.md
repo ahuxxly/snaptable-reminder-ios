@@ -35,6 +35,13 @@ If App Store Connect asks about user content, answer based on Apple's current qu
 - Crash data: No third-party crash reporting in version 1.
 - Performance data: No third-party performance reporting in version 1.
 
+## Privacy Manifest Required Reason API
+
+- UserDefaults: declared in `SnapTableReminder/Resources/PrivacyInfo.xcprivacy`.
+- Reason code: `CA92.1`.
+- Use: storing app-specific defaults, currently default currency and reminder lead days.
+- No app group, cross-app, advertising, analytics, or tracking use.
+
 ## Location
 
 - Precise location: No.
