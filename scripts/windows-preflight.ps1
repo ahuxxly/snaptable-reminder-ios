@@ -80,6 +80,21 @@ if ($LASTEXITCODE -eq 0) {
     Write-Host "no UserDefaults usage found"
 }
 
+Write-Section "Test coverage files"
+$requiredTestFiles = @(
+    "SnapTableReminderTests\DocumentParserTests.swift",
+    "SnapTableReminderTests\CSVExporterTests.swift",
+    "SnapTableReminderTests\RecordDateLogicTests.swift",
+    "SnapTableReminderTests\AppStateSettingsTests.swift",
+    "SnapTableReminderTests\ReminderDatePolicyTests.swift"
+)
+foreach ($testFile in $requiredTestFiles) {
+    if (-not (Test-Path $testFile)) {
+        throw "Missing required test file: $testFile"
+    }
+}
+Write-Host "required test files present"
+
 Write-Section "Static site links"
 $htmlFiles = Get-ChildItem site -Filter *.html
 foreach ($file in $htmlFiles) {
