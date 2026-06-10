@@ -358,8 +358,11 @@ $githubPublishText = Get-Content "scripts\github-publish.ps1" -Raw
 if (-not $githubPublishText.Contains("write-site-support-links.ps1")) {
     throw "GitHub publish script should write public support links after repo creation."
 }
+if (-not $githubPublishText.Contains("write-fastlane-store-urls.ps1")) {
+    throw "GitHub publish script should write Fastlane store URLs after repo creation."
+}
 if (-not $githubPublishText.Contains("docs: add public support request links")) {
-    throw "GitHub publish script should commit generated support-page links."
+    throw "GitHub publish script should commit generated release URL updates."
 }
 $siteSupportLinkWriterText = Get-Content "scripts\write-site-support-links.ps1" -Raw
 if (-not $siteSupportLinkWriterText.Contains("https://github.com/")) {
@@ -392,6 +395,30 @@ try {
     $resolvedTempBase = [System.IO.Path]::GetFullPath([System.IO.Path]::GetTempPath())
     if ($resolvedSupportTemp.StartsWith($resolvedTempBase, [System.StringComparison]::OrdinalIgnoreCase)) {
         Remove-Item -LiteralPath $resolvedSupportTemp -Recurse -Force
+    }
+}
+$tempFastlaneUrlRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("snaptable-fastlane-url-preflight-" + [guid]::NewGuid().ToString("N"))
+New-Item -ItemType Directory -Path $tempFastlaneUrlRoot | Out-Null
+try {
+    Push-Location $tempFastlaneUrlRoot
+    try {
+        powershell -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot "write-fastlane-store-urls.ps1") -Owner "preflight-owner" -RepoName "snaptable-reminder-ios" | Out-Null
+    } finally {
+        Pop-Location
+    }
+    $tempPrivacyUrlPath = Join-Path $tempFastlaneUrlRoot "fastlane\metadata\en-US\privacy_url.txt"
+    $tempSupportUrlPath = Join-Path $tempFastlaneUrlRoot "fastlane\metadata\en-US\support_url.txt"
+    if ((Get-Content $tempPrivacyUrlPath -Raw).Trim() -ne "https://preflight-owner.github.io/snaptable-reminder-ios/privacy.html") {
+        throw "Fastlane store URL writer did not write the expected privacy URL."
+    }
+    if ((Get-Content $tempSupportUrlPath -Raw).Trim() -ne "https://preflight-owner.github.io/snaptable-reminder-ios/support.html") {
+        throw "Fastlane store URL writer did not write the expected support URL."
+    }
+} finally {
+    $resolvedFastlaneUrlTemp = [System.IO.Path]::GetFullPath($tempFastlaneUrlRoot)
+    $resolvedTempBase = [System.IO.Path]::GetFullPath([System.IO.Path]::GetTempPath())
+    if ($resolvedFastlaneUrlTemp.StartsWith($resolvedTempBase, [System.StringComparison]::OrdinalIgnoreCase)) {
+        Remove-Item -LiteralPath $resolvedFastlaneUrlTemp -Recurse -Force
     }
 }
 Write-Host "GitHub publishing helpers present"

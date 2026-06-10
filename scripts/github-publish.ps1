@@ -72,14 +72,17 @@ Write-Host "repo=$repoFullName"
 Write-Section "Support links"
 $repoParts = $repoFullName -split "/", 2
 powershell -ExecutionPolicy Bypass -File scripts\write-site-support-links.ps1 -Owner $repoParts[0] -RepoName $repoParts[1]
-$siteStatus = git status --short -- site
-if ($siteStatus) {
-    Write-Host $siteStatus
+Write-Section "Fastlane store URLs"
+powershell -ExecutionPolicy Bypass -File scripts\write-fastlane-store-urls.ps1 -Owner $repoParts[0] -RepoName $repoParts[1]
+$generatedReleaseStatus = git status --short -- site fastlane\metadata\en-US\privacy_url.txt fastlane\metadata\en-US\support_url.txt
+if ($generatedReleaseStatus) {
+    Write-Host $generatedReleaseStatus
     git add site\support.html site\privacy.html
+    git add fastlane\metadata\en-US\privacy_url.txt fastlane\metadata\en-US\support_url.txt
     git commit -m "docs: add public support request links"
     git push -u origin $branch
 } else {
-    Write-Host "site support links already current"
+    Write-Host "site support links and Fastlane store URLs already current"
 }
 
 Write-Section "Recent workflow runs"

@@ -75,7 +75,7 @@ fastlane/metadata/en-US/privacy_url.txt
 fastlane/metadata/en-US/support_url.txt
 ```
 
-For GitHub Pages hosting, generate them with:
+For GitHub Pages hosting, `scripts/github-publish.ps1` generates them automatically after the repository URL is known. They can also be generated manually with:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/write-fastlane-store-urls.ps1 -Owner <owner> -RepoName <repo>
