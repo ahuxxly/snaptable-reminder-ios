@@ -19,6 +19,7 @@ Local repository status:
 - App Store metadata length and keyword byte limits are covered by `scripts/validate-app-store-metadata.ps1`.
 - GitHub Pages workflow prints the exact Privacy Policy and Support URLs after deployment.
 - App Store screenshot UI test target and Mac capture script are present.
+- Manual GitHub Actions workflow is present for App Store screenshot artifact generation.
 
 Verified on this Windows workspace:
 

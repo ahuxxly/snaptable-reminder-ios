@@ -40,6 +40,8 @@ bash scripts/mac-capture-screenshots.sh
 
 This uses demo data and exports screenshot attachments for Capture, Records, Dashboard, and Settings to `build/app-store-screenshots`.
 
+After the repository is on GitHub, the same screenshot path is available through the manual `App Store Screenshots` workflow. Download the `app-store-screenshots` artifact from the workflow run.
+
 ## GitHub Actions
 
 The repository includes `.github/workflows/ios-ci.yml`. After pushing to GitHub, open the Actions tab and confirm the iOS CI workflow passes. This verifies the same project generation, test, and simulator build path on a hosted macOS runner.

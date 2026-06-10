@@ -1,0 +1,36 @@
+name: App Store Screenshots
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  capture:
+    runs-on: macos-15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Capture screenshots
+        run: bash scripts/mac-capture-screenshots.sh
+
+      - name: Upload screenshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-store-screenshots
+          path: build/app-store-screenshots
+          if-no-files-found: error
+
+      - name: Summarize artifact
+        run: |
+          {
+            echo "### App Store screenshots"
+            echo ""
+            echo "Download the app-store-screenshots artifact from this workflow run."
+            echo "Upload the Capture, Records, Dashboard, and Settings screenshots to App Store Connect."
+          } >> "$GITHUB_STEP_SUMMARY"

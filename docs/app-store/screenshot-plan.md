@@ -16,6 +16,14 @@ bash scripts/mac-capture-screenshots.sh
 
 The script generates the Xcode project, runs `SnapTableReminderUITests`, and exports XCTest screenshot attachments to `build/app-store-screenshots`.
 
+GitHub Actions path:
+
+1. Push the repository to GitHub.
+2. Open Actions.
+3. Run `App Store Screenshots`.
+4. Download the `app-store-screenshots` artifact.
+5. Upload the exported screenshots to App Store Connect.
+
 Preferred simulators:
 
 - iPhone 17 Pro Max

@@ -119,6 +119,12 @@ Preferred automated path:
 bash scripts/mac-capture-screenshots.sh
 ```
 
+GitHub Actions alternative:
+
+1. Run the `App Store Screenshots` workflow.
+2. Download the `app-store-screenshots` artifact.
+3. Upload the screenshots to App Store Connect.
+
 Manual path:
 
 1. Generate project on Mac.

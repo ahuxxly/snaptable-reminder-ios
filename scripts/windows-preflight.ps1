@@ -315,6 +315,16 @@ if (-not $screenshotScriptText.Contains("iPhone 16 Pro Max") -and -not $screensh
 if (-not $launchRunbookText.Contains("scripts/mac-capture-screenshots.sh")) {
     throw "Launch runbook should mention the screenshot capture script."
 }
+$screenshotWorkflowText = Get-Content ".github\workflows\app-store-screenshots.yml" -Raw
+if (-not $screenshotWorkflowText.Contains("workflow_dispatch")) {
+    throw "App Store screenshot workflow should be manually runnable."
+}
+if (-not $screenshotWorkflowText.Contains("scripts/mac-capture-screenshots.sh")) {
+    throw "App Store screenshot workflow should run the Mac screenshot script."
+}
+if (-not $screenshotWorkflowText.Contains("actions/upload-artifact")) {
+    throw "App Store screenshot workflow should upload screenshot artifacts."
+}
 Write-Host "screenshot capture path present"
 
 Write-Section "Static site links"
