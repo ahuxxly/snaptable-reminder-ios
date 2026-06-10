@@ -48,6 +48,16 @@ The repository includes `.github/workflows/ios-ci.yml`. After pushing to GitHub,
 
 If the local Mac run or CI fails, use `docs/testing/ci-failure-playbook.md` before retrying.
 
+## Run Release Readiness
+
+Before App Store Connect upload work, run:
+
+```bash
+bash scripts/mac-release-readiness.sh
+```
+
+This runs Mac verification, captures screenshots, stages Fastlane screenshot files, and prints the next upload commands.
+
 ## Archive for App Store Connect
 
 After tests and simulator build pass:

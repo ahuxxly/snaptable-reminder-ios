@@ -40,6 +40,14 @@ bash scripts/mac-capture-screenshots.sh
 
 This runs the screenshot UI test flow with demo data and exports Capture, Records, Dashboard, and Settings screenshots for App Store preparation.
 
+## Mac Release Readiness
+
+```bash
+bash scripts/mac-release-readiness.sh
+```
+
+This runs Mac verification, captures screenshots, stages Fastlane screenshots, and prints the next upload commands.
+
 ## Windows Preflight
 
 On this Windows workspace, run the static checks with:

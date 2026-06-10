@@ -303,6 +303,16 @@ Write-Section "Screenshot automation"
 if (-not (Test-Path "scripts\mac-capture-screenshots.sh")) {
     throw "Missing Mac screenshot capture script."
 }
+if (-not (Test-Path "scripts\mac-release-readiness.sh")) {
+    throw "Missing Mac release readiness script."
+}
+$releaseReadinessText = Get-Content "scripts\mac-release-readiness.sh" -Raw
+if (-not $releaseReadinessText.Contains("scripts/mac-verify.sh")) {
+    throw "Mac release readiness script should run Mac verification."
+}
+if (-not $releaseReadinessText.Contains("scripts/mac-capture-screenshots.sh")) {
+    throw "Mac release readiness script should capture screenshots."
+}
 $screenshotScriptText = Get-Content "scripts\mac-capture-screenshots.sh" -Raw
 if (-not $screenshotScriptText.Contains("SnapTableReminderScreenshots")) {
     throw "Screenshot script should run the SnapTableReminderScreenshots scheme."

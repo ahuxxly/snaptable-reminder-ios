@@ -58,6 +58,12 @@ The required Mac verification command is:
 bash scripts/mac-verify.sh
 ```
 
+The broader local release readiness command is:
+
+```bash
+bash scripts/mac-release-readiness.sh
+```
+
 Alternative:
 
 ```bash
@@ -69,6 +75,7 @@ Evidence:
 - XcodeGen generates `SnapTableReminder.xcodeproj`.
 - Tests pass.
 - Simulator build passes.
+- Screenshot files are staged in `fastlane/screenshots/en-US`.
 
 If any command fails, follow `docs/testing/ci-failure-playbook.md` and keep the failing command output.
 
