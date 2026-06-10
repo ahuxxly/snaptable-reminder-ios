@@ -11,7 +11,7 @@ Local repository status:
 - Unit test source files are present for parsing, CSV export, date logic, settings persistence, and reminder date policy.
 - App Store support site files are present in `site/`.
 - GitHub Actions workflows are present for iOS CI, GitHub Pages, App Store screenshots, release readiness, App Store Connect metadata/screenshot upload, TestFlight upload, and protected App Review submission.
-- Fastlane lanes are present for verify, archive, and TestFlight upload.
+- Fastlane lanes are present for verify, archive, metadata upload, screenshot upload, review checks, TestFlight upload, and protected App Review submission.
 - GitHub login and publish helper script is present in `scripts/github-login-and-publish.ps1`.
 - GitHub publish helper can enable GitHub Issues, prepare the support issue label, write public support request links, and write Fastlane store URL files after the repository URL is known.
 - GitHub support issue template is present and warns users not to include private documents in public support requests.
@@ -30,7 +30,7 @@ Local repository status:
 - Fastlane `review_check` lane and Precheckfile are present for App Review metadata risk checks.
 - Mac Fastlane upload environment validation script is present.
 - Mac Apple signing environment validation and installation scripts are present.
-- Windows GitHub Apple secret helper is present for configuring upload and signing secrets without committing private files.
+- Windows GitHub Apple secret helper is present for configuring upload, signing, and App Review contact secrets without committing private files.
 - Windows GitHub App Store release helper is present for checking secrets and triggering upload workflows.
 - Windows GitHub App Review submit helper is present for checking review-contact secrets and triggering final submission with explicit confirmation.
 - App Review contact checklist and Mac environment validation script are present.
