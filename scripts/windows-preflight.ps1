@@ -5,6 +5,28 @@ function Write-Section($title) {
     Write-Host "== $title =="
 }
 
+function Read-PngMetadata($path) {
+    $bytes = [System.IO.File]::ReadAllBytes($path)
+    if ($bytes.Length -lt 33) {
+        throw "PNG file is too small: $path"
+    }
+    $pngSignature = @(137, 80, 78, 71, 13, 10, 26, 10)
+    for ($index = 0; $index -lt $pngSignature.Count; $index++) {
+        if ($bytes[$index] -ne $pngSignature[$index]) {
+            throw "File is not a PNG: $path"
+        }
+    }
+    $width = [System.BitConverter]::ToUInt32(([byte[]]@($bytes[19], $bytes[18], $bytes[17], $bytes[16])), 0)
+    $height = [System.BitConverter]::ToUInt32(([byte[]]@($bytes[23], $bytes[22], $bytes[21], $bytes[20])), 0)
+    $colorType = $bytes[25]
+
+    [pscustomobject]@{
+        Width = [int]$width
+        Height = [int]$height
+        ColorType = [int]$colorType
+    }
+}
+
 Write-Section "Git status"
 $gitStatus = git status --short
 if ($gitStatus) {
@@ -256,15 +278,29 @@ powershell -ExecutionPolicy Bypass -File scripts\validate-app-store-metadata.ps1
 
 Write-Section "Asset references"
 $appIconDirectory = "SnapTableReminder\Resources\Assets.xcassets\AppIcon.appiconset"
+$hasMarketingIcon = $false
 foreach ($image in $appIconContents.images) {
     if ($image.filename) {
         $imagePath = Join-Path $appIconDirectory $image.filename
         if (-not (Test-Path $imagePath)) {
             throw "Missing app icon file referenced by asset catalog: $($image.filename)"
         }
+        $pngMetadata = Read-PngMetadata $imagePath
+        $sizePoints = [int](([string]$image.size -split "x")[0])
+        $scale = [int](([string]$image.scale).Replace("x", ""))
+        $expectedPixels = $sizePoints * $scale
+        if ($pngMetadata.Width -ne $expectedPixels -or $pngMetadata.Height -ne $expectedPixels) {
+            throw "App icon $($image.filename) should be ${expectedPixels}x${expectedPixels}px but is $($pngMetadata.Width)x$($pngMetadata.Height)."
+        }
+        if ($image.idiom -eq "ios-marketing" -and $expectedPixels -eq 1024) {
+            $hasMarketingIcon = $true
+        }
     }
 }
-Write-Host "app icon references valid"
+if (-not $hasMarketingIcon) {
+    throw "App icon asset catalog should include a 1024x1024 ios-marketing icon."
+}
+Write-Host "app icon references and dimensions valid"
 
 Write-Section "Privacy manifest coverage"
 $usesUserDefaults = rg "UserDefaults" SnapTableReminder 2>$null
