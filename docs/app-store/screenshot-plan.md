@@ -1,6 +1,6 @@
 # App Store Screenshot Plan
 
-Use this plan after the app builds on a Mac. Apple currently accepts 6.9 inch iPhone screenshots for the primary iPhone screenshot set. The app includes a screenshot data mode triggered by the launch argument `-demoData`.
+Use this plan after the app builds on a Mac. Apple currently accepts 6.9 inch iPhone screenshots for the primary iPhone screenshot set. The app includes a screenshot data mode triggered by the launch argument `-demoData`; screenshot automation also uses `-resetDemoData` so old simulator data cannot leak into App Store screenshots.
 
 Official reference:
 
@@ -54,10 +54,10 @@ Manual Xcode path:
 1. Open the generated project.
 2. Edit the active scheme.
 3. Go to Run > Arguments.
-4. Add launch argument `-demoData`.
+4. Add launch arguments `-demoData` and `-resetDemoData`.
 5. Run the app on a 6.9 inch iPhone simulator.
 
-The app seeds three local records only when the store is empty.
+The app seeds three local records only when the store is empty, unless `-resetDemoData` is also present.
 
 ## Required Screens
 
@@ -83,7 +83,7 @@ Settings:
 
 ## After Screenshots
 
-Remove the `-demoData` launch argument before manual QA or App Review testing.
+Remove the `-demoData` and `-resetDemoData` launch arguments before manual QA or App Review testing.
 
 ## Notes
 

@@ -21,6 +21,7 @@ Local repository status:
 - App Store screenshot UI test target and Mac capture script are present.
 - Manual GitHub Actions workflow is present for App Store screenshot artifact generation.
 - Fastlane screenshot staging and upload lane are present.
+- Screenshot automation resets demo data to avoid stale simulator records.
 
 Verified on this Windows workspace:
 

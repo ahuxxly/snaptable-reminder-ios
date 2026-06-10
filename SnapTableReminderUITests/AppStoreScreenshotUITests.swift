@@ -7,7 +7,7 @@ final class AppStoreScreenshotUITests: XCTestCase {
         continueAfterFailure = false
 
         app = XCUIApplication()
-        app.launchArguments = ["-demoData"]
+        app.launchArguments = ["-demoData", "-resetDemoData"]
         app.launch()
     }
 

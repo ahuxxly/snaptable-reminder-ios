@@ -2,8 +2,12 @@ import Foundation
 
 enum DemoData {
     static func seedIfRequested(into store: DocumentRecordStore) {
-        guard ProcessInfo.processInfo.arguments.contains("-demoData") else { return }
-        guard store.records.isEmpty else { return }
+        seedIfRequested(into: store, arguments: ProcessInfo.processInfo.arguments)
+    }
+
+    static func seedIfRequested(into store: DocumentRecordStore, arguments: [String]) {
+        guard arguments.contains("-demoData") else { return }
+        guard store.records.isEmpty || arguments.contains("-resetDemoData") else { return }
         store.replaceAll(sampleRecords())
     }
 

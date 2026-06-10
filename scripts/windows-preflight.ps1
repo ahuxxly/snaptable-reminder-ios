@@ -272,6 +272,7 @@ $requiredTestFiles = @(
     "SnapTableReminderTests\RecordDateLogicTests.swift",
     "SnapTableReminderTests\AppStateSettingsTests.swift",
     "SnapTableReminderTests\ReminderDatePolicyTests.swift",
+    "SnapTableReminderTests\DemoDataTests.swift",
     "SnapTableReminderUITests\AppStoreScreenshotUITests.swift"
 )
 foreach ($testFile in $requiredTestFiles) {
@@ -312,6 +313,9 @@ if (-not $screenshotScriptText.Contains("xcresulttool export attachments")) {
 if (-not $screenshotScriptText.Contains("mac-stage-fastlane-screenshots.sh")) {
     throw "Screenshot script should stage screenshots for Fastlane."
 }
+if (-not (Get-Content "SnapTableReminderUITests\AppStoreScreenshotUITests.swift" -Raw).Contains("-resetDemoData")) {
+    throw "Screenshot UI tests should reset demo data for stable screenshots."
+}
 if (-not $screenshotScriptText.Contains("iPhone 16 Pro Max") -and -not $screenshotScriptText.Contains("iPhone 17 Pro Max")) {
     throw "Screenshot script should prefer current App Store iPhone screenshot simulators."
 }
@@ -330,6 +334,9 @@ if (-not $fastfileText.Contains("screenshots_path: `"fastlane/screenshots`"")) {
 }
 if (-not $launchRunbookText.Contains("scripts/mac-capture-screenshots.sh")) {
     throw "Launch runbook should mention the screenshot capture script."
+}
+if (-not $launchRunbookText.Contains("-resetDemoData")) {
+    throw "Launch runbook should mention reset demo data for screenshots."
 }
 $screenshotWorkflowText = Get-Content ".github\workflows\app-store-screenshots.yml" -Raw
 if (-not $screenshotWorkflowText.Contains("workflow_dispatch")) {
