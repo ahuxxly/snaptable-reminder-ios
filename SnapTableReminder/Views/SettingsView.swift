@@ -5,16 +5,29 @@ struct SettingsView: View {
     @EnvironmentObject private var store: DocumentRecordStore
     @State private var isConfirmingDelete = false
     @State private var csvExportURL: URL?
+    @State private var currencyCodeText = ""
+
+    private var isCurrencyCodeValid: Bool {
+        normalizedCurrencyCode(from: currencyCodeText) != nil
+    }
 
     var body: some View {
         NavigationStack {
             Form {
                 Section("Defaults") {
-                    TextField("Currency", text: Binding(
-                        get: { appState.defaultCurrencyCode },
-                        set: { appState.setDefaultCurrencyCode($0) }
-                    ))
+                    TextField("Currency", text: $currencyCodeText)
                         .textInputAutocapitalization(.characters)
+                        .onChange(of: currencyCodeText) { _, _ in
+                            commitCurrencyCodeIfValid()
+                        }
+                        .onSubmit {
+                            commitCurrencyCodeIfValid()
+                        }
+                    if !currencyCodeText.isEmpty, !isCurrencyCodeValid {
+                        Text("Use a 3-letter currency code, such as USD, EUR, or CNY.")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
                     Stepper(
                         "Reminder lead: \(appState.defaultReminderLeadDays) day(s)",
                         value: Binding(
@@ -59,6 +72,7 @@ struct SettingsView: View {
             }
             .navigationTitle("Settings")
             .onAppear {
+                currencyCodeText = appState.defaultCurrencyCode
                 prepareCSVExport()
             }
             .onChange(of: store.records) { _, _ in
@@ -80,5 +94,20 @@ struct SettingsView: View {
             csvExportURL = nil
             appState.statusMessage = error.localizedDescription
         }
+    }
+
+    private func commitCurrencyCodeIfValid() {
+        guard let normalized = normalizedCurrencyCode(from: currencyCodeText) else { return }
+        currencyCodeText = normalized
+        appState.setDefaultCurrencyCode(normalized)
+    }
+
+    private func normalizedCurrencyCode(from text: String) -> String? {
+        let letters = text
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .uppercased()
+            .filter(\.isLetter)
+        guard letters.count == 3 else { return nil }
+        return String(letters)
     }
 }

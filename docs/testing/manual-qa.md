@@ -66,10 +66,11 @@
 ## Settings Persistence
 
 1. Open Settings.
-2. Change Currency to `EUR`.
-3. Change Reminder lead to 3 days.
-4. Force quit and relaunch the app.
-5. Confirm Currency is still `EUR` and Reminder lead is still 3 days.
+2. Change Currency to `E` and confirm the app asks for a 3-letter code.
+3. Change Currency to `EUR` and confirm it is accepted.
+4. Change Reminder lead to 3 days.
+5. Force quit and relaunch the app.
+6. Confirm Currency is still `EUR` and Reminder lead is still 3 days.
 
 ## Reset
 

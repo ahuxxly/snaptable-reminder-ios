@@ -24,11 +24,14 @@ final class AppStateSettingsTests: XCTestCase {
 
         let state = AppState(userDefaults: defaults)
 
-        state.setDefaultCurrencyCode("usdollars")
-        XCTAssertEqual(state.defaultCurrencyCode, "USD")
+        XCTAssertTrue(state.setDefaultCurrencyCode(" eur "))
+        XCTAssertEqual(state.defaultCurrencyCode, "EUR")
 
-        state.setDefaultCurrencyCode("")
-        XCTAssertEqual(state.defaultCurrencyCode, "USD")
+        XCTAssertFalse(state.setDefaultCurrencyCode("usdollars"))
+        XCTAssertEqual(state.defaultCurrencyCode, "EUR")
+
+        XCTAssertFalse(state.setDefaultCurrencyCode(""))
+        XCTAssertEqual(state.defaultCurrencyCode, "EUR")
 
         state.setDefaultReminderLeadDays(99)
         XCTAssertEqual(state.defaultReminderLeadDays, 30)

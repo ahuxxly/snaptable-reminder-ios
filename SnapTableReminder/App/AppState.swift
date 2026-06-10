@@ -36,10 +36,12 @@ final class AppState: ObservableObject {
         self.reminderScheduler = reminderScheduler
     }
 
-    func setDefaultCurrencyCode(_ code: String) {
-        let sanitized = Self.sanitizedCurrencyCode(code)
-        defaultCurrencyCode = sanitized
-        userDefaults.set(sanitized, forKey: SettingsKey.defaultCurrencyCode)
+    @discardableResult
+    func setDefaultCurrencyCode(_ code: String) -> Bool {
+        guard let normalized = Self.normalizedCurrencyCode(code) else { return false }
+        defaultCurrencyCode = normalized
+        userDefaults.set(normalized, forKey: SettingsKey.defaultCurrencyCode)
+        return true
     }
 
     func setDefaultReminderLeadDays(_ days: Int) {
@@ -79,12 +81,16 @@ final class AppState: ObservableObject {
     }
 
     private static func sanitizedCurrencyCode(_ code: String) -> String {
+        normalizedCurrencyCode(code) ?? "USD"
+    }
+
+    private static func normalizedCurrencyCode(_ code: String) -> String? {
         let letters = code
             .trimmingCharacters(in: .whitespacesAndNewlines)
             .uppercased()
             .filter(\.isLetter)
-        let sanitized = String(letters.prefix(3))
-        return sanitized.isEmpty ? "USD" : sanitized
+        guard letters.count == 3 else { return nil }
+        return String(letters)
     }
 
     private static func clampedReminderLeadDays(_ days: Int) -> Int {
