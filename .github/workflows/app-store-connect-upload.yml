@@ -26,6 +26,7 @@ permissions:
 jobs:
   app-store-connect-upload:
     runs-on: macos-15
+    timeout-minutes: 45
     env:
       APP_STORE_CONNECT_USERNAME: ${{ secrets.APP_STORE_CONNECT_USERNAME }}
       APPLE_DEVELOPER_TEAM_ID: ${{ secrets.APPLE_DEVELOPER_TEAM_ID }}

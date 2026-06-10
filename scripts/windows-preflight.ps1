@@ -660,6 +660,9 @@ $screenshotWorkflowText = Get-Content ".github\workflows\app-store-screenshots.y
 if (-not $screenshotWorkflowText.Contains("workflow_dispatch")) {
     throw "App Store screenshot workflow should be manually runnable."
 }
+if (-not $screenshotWorkflowText.Contains("timeout-minutes: 20")) {
+    throw "App Store screenshot workflow should cap macOS runtime."
+}
 if (-not $screenshotWorkflowText.Contains("scripts/mac-capture-screenshots.sh")) {
     throw "App Store screenshot workflow should run the Mac screenshot script."
 }
@@ -672,6 +675,9 @@ if (-not $screenshotWorkflowText.Contains("fastlane-screenshots")) {
 $releaseReadinessWorkflowText = Get-Content ".github\workflows\release-readiness.yml" -Raw
 if (-not $releaseReadinessWorkflowText.Contains("workflow_dispatch")) {
     throw "Release Readiness workflow should be manually runnable."
+}
+if (-not $releaseReadinessWorkflowText.Contains("timeout-minutes: 25")) {
+    throw "Release Readiness workflow should cap macOS runtime."
 }
 if (-not $releaseReadinessWorkflowText.Contains("scripts/mac-release-readiness.sh")) {
     throw "Release Readiness workflow should run the Mac release readiness script."
@@ -692,6 +698,9 @@ if (-not (Test-Path $appStoreConnectUploadWorkflowPath)) {
 $appStoreConnectUploadWorkflowText = Get-Content $appStoreConnectUploadWorkflowPath -Raw
 if (-not $appStoreConnectUploadWorkflowText.Contains("workflow_dispatch")) {
     throw "App Store Connect upload workflow should be manually runnable."
+}
+if (-not $appStoreConnectUploadWorkflowText.Contains("timeout-minutes: 45")) {
+    throw "App Store Connect upload workflow should cap macOS runtime."
 }
 if (-not $appStoreConnectUploadWorkflowText.Contains("APP_STORE_CONNECT_API_PRIVATE_KEY")) {
     throw "App Store Connect upload workflow should accept the private key from GitHub Secrets."
@@ -743,6 +752,10 @@ foreach ($file in $htmlFiles) {
 Write-Host "site links valid"
 
 Write-Section "GitHub Pages workflow"
+$iosCiWorkflowText = Get-Content ".github\workflows\ios-ci.yml" -Raw
+if (-not $iosCiWorkflowText.Contains("timeout-minutes: 20")) {
+    throw "iOS CI workflow should cap macOS runtime."
+}
 $pagesWorkflowText = Get-Content ".github\workflows\pages.yml" -Raw
 if (-not $pagesWorkflowText.Contains("enablement: true")) {
     throw "GitHub Pages workflow should enable Pages when configuring the site."
