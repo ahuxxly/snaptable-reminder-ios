@@ -42,6 +42,9 @@ targets:
       - SnapTableReminderTests
     dependencies:
       - target: SnapTableReminder
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
   SnapTableReminderUITests:
     type: bundle.ui-testing
     platform: iOS
@@ -54,6 +57,7 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.snaptable.reminder.uitests
         TEST_TARGET_NAME: SnapTableReminder
         TARGETED_DEVICE_FAMILY: "1"
+        GENERATE_INFOPLIST_FILE: YES
 schemes:
   SnapTableReminder:
     build:

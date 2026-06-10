@@ -127,6 +127,9 @@ if (-not $projectText.Contains("SnapTableReminderUITests")) {
 if (-not $projectText.Contains("SnapTableReminderScreenshots")) {
     throw "project.yml should include the screenshot scheme."
 }
+if (-not $projectText.Contains("GENERATE_INFOPLIST_FILE: YES")) {
+    throw "project.yml should generate Info.plist files for test bundle targets."
+}
 if (-not $projectText.Contains("TEST_TARGET_NAME: SnapTableReminder")) {
     throw "Screenshot UI test target should point at SnapTableReminder."
 }
@@ -701,6 +704,9 @@ Write-Host "site links valid"
 
 Write-Section "GitHub Pages workflow"
 $pagesWorkflowText = Get-Content ".github\workflows\pages.yml" -Raw
+if (-not $pagesWorkflowText.Contains("enablement: true")) {
+    throw "GitHub Pages workflow should enable Pages when configuring the site."
+}
 if (-not $pagesWorkflowText.Contains("privacy.html")) {
     throw "GitHub Pages workflow should summarize the Privacy Policy URL."
 }
