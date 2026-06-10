@@ -11,13 +11,15 @@ powershell -ExecutionPolicy Bypass -File scripts/release-doctor.ps1 -RunPrefligh
 ```
 
 This command checks local release gates, GitHub workflows, hosted support URLs, GitHub secrets, and the remaining external Apple account gates. It does not upload builds, trigger workflows, or submit the app for review.
+It also writes `SnapTableReminder-Apple-Next-Actions.md` to your Documents folder so the first missing Apple action is visible after every diagnosis.
 
 For a network-independent local artifact check:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/release-doctor.ps1 -LocalOnly `
   -EntryPackDirectory "C:\path\outside\repo\SnapTableReminder-AppStoreConnect-EntryPack" `
-  -MaterialsDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials"
+  -MaterialsDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials" `
+  -NextActionsOutputPath "C:\path\outside\repo\SnapTableReminder-Apple-Next-Actions.md"
 ```
 
 To refresh the public GitHub tracking issue after release gates change:

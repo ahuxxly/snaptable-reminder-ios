@@ -70,13 +70,15 @@ powershell -ExecutionPolicy Bypass -File scripts/release-doctor.ps1 -RunPrefligh
 ```
 
 This performs a read-only status sweep over local gates, GitHub workflows, hosted support URLs, GitHub secrets, and remaining Apple account blockers. It does not trigger uploads or App Review submission.
+It also writes a local `SnapTableReminder-Apple-Next-Actions.md` checklist so the next Apple/account action is visible after the diagnosis.
 
 Local-only artifact diagnosis:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/release-doctor.ps1 -LocalOnly `
   -EntryPackDirectory "C:\path\outside\repo\SnapTableReminder-AppStoreConnect-EntryPack" `
-  -MaterialsDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials"
+  -MaterialsDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials" `
+  -NextActionsOutputPath "C:\path\outside\repo\SnapTableReminder-Apple-Next-Actions.md"
 ```
 
 ## Not Yet Complete

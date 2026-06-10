@@ -181,6 +181,31 @@ try {
         Assert-Contains $result.Output "[BLOCKED] App Store Connect entry packet" "missing entry pack should be blocked"
         Assert-Contains $result.Output "[BLOCKED] Apple private material folder" "missing materials should be blocked"
     }
+
+    Run-Test "local-only doctor writes next action packet for incomplete Apple materials" {
+        $entryPack = Join-Path $tempRoot "next-action-entry-pack"
+        $materials = Join-Path $tempRoot "next-action-materials"
+        $nextActionsPath = Join-Path $tempRoot "doctor-next-actions.md"
+        & powershell -NoProfile -ExecutionPolicy Bypass -File $entryPackExporterPath -OutputDirectory $entryPack | Out-Null
+        Assert-True ($LASTEXITCODE -eq 0) "entry pack setup failed"
+        & powershell -NoProfile -ExecutionPolicy Bypass -File $materialsPrepPath -OutputDirectory $materials | Out-Null
+        Assert-True ($LASTEXITCODE -eq 0) "materials setup failed"
+
+        $result = Invoke-ReleaseDoctor @(
+            "-LocalOnly",
+            "-EntryPackDirectory", $entryPack,
+            "-MaterialsDirectory", $materials,
+            "-NextActionsOutputPath", $nextActionsPath
+        )
+
+        Assert-True ($result.ExitCode -eq 2) "incomplete Apple materials should block release: $($result.Output)"
+        Assert-Contains $result.Output "[OK] Apple release next actions" "doctor should write the next-actions packet even when blocked"
+        Assert-Contains $result.Output $nextActionsPath "doctor output should include the generated next-actions path"
+        Assert-True (Test-Path $nextActionsPath) "doctor should create the next-actions Markdown packet"
+        $nextActions = Get-Content $nextActionsPath -Raw
+        Assert-Contains $nextActions "Complete Apple account and paid app setup" "next-actions packet should name the first missing Apple action"
+        Assert-Contains $nextActions "Do not paste private Apple values into GitHub issues" "next-actions packet should include privacy guardrails"
+    }
 } finally {
     $resolvedTempRoot = [System.IO.Path]::GetFullPath($tempRoot)
     $resolvedTempBase = [System.IO.Path]::GetFullPath([System.IO.Path]::GetTempPath())
