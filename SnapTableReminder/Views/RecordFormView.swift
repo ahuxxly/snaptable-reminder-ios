@@ -2,15 +2,16 @@ import SwiftUI
 
 struct RecordFormView: View {
     enum Mode {
-        case add(defaultCurrencyCode: String)
-        case addFromDraft(ParsedDocumentDraft, defaultCurrencyCode: String, sourceType: DocumentSourceType)
-        case edit(DocumentRecord)
+        case add(defaultCurrencyCode: String, defaultReminderLeadDays: Int)
+        case addFromDraft(ParsedDocumentDraft, defaultCurrencyCode: String, sourceType: DocumentSourceType, defaultReminderLeadDays: Int)
+        case edit(DocumentRecord, defaultReminderLeadDays: Int)
     }
 
     @Environment(\.dismiss) private var dismiss
 
     let mode: Mode
     let onSave: (DocumentRecord) -> Void
+    private let defaultReminderLeadDays: Int
 
     @State private var draft: DocumentRecord
     @State private var amountText: String
@@ -24,6 +25,7 @@ struct RecordFormView: View {
     init(mode: Mode, onSave: @escaping (DocumentRecord) -> Void) {
         self.mode = mode
         self.onSave = onSave
+        self.defaultReminderLeadDays = Self.defaultReminderLeadDays(from: mode)
 
         let initial = Self.makeInitialRecord(from: mode)
         _draft = State(initialValue: initial)
@@ -76,6 +78,10 @@ struct RecordFormView: View {
                         Toggle("Custom reminder date", isOn: $hasReminderDate)
                         if hasReminderDate {
                             DatePicker("Reminder", selection: $reminderDate, displayedComponents: [.date, .hourAndMinute])
+                        } else if !hasEventDate && !hasDueDate {
+                            Text("Add an event or due date, or choose a custom reminder date.")
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
                         }
                     }
                 }
@@ -120,9 +126,9 @@ struct RecordFormView: View {
 
     private var navigationTitle: String {
         switch mode {
-        case .edit:
+        case .edit(_, _):
             return "Edit Record"
-        case .add, .addFromDraft:
+        case .add(_, _), .addFromDraft(_, _, _, _):
             return "Add Record"
         }
     }
@@ -130,6 +136,7 @@ struct RecordFormView: View {
     private var isValid: Bool {
         !draft.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
         !draft.currencyCode.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
+        (!draft.reminderEnabled || hasReminderDate || hasEventDate || hasDueDate) &&
         (amountText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || Decimal(string: amountText) != nil)
     }
 
@@ -139,16 +146,30 @@ struct RecordFormView: View {
         saved.currencyCode = saved.currencyCode.uppercased()
         saved.eventDate = hasEventDate ? eventDate : nil
         saved.dueDate = hasDueDate ? dueDate : nil
-        saved.reminderDate = saved.reminderEnabled && hasReminderDate ? reminderDate : nil
+        if saved.reminderEnabled {
+            saved.reminderDate = hasReminderDate ? reminderDate : automaticReminderDate()
+        } else {
+            saved.reminderDate = nil
+        }
         saved.updatedAt = Date()
         return saved
     }
 
+    private func automaticReminderDate(now: Date = Date(), calendar: Calendar = .current) -> Date? {
+        let displayDate = hasDueDate ? dueDate : (hasEventDate ? eventDate : nil)
+        guard let displayDate else { return nil }
+        let candidate = calendar.date(byAdding: .day, value: -defaultReminderLeadDays, to: displayDate)
+        if let candidate, candidate >= now {
+            return candidate
+        }
+        return displayDate >= now ? displayDate : nil
+    }
+
     private static func makeInitialRecord(from mode: Mode) -> DocumentRecord {
         switch mode {
-        case .edit(let record):
+        case .edit(let record, _):
             return record
-        case .add(let defaultCurrencyCode):
+        case .add(let defaultCurrencyCode, _):
             var record = DocumentRecord.sample(
                 title: "",
                 category: .other,
@@ -166,8 +187,19 @@ struct RecordFormView: View {
             record.createdAt = Date()
             record.updatedAt = Date()
             return record
-        case .addFromDraft(let draft, let defaultCurrencyCode, let sourceType):
+        case .addFromDraft(let draft, let defaultCurrencyCode, let sourceType, _):
             return draft.makeRecord(defaultCurrencyCode: defaultCurrencyCode, sourceType: sourceType)
+        }
+    }
+
+    private static func defaultReminderLeadDays(from mode: Mode) -> Int {
+        switch mode {
+        case .add(_, let defaultReminderLeadDays):
+            return defaultReminderLeadDays
+        case .addFromDraft(_, _, _, let defaultReminderLeadDays):
+            return defaultReminderLeadDays
+        case .edit(_, let defaultReminderLeadDays):
+            return defaultReminderLeadDays
         }
     }
 }

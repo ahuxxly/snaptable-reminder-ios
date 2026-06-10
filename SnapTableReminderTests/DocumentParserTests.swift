@@ -18,6 +18,7 @@ final class DocumentParserTests: XCTestCase {
         XCTAssertEqual(result.currencyCode, "USD")
         XCTAssertEqual(result.emailAddress, "billing@example.invalid")
         XCTAssertNil(result.phoneNumber)
+        XCTAssertNil(result.reminderDate)
         XCTAssertEqual(result.confidence, .high)
         XCTAssertDate(result.dueDate, year: 2026, month: 7, day: 10)
     }

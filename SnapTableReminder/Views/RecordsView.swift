@@ -52,7 +52,7 @@ struct RecordsView: View {
                 } else {
                     ForEach(filteredRecords) { record in
                         NavigationLink {
-                            RecordFormView(mode: .edit(record)) { updated in
+                            RecordFormView(mode: .edit(record, defaultReminderLeadDays: appState.defaultReminderLeadDays)) { updated in
                                 store.update(updated)
                                 appState.scheduleReminderIfNeeded(for: updated)
                             }
@@ -104,7 +104,10 @@ struct RecordsView: View {
                 }
             }
             .sheet(isPresented: $isAdding) {
-                RecordFormView(mode: .add(defaultCurrencyCode: appState.defaultCurrencyCode)) { record in
+                RecordFormView(mode: .add(
+                    defaultCurrencyCode: appState.defaultCurrencyCode,
+                    defaultReminderLeadDays: appState.defaultReminderLeadDays
+                )) { record in
                     store.add(record)
                     appState.scheduleReminderIfNeeded(for: record)
                 }

@@ -117,12 +117,20 @@ struct CaptureView: View {
                         activeSheet = nil
                     }
                 case .manual:
-                    RecordFormView(mode: .add(defaultCurrencyCode: appState.defaultCurrencyCode)) { record in
+                    RecordFormView(mode: .add(
+                        defaultCurrencyCode: appState.defaultCurrencyCode,
+                        defaultReminderLeadDays: appState.defaultReminderLeadDays
+                    )) { record in
                         store.add(record)
                         appState.scheduleReminderIfNeeded(for: record)
                     }
                 case .draft(let draft, let sourceType):
-                    RecordFormView(mode: .addFromDraft(draft, defaultCurrencyCode: appState.defaultCurrencyCode, sourceType: sourceType)) { record in
+                    RecordFormView(mode: .addFromDraft(
+                        draft,
+                        defaultCurrencyCode: appState.defaultCurrencyCode,
+                        sourceType: sourceType,
+                        defaultReminderLeadDays: appState.defaultReminderLeadDays
+                    )) { record in
                         store.add(record)
                         appState.scheduleReminderIfNeeded(for: record)
                     }

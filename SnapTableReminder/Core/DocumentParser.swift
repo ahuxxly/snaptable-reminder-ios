@@ -16,7 +16,6 @@ struct DocumentParser {
         let dueDate = dates.first(where: \.isDeadline)?.date
         let eventDate = dates.first(where: { !$0.isDeadline })?.date
         let displayDate = dueDate ?? eventDate
-        let reminderDate = displayDate.flatMap { Calendar.current.date(byAdding: .day, value: -1, to: $0) }
         let confidence = scoreConfidence(title: title, amount: money.amount, displayDate: displayDate, contact: contact)
 
         return ParsedDocumentDraft(
@@ -26,7 +25,7 @@ struct DocumentParser {
             currencyCode: money.currencyCode,
             eventDate: eventDate,
             dueDate: dueDate,
-            reminderDate: reminderDate,
+            reminderDate: nil,
             phoneNumber: contact.phone,
             emailAddress: contact.email,
             location: nil,

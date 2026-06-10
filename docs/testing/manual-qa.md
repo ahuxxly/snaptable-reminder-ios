@@ -52,8 +52,10 @@
 
 1. Create a record with a due date 3 days from today.
 2. Enable reminder.
-3. Deny notification permission and confirm the app shows a non-blocking message.
-4. Enable notification permission in Settings and schedule again.
+3. Confirm Save is disabled if Reminder is on but no event, due, or custom reminder date exists.
+4. Confirm a default reminder date is created from the saved due date when no custom reminder date is selected.
+5. Deny notification permission and confirm the app shows a non-blocking message.
+6. Enable notification permission in Settings and schedule again.
 
 ## Export
 

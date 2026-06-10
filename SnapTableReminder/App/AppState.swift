@@ -54,10 +54,14 @@ final class AppState: ObservableObject {
         parser.parse(text, defaultCurrencyCode: defaultCurrencyCode)
     }
 
-    func applyDefaultReminder(to draft: ParsedDocumentDraft) -> ParsedDocumentDraft {
+    func applyDefaultReminder(
+        to draft: ParsedDocumentDraft,
+        now: Date = Date(),
+        calendar: Calendar = .current
+    ) -> ParsedDocumentDraft {
         var updated = draft
-        guard updated.reminderDate == nil, let displayDate = updated.displayDate else { return updated }
-        updated.reminderDate = Calendar.current.date(byAdding: .day, value: -defaultReminderLeadDays, to: displayDate)
+        guard let displayDate = updated.displayDate else { return updated }
+        updated.reminderDate = defaultReminderDate(for: displayDate, now: now, calendar: calendar)
         return updated
     }
 
@@ -95,6 +99,14 @@ final class AppState: ObservableObject {
 
     private static func clampedReminderLeadDays(_ days: Int) -> Int {
         min(max(days, 0), 30)
+    }
+
+    private func defaultReminderDate(for displayDate: Date, now: Date, calendar: Calendar) -> Date? {
+        let candidate = calendar.date(byAdding: .day, value: -defaultReminderLeadDays, to: displayDate)
+        if let candidate, candidate >= now {
+            return candidate
+        }
+        return displayDate >= now ? displayDate : nil
     }
 
     private enum SettingsKey {
