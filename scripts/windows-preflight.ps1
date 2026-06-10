@@ -89,6 +89,7 @@ Write-Section "Release configuration consistency"
 $projectText = Get-Content "project.yml" -Raw
 $appfileText = Get-Content "fastlane\Appfile" -Raw
 $fastfileText = Get-Content "fastlane\Fastfile" -Raw
+$gitignoreText = Get-Content ".gitignore" -Raw
 $launchRunbookText = Get-Content "docs\app-store\launch-runbook.md" -Raw
 $storeFieldsPath = "docs\app-store\app-store-fields.json"
 if (-not (Test-Path $storeFieldsPath)) {
@@ -132,6 +133,9 @@ if (-not $projectText.Contains("GENERATE_INFOPLIST_FILE: YES")) {
 }
 if (-not $projectText.Contains("TEST_TARGET_NAME: SnapTableReminder")) {
     throw "Screenshot UI test target should point at SnapTableReminder."
+}
+if (-not $gitignoreText.Contains("*.p12") -or -not $gitignoreText.Contains("*.mobileprovision")) {
+    throw ".gitignore should exclude Apple signing certificates and provisioning profiles."
 }
 Write-Host "bundle id and release config align"
 
@@ -284,6 +288,15 @@ if (-not $fastfileText.Contains("lane :metadata")) {
 }
 if (-not $fastfileText.Contains("private_lane :validate_upload_environment")) {
     throw "fastlane/Fastfile should include a private upload environment validation lane."
+}
+if (-not $fastfileText.Contains("archive_build_options")) {
+    throw "fastlane/Fastfile should centralize archive options for signing-aware builds."
+}
+if (-not $fastfileText.Contains("APPLE_PROVISIONING_PROFILE_SPECIFIER")) {
+    throw "fastlane/Fastfile should support a CI provisioning profile specifier."
+}
+if (-not $fastfileText.Contains("CODE_SIGN_STYLE=Manual")) {
+    throw "fastlane/Fastfile should support manual signing for CI TestFlight uploads."
 }
 if (-not $fastfileText.Contains("sh(`"bash scripts/mac-validate-upload-env.sh`")")) {
     throw "Fastlane upload environment validation should call scripts/mac-validate-upload-env.sh."
@@ -559,6 +572,12 @@ if (-not (Test-Path "scripts\mac-release-readiness.sh")) {
 if (-not (Test-Path "scripts\mac-validate-upload-env.sh")) {
     throw "Missing Mac Fastlane upload environment validation script."
 }
+if (-not (Test-Path "scripts\mac-validate-signing-env.sh")) {
+    throw "Missing Mac Apple signing environment validation script."
+}
+if (-not (Test-Path "scripts\mac-install-signing-assets.sh")) {
+    throw "Missing Mac Apple signing asset installation script."
+}
 $releaseReadinessText = Get-Content "scripts\mac-release-readiness.sh" -Raw
 if (-not $releaseReadinessText.Contains("scripts/mac-verify.sh")) {
     throw "Mac release readiness script should run Mac verification."
@@ -590,6 +609,40 @@ if (-not $uploadEnvText.Contains("Do not store the App Store Connect .p8 key ins
 }
 if (-not $uploadEnvText.Contains("BEGIN PRIVATE KEY")) {
     throw "Upload environment validation script should inspect the .p8 key header."
+}
+$signingEnvText = Get-Content "scripts\mac-validate-signing-env.sh" -Raw
+$requiredSigningEnvVars = @(
+    "APPLE_DISTRIBUTION_CERTIFICATE_BASE64",
+    "APPLE_DISTRIBUTION_CERTIFICATE_PASSWORD",
+    "APPLE_APP_STORE_PROFILE_BASE64",
+    "APPLE_CODESIGN_KEYCHAIN_PASSWORD"
+)
+foreach ($signingEnvVar in $requiredSigningEnvVars) {
+    if (-not $signingEnvText.Contains($signingEnvVar)) {
+        throw "Signing environment validation script should check $signingEnvVar."
+    }
+}
+if (-not $signingEnvText.Contains("com.snaptable.reminder")) {
+    throw "Signing environment validation script should validate the provisioning profile bundle id."
+}
+if (-not $signingEnvText.Contains("get-task-allow")) {
+    throw "Signing environment validation script should reject development provisioning profiles."
+}
+$installSigningAssetsText = Get-Content "scripts\mac-install-signing-assets.sh" -Raw
+if (-not $installSigningAssetsText.Contains("security create-keychain")) {
+    throw "Signing asset installation script should create a temporary keychain."
+}
+if (-not $installSigningAssetsText.Contains("security import")) {
+    throw "Signing asset installation script should import the distribution certificate."
+}
+if (-not $installSigningAssetsText.Contains("set-key-partition-list")) {
+    throw "Signing asset installation script should configure key partition access for codesigning."
+}
+if (-not $installSigningAssetsText.Contains("Provisioning Profiles")) {
+    throw "Signing asset installation script should install the provisioning profile."
+}
+if (-not $installSigningAssetsText.Contains("APPLE_PROVISIONING_PROFILE_SPECIFIER")) {
+    throw "Signing asset installation script should expose the profile specifier to Fastlane."
 }
 $screenshotScriptText = Get-Content "scripts\mac-capture-screenshots.sh" -Raw
 if (-not $screenshotScriptText.Contains("SnapTableReminderScreenshots")) {
@@ -722,6 +775,28 @@ if (-not $appStoreConnectUploadWorkflowText.Contains("bundle exec fastlane ios s
 }
 if (-not $appStoreConnectUploadWorkflowText.Contains("bundle exec fastlane ios review_check")) {
     throw "App Store Connect upload workflow should run Fastlane precheck."
+}
+$testFlightUploadWorkflowPath = ".github\workflows\testflight-upload.yml"
+if (-not (Test-Path $testFlightUploadWorkflowPath)) {
+    throw "Missing TestFlight upload workflow."
+}
+$testFlightUploadWorkflowText = Get-Content $testFlightUploadWorkflowPath -Raw
+if (-not $testFlightUploadWorkflowText.Contains("workflow_dispatch")) {
+    throw "TestFlight upload workflow should be manually runnable."
+}
+if (-not $testFlightUploadWorkflowText.Contains("timeout-minutes: 45")) {
+    throw "TestFlight upload workflow should cap macOS runtime."
+}
+foreach ($signingEnvVar in $requiredSigningEnvVars) {
+    if (-not $testFlightUploadWorkflowText.Contains($signingEnvVar)) {
+        throw "TestFlight upload workflow should read $signingEnvVar from GitHub Secrets."
+    }
+}
+if (-not $testFlightUploadWorkflowText.Contains("scripts/mac-install-signing-assets.sh")) {
+    throw "TestFlight upload workflow should install signing assets."
+}
+if (-not $testFlightUploadWorkflowText.Contains("bundle exec fastlane ios testflight")) {
+    throw "TestFlight upload workflow should upload the signed build to TestFlight."
 }
 Write-Host "screenshot capture path present"
 

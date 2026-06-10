@@ -204,6 +204,12 @@ bundle exec fastlane ios review_check
 bundle exec fastlane ios testflight
 ```
 
+GitHub Actions TestFlight path:
+
+1. Add the upload and signing secrets listed in `docs/app-store/account-setup.md`.
+2. Run the `TestFlight Upload` workflow.
+3. Wait for App Store Connect to finish processing the build.
+
 GitHub Actions metadata and screenshot path:
 
 1. Add the `APP_STORE_CONNECT_*` and `APPLE_DEVELOPER_TEAM_ID` secrets from `docs/app-store/account-setup.md`.

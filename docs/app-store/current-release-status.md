@@ -10,7 +10,7 @@ Local repository status:
 - XcodeGen project configuration is present in `project.yml`.
 - Unit test source files are present for parsing, CSV export, date logic, settings persistence, and reminder date policy.
 - App Store support site files are present in `site/`.
-- GitHub Actions workflows are present for iOS CI, GitHub Pages, App Store screenshots, release readiness, and App Store Connect metadata/screenshot upload.
+- GitHub Actions workflows are present for iOS CI, GitHub Pages, App Store screenshots, release readiness, App Store Connect metadata/screenshot upload, and TestFlight upload.
 - Fastlane lanes are present for verify, archive, and TestFlight upload.
 - GitHub login and publish helper script is present in `scripts/github-login-and-publish.ps1`.
 - GitHub publish helper can enable GitHub Issues, prepare the support issue label, write public support request links, and write Fastlane store URL files after the repository URL is known.
@@ -29,6 +29,7 @@ Local repository status:
 - Mac release readiness script is present for local build, test, and screenshot staging checks.
 - Fastlane `review_check` lane and Precheckfile are present for App Review metadata risk checks.
 - Mac Fastlane upload environment validation script is present.
+- Mac Apple signing environment validation and installation scripts are present.
 - App Review contact checklist and Mac environment validation script are present.
 
 Verified on GitHub:
@@ -58,6 +59,7 @@ These are still required before the goal is actually complete:
 - App Store Connect app record created with bundle ID `com.snaptable.reminder`.
 - Signing configured.
 - App Store Connect upload secrets configured in GitHub.
+- Apple signing secrets configured in GitHub.
 - App Store metadata, screenshots, and precheck uploaded through Fastlane.
 - App screenshots uploaded to App Store Connect.
 - App archived and uploaded to TestFlight/App Store Connect.
@@ -87,7 +89,11 @@ https://ahuxxly.github.io/snaptable-reminder-ios/support.html
 
 5. Run the `App Store Connect Upload` workflow to upload metadata, screenshots, and precheck.
 
-6. On a Mac, run:
+6. Add the Apple signing secrets listed in `docs/app-store/account-setup.md`.
+
+7. Run the `TestFlight Upload` workflow to upload a signed build.
+
+8. On a Mac, run:
 
 ```bash
 brew install xcodegen
@@ -96,15 +102,13 @@ bash scripts/mac-verify.sh
 bash scripts/mac-release-readiness.sh
 ```
 
-7. Configure Apple signing and upload a signed build to TestFlight/App Store Connect.
-
-8. Before final App Review submission, set the `APP_REVIEW_*` contact environment variables and run:
+9. Before final App Review submission, set the `APP_REVIEW_*` contact environment variables and run:
 
 ```bash
 bash scripts/mac-validate-review-contact-env.sh
 ```
 
-9. Continue with `docs/app-store/launch-runbook.md`.
+10. Continue with `docs/app-store/launch-runbook.md`.
 
 ## Release Boundaries
 

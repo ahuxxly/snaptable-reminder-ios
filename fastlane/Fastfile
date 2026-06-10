@@ -1,4 +1,40 @@
+require "shellwords"
+
 default_platform(:ios)
+
+def archive_build_options
+  options = {
+    scheme: "SnapTableReminder",
+    export_method: "app-store",
+    clean: true,
+    output_directory: "build",
+    output_name: "SnapTableReminder.ipa"
+  }
+
+  team_id = ENV.fetch("APPLE_DEVELOPER_TEAM_ID", "").strip
+  profile_name = ENV.fetch("APPLE_PROVISIONING_PROFILE_SPECIFIER", "").strip
+  xcargs = []
+
+  if !team_id.empty?
+    xcargs << "DEVELOPMENT_TEAM=#{team_id.shellescape}"
+  end
+
+  if !profile_name.empty?
+    xcargs << "CODE_SIGN_STYLE=Manual"
+    xcargs << "PROVISIONING_PROFILE_SPECIFIER=#{profile_name.shellescape}"
+    options[:export_options] = {
+      method: "app-store",
+      signingStyle: "manual",
+      teamID: team_id,
+      provisioningProfiles: {
+        "com.snaptable.reminder" => profile_name
+      }
+    }
+  end
+
+  options[:xcargs] = xcargs.join(" ") unless xcargs.empty?
+  options
+end
 
 platform :ios do
   private_lane :validate_upload_environment do
@@ -14,13 +50,7 @@ platform :ios do
   lane :archive do
     sh("xcodegen generate")
 
-    build_app(
-      scheme: "SnapTableReminder",
-      export_method: "app-store",
-      clean: true,
-      output_directory: "build",
-      output_name: "SnapTableReminder.ipa"
-    )
+    build_app(archive_build_options)
   end
 
   desc "Upload a signed build to TestFlight"

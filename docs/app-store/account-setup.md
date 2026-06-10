@@ -132,6 +132,27 @@ The workflow can upload:
 
 It does not submit for review and does not upload the signed binary. TestFlight upload still requires Apple signing assets.
 
+## GitHub Actions Signing Secrets
+
+For the `TestFlight Upload` workflow, add the upload secrets above plus these signing secrets:
+
+```text
+APPLE_DISTRIBUTION_CERTIFICATE_BASE64
+APPLE_DISTRIBUTION_CERTIFICATE_PASSWORD
+APPLE_APP_STORE_PROFILE_BASE64
+APPLE_CODESIGN_KEYCHAIN_PASSWORD
+```
+
+Use these values:
+
+- `APPLE_DISTRIBUTION_CERTIFICATE_BASE64`: base64 text of the Apple Distribution `.p12` certificate.
+- `APPLE_DISTRIBUTION_CERTIFICATE_PASSWORD`: password used when exporting the `.p12` certificate.
+- `APPLE_APP_STORE_PROFILE_BASE64`: base64 text of the App Store provisioning profile for `com.snaptable.reminder`.
+- `APPLE_CODESIGN_KEYCHAIN_PASSWORD`: a new random password used only for the temporary CI keychain.
+
+The workflow installs the certificate into a temporary keychain, installs the provisioning profile, archives the app, and uploads the signed build to TestFlight.
+Do not commit `.p12` or `.mobileprovision` files to this repository.
+
 ## App Review Contact
 
 Apple also requires reviewer contact information during final submission. Use `docs/app-store/review-contact.md` as the source checklist.

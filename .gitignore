@@ -18,3 +18,5 @@ fastlane/screenshots/
 fastlane/test_output/
 fastlane/.env
 fastlane/*.p8
+*.p12
+*.mobileprovision

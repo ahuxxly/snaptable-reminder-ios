@@ -1,0 +1,67 @@
+name: TestFlight Upload
+run-name: TestFlight upload
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  testflight-upload:
+    runs-on: macos-15
+    timeout-minutes: 45
+    env:
+      APP_STORE_CONNECT_USERNAME: ${{ secrets.APP_STORE_CONNECT_USERNAME }}
+      APPLE_DEVELOPER_TEAM_ID: ${{ secrets.APPLE_DEVELOPER_TEAM_ID }}
+      APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+      APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+      APP_STORE_CONNECT_API_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_API_PRIVATE_KEY }}
+      APPLE_DISTRIBUTION_CERTIFICATE_BASE64: ${{ secrets.APPLE_DISTRIBUTION_CERTIFICATE_BASE64 }}
+      APPLE_DISTRIBUTION_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_DISTRIBUTION_CERTIFICATE_PASSWORD }}
+      APPLE_APP_STORE_PROFILE_BASE64: ${{ secrets.APPLE_APP_STORE_PROFILE_BASE64 }}
+      APPLE_CODESIGN_KEYCHAIN_PASSWORD: ${{ secrets.APPLE_CODESIGN_KEYCHAIN_PASSWORD }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+
+      - name: Install Ruby dependencies
+        run: bundle install
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Write App Store Connect API key
+        shell: bash
+        run: |
+          set -euo pipefail
+          key_dir="${RUNNER_TEMP}/app-store-connect"
+          mkdir -p "${key_dir}"
+          key_path="${key_dir}/AuthKey_${APP_STORE_CONNECT_API_KEY_ID}.p8"
+          printf '%s\n' "${APP_STORE_CONNECT_API_PRIVATE_KEY}" > "${key_path}"
+          chmod 600 "${key_path}"
+          echo "APP_STORE_CONNECT_API_KEY_PATH=${key_path}" >> "${GITHUB_ENV}"
+
+      - name: Validate upload environment
+        run: bash scripts/mac-validate-upload-env.sh
+
+      - name: Install signing assets
+        run: bash scripts/mac-install-signing-assets.sh
+
+      - name: Upload build to TestFlight
+        run: bundle exec fastlane ios testflight
+
+      - name: Summarize upload
+        run: |
+          {
+            echo "### TestFlight upload"
+            echo ""
+            echo "A signed SnapTable Reminder build was uploaded to TestFlight."
+            echo "Wait for App Store Connect processing before selecting the build for review."
+          } >> "$GITHUB_STEP_SUMMARY"
