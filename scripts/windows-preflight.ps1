@@ -192,6 +192,18 @@ if ($fastlaneKeywords -ne (($storeFields.storeListing.keywords) -join ",")) {
 if ($fastlanePrimaryCategory -ne "PRODUCTIVITY") {
     throw "Fastlane primary category should be PRODUCTIVITY."
 }
+$optionalUrlFiles = @(
+    "fastlane\metadata\en-US\privacy_url.txt",
+    "fastlane\metadata\en-US\support_url.txt"
+)
+foreach ($urlFile in $optionalUrlFiles) {
+    if (Test-Path $urlFile) {
+        $urlValue = (Get-Content $urlFile -Raw).Trim()
+        if ($urlValue -notmatch "^https://") {
+            throw "Fastlane URL file must contain an https URL: $urlFile"
+        }
+    }
+}
 if (-not $fastfileText.Contains("lane :metadata")) {
     throw "fastlane/Fastfile should include the metadata lane."
 }

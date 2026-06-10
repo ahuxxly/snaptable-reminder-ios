@@ -56,6 +56,12 @@ fastlane/metadata/en-US/privacy_url.txt
 fastlane/metadata/en-US/support_url.txt
 ```
 
+For GitHub Pages hosting, generate them with:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/write-fastlane-store-urls.ps1 -Owner <owner> -RepoName <repo>
+```
+
 Then run:
 
 ```bash

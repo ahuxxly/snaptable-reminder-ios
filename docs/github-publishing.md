@@ -56,6 +56,12 @@ https://<owner>.github.io/<repo>/privacy.html
 https://<owner>.github.io/<repo>/support.html
 ```
 
+To write those URLs into Fastlane metadata after Pages is live:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/write-fastlane-store-urls.ps1 -Owner <owner> -RepoName <repo>
+```
+
 ## CI Gate
 
 The `iOS CI` workflow must pass before App Store upload work is trusted. It generates the Xcode project, runs unit tests, and builds for an iPhone simulator on a hosted macOS runner.
