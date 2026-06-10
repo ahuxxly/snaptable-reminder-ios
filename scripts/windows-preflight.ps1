@@ -818,6 +818,20 @@ if (-not $releaseReadinessText.Contains("scripts/mac-validate-upload-env.sh")) {
 if (-not $releaseReadinessText.Contains("scripts/mac-validate-review-contact-env.sh")) {
     throw "Mac release readiness script should print review contact validation."
 }
+$macVerifyText = Get-Content "scripts\mac-verify.sh" -Raw
+foreach ($macVerifyTerm in @(
+    "run_timed",
+    "::group::",
+    "duration_seconds",
+    "simulator_id",
+    "xcodebuild test SnapTableReminder",
+    "xcodebuild build SnapTableReminder",
+    "xcodebuild build-for-testing SnapTableReminderScreenshots"
+)) {
+    if (-not $macVerifyText.Contains($macVerifyTerm)) {
+        throw "Mac verification script should include diagnostic marker: $macVerifyTerm"
+    }
+}
 $uploadEnvText = Get-Content "scripts\mac-validate-upload-env.sh" -Raw
 $requiredUploadEnvVars = @(
     "APP_STORE_CONNECT_USERNAME",
