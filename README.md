@@ -28,8 +28,8 @@ open SnapTableReminder.xcodeproj
 
 ```bash
 xcodegen generate
-xcodebuild test -scheme SnapTableReminder -destination 'platform=iOS Simulator,name=iPhone 15'
-xcodebuild build -scheme SnapTableReminder -destination 'platform=iOS Simulator,name=iPhone 15'
+xcodebuild test -scheme SnapTableReminder -destination 'platform=iOS Simulator,id=<available iPhone simulator id>'
+xcodebuild build -scheme SnapTableReminder -destination 'platform=iOS Simulator,id=<available iPhone simulator id>'
 ```
 
 Or run:
@@ -37,6 +37,10 @@ Or run:
 ```bash
 bash scripts/mac-verify.sh
 ```
+
+## GitHub CI
+
+The repository includes `.github/workflows/ios-ci.yml`. After this project is pushed to GitHub, GitHub Actions can run XcodeGen, unit tests, and an iPhone simulator build on macOS. Signing and App Store upload still require Apple Developer account setup.
 
 ## App Store Direction
 

@@ -27,7 +27,11 @@ Expected result:
 
 - `xcodegen generate` succeeds.
 - `xcodebuild test` succeeds for `SnapTableReminderTests`.
-- `xcodebuild build` succeeds for the iPhone simulator destination.
+- `xcodebuild build` succeeds for the first available iPhone simulator destination.
+
+## GitHub Actions
+
+The repository includes `.github/workflows/ios-ci.yml`. After pushing to GitHub, open the Actions tab and confirm the iOS CI workflow passes. This verifies the same project generation, test, and simulator build path on a hosted macOS runner.
 
 ## Archive for App Store Connect
 
