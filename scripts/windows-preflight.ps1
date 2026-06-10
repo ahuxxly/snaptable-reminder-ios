@@ -93,6 +93,12 @@ if (-not $fastfileText.Contains("scheme: `"SnapTableReminder`"") -and -not $fast
 if (-not $projectText.Contains("TARGETED_DEVICE_FAMILY: `"1`"")) {
     throw "project.yml should target iPhone only for version 1."
 }
+if (-not $projectText.Contains("MARKETING_VERSION: `"1.0`"")) {
+    throw "project.yml should use MARKETING_VERSION 1.0 for the first App Store release."
+}
+if (-not $projectText.Contains("CURRENT_PROJECT_VERSION: `"1`"")) {
+    throw "project.yml should use build number 1 for the first App Store release."
+}
 if (-not $projectText.Contains("SnapTableReminderUITests")) {
     throw "project.yml should include the screenshot UI test target."
 }
