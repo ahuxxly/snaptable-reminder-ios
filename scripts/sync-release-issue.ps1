@@ -47,6 +47,7 @@ This issue tracks the private Apple-account work required before SnapTable Remin
 - Privacy URL: https://ahuxxly.github.io/snaptable-reminder-ios/privacy.html
 - Support URL: https://ahuxxly.github.io/snaptable-reminder-ios/support.html
 - Local release doctor: `powershell -ExecutionPolicy Bypass -File scripts/release-doctor.ps1 -RunPreflight`
+- Local artifact doctor: `powershell -ExecutionPolicy Bypass -File scripts/release-doctor.ps1 -LocalOnly -EntryPackDirectory "C:\path\outside\repo\SnapTableReminder-AppStoreConnect-EntryPack" -MaterialsDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials"`
 - Windows preflight: `powershell -ExecutionPolicy Bypass -File scripts/windows-preflight.ps1`
 - Private Apple material folder helper: `powershell -ExecutionPolicy Bypass -File scripts/prepare-apple-materials-folder.ps1`
 - App Store Connect entry packet exporter: `powershell -ExecutionPolicy Bypass -File scripts/export-app-store-connect-entry-pack.ps1`

@@ -1,6 +1,9 @@
 param(
     [string]$RepoFullName = "",
-    [switch]$RunPreflight
+    [switch]$RunPreflight,
+    [switch]$LocalOnly,
+    [string]$EntryPackDirectory = "",
+    [string]$MaterialsDirectory = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -40,6 +43,26 @@ function Write-Gates($gates) {
         if (-not [string]::IsNullOrWhiteSpace($gate.NextAction)) {
             Write-Host "  Next: $($gate.NextAction)"
         }
+    }
+}
+
+function Complete-Doctor($gates) {
+    Write-Section "Summary"
+    Write-Gates $gates
+
+    $blockedCount = @($gates | Where-Object { $_.Status -eq "BLOCKED" }).Count
+    $warnCount = @($gates | Where-Object { $_.Status -eq "WARN" }).Count
+    Write-Host ""
+    Write-Host "blocked=$blockedCount warn=$warnCount ok=$(@($gates | Where-Object { $_.Status -eq "OK" }).Count)"
+
+    if ($blockedCount -gt 0) {
+        Write-Host ""
+        Write-Host "Release is not ready. The next hard blocker is the Apple account/App Store Connect material set."
+        exit 2
+    }
+
+    if ($warnCount -gt 0) {
+        exit 1
     }
 }
 
@@ -109,6 +132,111 @@ function Invoke-GhJson($ghPath, $arguments, $failureMessage) {
     return $output
 }
 
+function Get-DocumentsDirectory {
+    $documents = [Environment]::GetFolderPath("MyDocuments")
+    if ([string]::IsNullOrWhiteSpace($documents)) {
+        $documents = [Environment]::GetFolderPath("UserProfile")
+    }
+    if ([string]::IsNullOrWhiteSpace($documents)) {
+        $documents = [System.IO.Path]::GetTempPath()
+    }
+    return $documents
+}
+
+function Resolve-ArtifactPath($path, $defaultLeafName) {
+    if ([string]::IsNullOrWhiteSpace($path)) {
+        return [System.IO.Path]::GetFullPath((Join-Path (Get-DocumentsDirectory) $defaultLeafName))
+    }
+    if ([System.IO.Path]::IsPathRooted($path)) {
+        return [System.IO.Path]::GetFullPath($path)
+    }
+    return [System.IO.Path]::GetFullPath((Join-Path (Get-Location).Path $path))
+}
+
+function Test-EntryPack($gates, $entryPackDirectory, $explicitPath) {
+    $entryPackPath = Resolve-ArtifactPath $entryPackDirectory "SnapTableReminder-AppStoreConnect-EntryPack"
+    Write-Host "entryPack=$entryPackPath"
+
+    if (-not (Test-Path $entryPackPath)) {
+        if ($explicitPath) {
+            Add-Gate $gates "App Store Connect entry packet" "BLOCKED" "Entry packet folder is missing: $entryPackPath" "Run scripts/export-app-store-connect-entry-pack.ps1 -OutputDirectory `"$entryPackPath`"."
+        } else {
+            Add-Gate $gates "App Store Connect entry packet" "WARN" "Default entry packet folder is missing: $entryPackPath" "Run scripts/export-app-store-connect-entry-pack.ps1."
+        }
+        return
+    }
+
+    $requiredEntryPackFiles = @(
+        "README.md",
+        "00-app-record.txt",
+        "01-pricing-availability.txt",
+        "02-version-metadata.txt",
+        "03-privacy-compliance.txt",
+        "04-review.txt",
+        "app-store-connect-entry-pack.json"
+    )
+    $missingFiles = @()
+    foreach ($entryPackFile in $requiredEntryPackFiles) {
+        if (-not (Test-Path (Join-Path $entryPackPath $entryPackFile))) {
+            $missingFiles += $entryPackFile
+        }
+    }
+    if ($missingFiles.Count -gt 0) {
+        Add-Gate $gates "App Store Connect entry packet" "BLOCKED" "Missing files: $($missingFiles -join ', ')." "Regenerate the packet with scripts/export-app-store-connect-entry-pack.ps1."
+        return
+    }
+
+    try {
+        $entryPacket = Get-Content (Join-Path $entryPackPath "app-store-connect-entry-pack.json") -Raw | ConvertFrom-Json
+        if ($entryPacket.app.bundleId -ne "com.snaptable.reminder") {
+            Add-Gate $gates "App Store Connect entry packet" "BLOCKED" "Entry packet bundle id is $($entryPacket.app.bundleId)." "Regenerate the packet from the current repository sources."
+            return
+        }
+        if ([string]::IsNullOrWhiteSpace($entryPacket.urls.privacyPolicyUrl) -or [string]::IsNullOrWhiteSpace($entryPacket.urls.supportUrl)) {
+            Add-Gate $gates "App Store Connect entry packet" "BLOCKED" "Entry packet is missing hosted privacy/support URLs." "Regenerate the packet with owner and repo parameters."
+            return
+        }
+    } catch {
+        Add-Gate $gates "App Store Connect entry packet" "BLOCKED" "Entry packet JSON is invalid." "Regenerate the packet with scripts/export-app-store-connect-entry-pack.ps1."
+        return
+    }
+
+    Add-Gate $gates "App Store Connect entry packet" "OK" "Paste-ready packet is present at $entryPackPath."
+}
+
+function Test-Materials($gates, $materialsDirectory, $explicitPath) {
+    $materialsPath = Resolve-ArtifactPath $materialsDirectory "SnapTableReminder-Apple-Materials"
+    Write-Host "materials=$materialsPath"
+
+    if (-not (Test-Path $materialsPath)) {
+        if ($explicitPath) {
+            Add-Gate $gates "Apple private material folder" "BLOCKED" "Materials folder is missing: $materialsPath" "Run scripts/prepare-apple-materials-folder.ps1 -OutputDirectory `"$materialsPath`"."
+        } else {
+            Add-Gate $gates "Apple private material folder" "WARN" "Default materials folder is missing: $materialsPath" "Run scripts/prepare-apple-materials-folder.ps1."
+        }
+        return
+    }
+
+    $previousErrorActionPreference = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    try {
+        $validationOutput = powershell -NoProfile -ExecutionPolicy Bypass -File scripts\prepare-apple-materials-folder.ps1 -OutputDirectory $materialsPath -ValidateOnly 2>&1 | Out-String
+        $validationExitCode = $LASTEXITCODE
+    } finally {
+        $ErrorActionPreference = $previousErrorActionPreference
+    }
+
+    if ($validationExitCode -ne 0) {
+        Add-Gate $gates "Apple private material folder" "BLOCKED" "Materials folder validation failed." "Open $materialsPath and add the missing Apple files listed by scripts/prepare-apple-materials-folder.ps1 -ValidateOnly."
+        if ($validationOutput) {
+            Write-Host $validationOutput.Trim()
+        }
+        return
+    }
+
+    Add-Gate $gates "Apple private material folder" "OK" "Private Apple material folder validates at $materialsPath."
+}
+
 $gates = New-Object "System.Collections.Generic.List[object]"
 
 Write-Section "Local repository"
@@ -137,6 +265,14 @@ if ($RunPreflight) {
     }
 } else {
     Add-Gate $gates "Windows preflight" "WARN" "Not run in this doctor pass." "Run scripts/release-doctor.ps1 -RunPreflight for the local static release gate."
+}
+
+Write-Section "Local release artifacts"
+Test-EntryPack $gates $EntryPackDirectory (-not [string]::IsNullOrWhiteSpace($EntryPackDirectory))
+Test-Materials $gates $MaterialsDirectory (-not [string]::IsNullOrWhiteSpace($MaterialsDirectory))
+
+if ($LocalOnly) {
+    Complete-Doctor $gates
 }
 
 $ghPath = Resolve-GitHubCli
@@ -299,20 +435,4 @@ Add-Gate $gates "App Store Connect app record" "BLOCKED" "Cannot verify from thi
 Add-Gate $gates "EU DSA trader status" "BLOCKED" "Cannot verify from this workspace." "Complete docs/app-store/eu-dsa-trader.md, or intentionally exclude EU storefronts."
 Add-Gate $gates "Build uploaded and submitted" "BLOCKED" "No App Store Connect evidence is available in this workspace." "After secrets exist, run scripts/github-run-app-store-release.ps1 -Wait, then scripts/github-submit-app-review.ps1 -ConfirmSubmitForReview YES -Wait."
 
-Write-Section "Summary"
-Write-Gates $gates
-
-$blockedCount = @($gates | Where-Object { $_.Status -eq "BLOCKED" }).Count
-$warnCount = @($gates | Where-Object { $_.Status -eq "WARN" }).Count
-Write-Host ""
-Write-Host "blocked=$blockedCount warn=$warnCount ok=$(@($gates | Where-Object { $_.Status -eq "OK" }).Count)"
-
-if ($blockedCount -gt 0) {
-    Write-Host ""
-    Write-Host "Release is not ready. The next hard blocker is the Apple account/App Store Connect material set."
-    exit 2
-}
-
-if ($warnCount -gt 0) {
-    exit 1
-}
+Complete-Doctor $gates

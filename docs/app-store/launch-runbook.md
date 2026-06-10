@@ -12,6 +12,14 @@ powershell -ExecutionPolicy Bypass -File scripts/release-doctor.ps1 -RunPrefligh
 
 This command checks local release gates, GitHub workflows, hosted support URLs, GitHub secrets, and the remaining external Apple account gates. It does not upload builds, trigger workflows, or submit the app for review.
 
+For a network-independent local artifact check:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/release-doctor.ps1 -LocalOnly `
+  -EntryPackDirectory "C:\path\outside\repo\SnapTableReminder-AppStoreConnect-EntryPack" `
+  -MaterialsDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials"
+```
+
 To refresh the public GitHub tracking issue after release gates change:
 
 ```powershell

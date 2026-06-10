@@ -550,6 +550,9 @@ if (-not (Test-Path "tests\github-set-apple-secrets.tests.ps1")) {
 if (-not (Test-Path "tests\export-app-store-connect-entry-pack.tests.ps1")) {
     throw "Missing App Store Connect entry packet exporter tests."
 }
+if (-not (Test-Path "tests\release-doctor-local-artifacts.tests.ps1")) {
+    throw "Missing release doctor local artifact tests."
+}
 if (-not (Test-Path "scripts\release-doctor.ps1")) {
     throw "Missing release doctor script."
 }
@@ -606,6 +609,7 @@ if (-not $launchRunbookText.Contains("export-app-store-connect-entry-pack.ps1"))
 powershell -NoProfile -ExecutionPolicy Bypass -File tests\prepare-apple-materials-folder.tests.ps1
 powershell -NoProfile -ExecutionPolicy Bypass -File tests\github-set-apple-secrets.tests.ps1
 powershell -NoProfile -ExecutionPolicy Bypass -File tests\export-app-store-connect-entry-pack.tests.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File tests\release-doctor-local-artifacts.tests.ps1
 $githubPublishText = Get-Content "scripts\github-publish.ps1" -Raw
 if (-not $githubPublishText.Contains("write-site-support-links.ps1")) {
     throw "GitHub publish script should write public support links after repo creation."
@@ -712,6 +716,11 @@ foreach ($releaseDoctorTerm in @(
     "Apple signing secrets",
     "App Review contact secrets",
     "EU DSA trader status",
+    "LocalOnly",
+    "EntryPackDirectory",
+    "MaterialsDirectory",
+    "App Store Connect entry packet",
+    "Apple private material folder",
     "scripts/github-run-app-store-release.ps1 -Wait",
     "scripts/github-submit-app-review.ps1 -ConfirmSubmitForReview YES -Wait"
 )) {
