@@ -4,6 +4,11 @@ This project includes Fastlane as an optional Mac release helper. It does not st
 
 Before using Fastlane upload lanes, complete `docs/app-store/account-setup.md`.
 
+Official Fastlane references:
+
+- https://docs.fastlane.tools/actions/deliver/
+- https://docs.fastlane.tools/actions/precheck/
+
 ## Install
 
 Run on macOS:
@@ -94,8 +99,18 @@ bundle exec fastlane ios screenshots
 
 This uploads screenshots only. It does not upload a binary, upload metadata, or submit the app for review.
 
+## Review Risk Check
+
+After metadata and screenshots are uploaded, run:
+
+```bash
+bundle exec fastlane ios review_check
+```
+
+This uses Fastlane precheck against App Store Connect metadata. It scans for common App Review risks such as placeholder text, test words, other platforms, future functionality claims, unreachable URLs, and selected risky marketing claims. It does not upload a binary or submit the app for review.
+
 ## Notes
 
 - The bundle identifier is `com.snaptable.reminder`.
-- The `testflight` lane uploads a build. The `metadata` lane uploads listing metadata. The `screenshots` lane uploads staged screenshots. Final App Review submission still requires privacy answers, pricing, and country/region availability.
+- The `testflight` lane uploads a build. The `metadata` lane uploads listing metadata. The `screenshots` lane uploads staged screenshots. The `review_check` lane runs Fastlane precheck. Final App Review submission still requires privacy answers, pricing, and country/region availability.
 - Do not commit `.p8` API keys, certificates, provisioning profiles, or exported archives.

@@ -1,0 +1,23 @@
+placeholder_text(level: :error)
+test_words(level: :error)
+future_functionality(level: :error)
+other_platforms(level: :error)
+curse_words(level: :error)
+unreachable_urls(level: :error)
+negative_apple_sentiment(level: :warn)
+copyright_date(level: :warn)
+free_stuff_in_iap(level: :skip)
+
+custom_text(
+  data: [
+    "guaranteed accuracy",
+    "guaranteed OCR",
+    "guaranteed approval",
+    "certified legal",
+    "certified medical",
+    "certified tax",
+    "bank-level",
+    "diagnosis"
+  ],
+  level: :warn
+)

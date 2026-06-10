@@ -342,6 +342,25 @@ if (-not $fastfileText.Contains("lane :screenshots")) {
 if (-not $fastfileText.Contains("screenshots_path: `"fastlane/screenshots`"")) {
     throw "Fastlane screenshots lane should upload fastlane/screenshots."
 }
+if (-not (Test-Path "fastlane\Precheckfile")) {
+    throw "Missing fastlane/Precheckfile."
+}
+$precheckText = Get-Content "fastlane\Precheckfile" -Raw
+if (-not $fastfileText.Contains("lane :review_check")) {
+    throw "fastlane/Fastfile should include the review_check lane."
+}
+if (-not $fastfileText.Contains("precheck(")) {
+    throw "review_check lane should call Fastlane precheck."
+}
+if (-not $fastfileText.Contains("default_rule_level: :error")) {
+    throw "Fastlane precheck should default to error-level findings."
+}
+if (-not $precheckText.Contains("placeholder_text(level: :error)")) {
+    throw "Precheckfile should treat placeholder text as an error."
+}
+if (-not $precheckText.Contains("unreachable_urls(level: :error)")) {
+    throw "Precheckfile should treat unreachable URLs as an error."
+}
 if (-not $launchRunbookText.Contains("scripts/mac-capture-screenshots.sh")) {
     throw "Launch runbook should mention the screenshot capture script."
 }

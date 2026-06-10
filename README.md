@@ -48,6 +48,12 @@ bash scripts/mac-release-readiness.sh
 
 This runs Mac verification, captures screenshots, stages Fastlane screenshots, and prints the next upload commands.
 
+Fastlane also includes a review-risk check after metadata is uploaded:
+
+```bash
+bundle exec fastlane ios review_check
+```
+
 ## Windows Preflight
 
 On this Windows workspace, run the static checks with:

@@ -137,6 +137,7 @@ Fastlane upload path:
 
 ```bash
 bundle exec fastlane ios screenshots
+bundle exec fastlane ios review_check
 ```
 
 Manual path:
@@ -170,6 +171,7 @@ export APP_STORE_CONNECT_API_ISSUER_ID="issuer-id"
 export APP_STORE_CONNECT_API_KEY_PATH="/absolute/path/to/AuthKey.p8"
 bundle exec fastlane ios metadata
 bundle exec fastlane ios screenshots
+bundle exec fastlane ios review_check
 bundle exec fastlane ios testflight
 ```
 
@@ -177,6 +179,7 @@ Evidence:
 
 - Build appears in App Store Connect > TestFlight.
 - Build processing completes.
+- Fastlane `review_check` has no unresolved error-level findings.
 
 ## Phase 8: Final Submission
 

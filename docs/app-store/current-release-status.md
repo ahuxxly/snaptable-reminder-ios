@@ -23,6 +23,7 @@ Local repository status:
 - Fastlane screenshot staging and upload lane are present.
 - Screenshot automation resets demo data to avoid stale simulator records.
 - Mac release readiness script is present for local build, test, and screenshot staging checks.
+- Fastlane `review_check` lane and Precheckfile are present for App Review metadata risk checks.
 
 Verified on this Windows workspace:
 
