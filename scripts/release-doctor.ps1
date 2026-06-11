@@ -441,7 +441,7 @@ function Test-AppStoreConnectSetupEvidence($gates, $materialsPath) {
     Add-Gate $gates "App Store Connect setup evidence" "OK" "App record, pricing, availability, privacy, and compliance setup evidence matches release requirements."
 }
 
-function Write-AppleReleaseNextActions($gates, $entryPackDirectory, $materialsDirectory, $nextActionsOutputPath) {
+function Write-AppleReleaseNextActions($gates, $entryPackDirectory, $submissionPacketDirectory, $materialsDirectory, $nextActionsOutputPath) {
     $nextActionsScriptPath = "scripts\apple-release-next-actions.ps1"
     if (-not (Test-Path $nextActionsScriptPath)) {
         Add-Gate $gates "Apple release next actions" "WARN" "Next-actions helper is missing." "Restore scripts/apple-release-next-actions.ps1 so release blockers produce a 0-basics checklist."
@@ -449,13 +449,14 @@ function Write-AppleReleaseNextActions($gates, $entryPackDirectory, $materialsDi
     }
 
     $entryPackPath = Resolve-ArtifactPath $entryPackDirectory "SnapTableReminder-AppStoreConnect-EntryPack"
+    $submissionPacketPath = Resolve-ArtifactPath $submissionPacketDirectory "SnapTableReminder-AppStoreSubmissionPacket"
     $materialsPath = Resolve-ArtifactPath $materialsDirectory "SnapTableReminder-Apple-Materials"
     $outputPath = Resolve-ArtifactPath $nextActionsOutputPath "SnapTableReminder-Apple-Next-Actions.md"
 
     $previousErrorActionPreference = $ErrorActionPreference
     $ErrorActionPreference = "Continue"
     try {
-        $nextActionOutput = powershell -NoProfile -ExecutionPolicy Bypass -File $nextActionsScriptPath -EntryPackDirectory $entryPackPath -MaterialsDirectory $materialsPath -OutputPath $outputPath 2>&1 | Out-String
+        $nextActionOutput = powershell -NoProfile -ExecutionPolicy Bypass -File $nextActionsScriptPath -EntryPackDirectory $entryPackPath -SubmissionPacketDirectory $submissionPacketPath -MaterialsDirectory $materialsPath -OutputPath $outputPath 2>&1 | Out-String
         $nextActionExitCode = $LASTEXITCODE
     } finally {
         $ErrorActionPreference = $previousErrorActionPreference
@@ -510,7 +511,7 @@ if (-not [string]::IsNullOrWhiteSpace($validMaterialsPath)) {
     Test-AppStoreConnectSetupEvidence $gates $validMaterialsPath
     Test-ReleaseEvidence $gates $validMaterialsPath
 }
-Write-AppleReleaseNextActions $gates $EntryPackDirectory $MaterialsDirectory $NextActionsOutputPath
+Write-AppleReleaseNextActions $gates $EntryPackDirectory $SubmissionPacketDirectory $MaterialsDirectory $NextActionsOutputPath
 
 if ($LocalOnly) {
     Complete-Doctor $gates

@@ -1,6 +1,7 @@
 param(
     [string]$MaterialsDirectory = "",
     [string]$EntryPackDirectory = "",
+    [string]$SubmissionPacketDirectory = "",
     [string]$OutputPath = ""
 )
 
@@ -69,7 +70,7 @@ function Add-Action($actions, $title, $detail, $command, $evidence) {
     }) | Out-Null
 }
 
-function Get-ReleaseActions($materialsPath, $entryPackPath) {
+function Get-ReleaseActions($materialsPath, $entryPackPath, $submissionPacketPath) {
     $actions = New-Object "System.Collections.Generic.List[object]"
 
     if (-not (Test-Path $materialsPath -PathType Container)) {
@@ -180,13 +181,13 @@ function Get-ReleaseActions($materialsPath, $entryPackPath) {
     Add-Action $actions `
         "Run release doctor for final status" `
         "All private materials and evidence are recorded locally. Now run the full release doctor and use its remaining gates as the authoritative final checklist." `
-        "powershell -ExecutionPolicy Bypass -File scripts/release-doctor.ps1 -RunPreflight -EntryPackDirectory `"$entryPackPath`" -MaterialsDirectory `"$materialsPath`"" `
+        "powershell -ExecutionPolicy Bypass -File scripts/release-doctor.ps1 -RunPreflight -EntryPackDirectory `"$entryPackPath`" -SubmissionPacketDirectory `"$submissionPacketPath`" -MaterialsDirectory `"$materialsPath`"" `
         "Release doctor reports zero blocked gates, or only external App Store status that must be checked in App Store Connect."
 
     return $actions
 }
 
-function Write-MarkdownPacket($path, $materialsPath, $entryPackPath, $actions) {
+function Write-MarkdownPacket($path, $materialsPath, $entryPackPath, $submissionPacketPath, $actions) {
     $parent = Split-Path -Parent $path
     if (-not [string]::IsNullOrWhiteSpace($parent) -and -not (Test-Path $parent)) {
         New-Item -ItemType Directory -Path $parent -Force | Out-Null
@@ -199,6 +200,7 @@ function Write-MarkdownPacket($path, $materialsPath, $entryPackPath, $actions) {
     $lines.Add("Generated at: $generatedAt") | Out-Null
     $lines.Add("Materials folder: $materialsPath") | Out-Null
     $lines.Add("Entry packet folder: $entryPackPath") | Out-Null
+    $lines.Add("Submission packet folder: $submissionPacketPath") | Out-Null
     $lines.Add("") | Out-Null
 
     $hasFinalDoctorAction = ($actions.Count -eq 1 -and $actions[0].Title -eq "Run release doctor for final status")
@@ -254,6 +256,7 @@ function Write-MarkdownPacket($path, $materialsPath, $entryPackPath, $actions) {
 $repoRoot = Resolve-RepositoryRoot
 $materialsPath = Resolve-PathOrDefault $MaterialsDirectory "SnapTableReminder-Apple-Materials"
 $entryPackPath = Resolve-PathOrDefault $EntryPackDirectory "SnapTableReminder-AppStoreConnect-EntryPack"
+$submissionPacketPath = Resolve-PathOrDefault $SubmissionPacketDirectory "SnapTableReminder-AppStoreSubmissionPacket"
 if ([string]::IsNullOrWhiteSpace($OutputPath)) {
     $OutputPath = Join-Path (Get-DocumentsDirectory) "SnapTableReminder-Apple-Next-Actions.md"
 }
@@ -261,8 +264,8 @@ $resolvedOutputPath = Resolve-PathOrDefault $OutputPath "SnapTableReminder-Apple
 
 Push-Location $repoRoot
 try {
-    $actions = @(Get-ReleaseActions $materialsPath $entryPackPath)
-    Write-MarkdownPacket $resolvedOutputPath $materialsPath $entryPackPath $actions
+    $actions = @(Get-ReleaseActions $materialsPath $entryPackPath $submissionPacketPath)
+    Write-MarkdownPacket $resolvedOutputPath $materialsPath $entryPackPath $submissionPacketPath $actions
 } finally {
     Pop-Location
 }
@@ -275,5 +278,6 @@ if ($actions.Count -gt 0) {
 Write-Section "Apple release next actions"
 Write-Host "materials=$materialsPath"
 Write-Host "entryPack=$entryPackPath"
+Write-Host "submissionPacket=$submissionPacketPath"
 Write-Host "output=$resolvedOutputPath"
 Write-Host "next=$nextTitle"

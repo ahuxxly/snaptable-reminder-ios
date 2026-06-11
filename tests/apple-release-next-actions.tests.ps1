@@ -213,17 +213,28 @@ try {
 
     Run-Test "reports all local private evidence when release evidence exists" {
         $materials = Join-Path $tempRoot "complete-materials-with-release"
+        $entryPack = Join-Path $tempRoot "final-entry-pack"
+        $submissionPacket = Join-Path $tempRoot "final-submission-packet"
         $outputPath = Join-Path $tempRoot "release-next-actions.md"
         New-CompleteMaterialsFolder $materials
         Add-SetupEvidence $materials
         Add-ReleaseEvidence $materials
+        New-Item -ItemType Directory -Path $entryPack | Out-Null
+        New-Item -ItemType Directory -Path $submissionPacket | Out-Null
 
-        $result = Invoke-NextActions @("-MaterialsDirectory", $materials, "-OutputPath", $outputPath)
+        $result = Invoke-NextActions @(
+            "-MaterialsDirectory", $materials,
+            "-EntryPackDirectory", $entryPack,
+            "-SubmissionPacketDirectory", $submissionPacket,
+            "-OutputPath", $outputPath
+        )
 
         Assert-True ($result.ExitCode -eq 0) "expected exit 0, got $($result.ExitCode): $($result.Output)"
         $packet = Get-Content $outputPath -Raw
         Assert-Contains $packet "All private materials and evidence are recorded" "packet should report local evidence completion"
         Assert-Contains $packet "Run release doctor for final status" "release doctor should be the next verification"
+        Assert-Contains $packet "Submission packet folder: $submissionPacket" "packet should record the public submission packet folder"
+        Assert-Contains $packet "-SubmissionPacketDirectory `"$submissionPacket`"" "final release doctor command should include the public submission packet folder"
     }
 } finally {
     $resolvedTempRoot = [System.IO.Path]::GetFullPath($tempRoot)

@@ -54,7 +54,10 @@ To prepare a private local folder for Apple account, signing, DSA, and review-co
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/prepare-apple-materials-folder.ps1
 powershell -ExecutionPolicy Bypass -File scripts/export-app-store-connect-entry-pack.ps1
-powershell -ExecutionPolicy Bypass -File scripts/apple-release-next-actions.ps1
+powershell -ExecutionPolicy Bypass -File scripts/apple-release-next-actions.ps1 `
+  -EntryPackDirectory "C:\path\outside\repo\SnapTableReminder-AppStoreConnect-EntryPack" `
+  -SubmissionPacketDirectory "C:\path\outside\repo\SnapTableReminder-AppStoreSubmissionPacket" `
+  -MaterialsDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials"
 ```
 
 The next-actions helper writes a local Markdown checklist to your Documents folder and prints the next safest Apple action based on the private materials folder state.

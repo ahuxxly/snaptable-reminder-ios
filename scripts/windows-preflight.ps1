@@ -677,6 +677,8 @@ foreach ($nextActionsTerm in @(
     "Upload metadata, screenshots, and TestFlight build",
     "Record App Store release evidence",
     "Run release doctor for final status",
+    "SubmissionPacketDirectory",
+    "Submission packet folder",
     "Do not paste private Apple values into GitHub issues",
     "no China mainland availability"
 )) {

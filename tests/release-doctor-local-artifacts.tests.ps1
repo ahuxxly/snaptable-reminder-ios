@@ -255,16 +255,19 @@ try {
 
     Run-Test "local-only doctor writes next action packet for incomplete Apple materials" {
         $entryPack = Join-Path $tempRoot "next-action-entry-pack"
+        $submissionPacket = Join-Path $tempRoot "next-action-submission-packet"
         $materials = Join-Path $tempRoot "next-action-materials"
         $nextActionsPath = Join-Path $tempRoot "doctor-next-actions.md"
         & powershell -NoProfile -ExecutionPolicy Bypass -File $entryPackExporterPath -OutputDirectory $entryPack | Out-Null
         Assert-True ($LASTEXITCODE -eq 0) "entry pack setup failed"
+        New-CompleteSubmissionPacket $entryPack $submissionPacket
         & powershell -NoProfile -ExecutionPolicy Bypass -File $materialsPrepPath -OutputDirectory $materials | Out-Null
         Assert-True ($LASTEXITCODE -eq 0) "materials setup failed"
 
         $result = Invoke-ReleaseDoctor @(
             "-LocalOnly",
             "-EntryPackDirectory", $entryPack,
+            "-SubmissionPacketDirectory", $submissionPacket,
             "-MaterialsDirectory", $materials,
             "-NextActionsOutputPath", $nextActionsPath
         )
@@ -275,6 +278,7 @@ try {
         Assert-True (Test-Path $nextActionsPath) "doctor should create the next-actions Markdown packet"
         $nextActions = Get-Content $nextActionsPath -Raw
         Assert-Contains $nextActions "Complete Apple account and paid app setup" "next-actions packet should name the first missing Apple action"
+        Assert-Contains $nextActions "Submission packet folder: $submissionPacket" "next-actions packet should include the submission packet folder from release doctor"
         Assert-Contains $nextActions "Do not paste private Apple values into GitHub issues" "next-actions packet should include privacy guardrails"
     }
 } finally {
