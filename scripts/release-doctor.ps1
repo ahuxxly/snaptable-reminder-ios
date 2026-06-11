@@ -155,6 +155,35 @@ function Invoke-GhJson($ghPath, $arguments, $failureMessage) {
     return $output
 }
 
+function Add-GitHubAuthGate($gates, $ghPath) {
+    $previousErrorActionPreference = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    $authOutput = & $ghPath auth status 2>&1
+    $authExitCode = $LASTEXITCODE
+    $ErrorActionPreference = $previousErrorActionPreference
+    if ($authExitCode -eq 0) {
+        Add-Gate $gates "GitHub CLI authentication" "OK" "GitHub CLI is authenticated."
+        return
+    }
+
+    $apiWorks = $false
+    try {
+        $null = Invoke-GhJson $ghPath @("api", "user") "Could not verify GitHub API authentication."
+        $apiWorks = $true
+    } catch {
+        $apiWorks = $false
+    }
+
+    if ($apiWorks) {
+        Write-Host $authOutput
+        Add-Gate $gates "GitHub CLI authentication" "WARN" "gh auth status reported an invalid session, but GitHub API requests still work." "Run gh auth refresh -h github.com after this release pass to clean up the local keyring token."
+        return
+    }
+
+    Write-Host $authOutput
+    Add-Gate $gates "GitHub CLI authentication" "BLOCKED" "gh auth status reports an invalid or missing GitHub session." "Run gh auth refresh -h github.com or gh auth login before setting secrets, updating issues, or triggering release workflows."
+}
+
 function Get-DocumentsDirectory {
     $documents = [Environment]::GetFolderPath("MyDocuments")
     if ([string]::IsNullOrWhiteSpace($documents)) {
@@ -546,17 +575,7 @@ if ($LocalOnly) {
 $ghPath = Resolve-GitHubCli
 
 Write-Section "GitHub"
-$previousErrorActionPreference = $ErrorActionPreference
-$ErrorActionPreference = "Continue"
-$authOutput = & $ghPath auth status 2>&1
-$authExitCode = $LASTEXITCODE
-$ErrorActionPreference = $previousErrorActionPreference
-if ($authExitCode -ne 0) {
-    Write-Host $authOutput
-    Add-Gate $gates "GitHub CLI authentication" "BLOCKED" "gh auth status reports an invalid or missing GitHub session." "Run gh auth refresh -h github.com or gh auth login before setting secrets, updating issues, or triggering release workflows."
-} else {
-    Add-Gate $gates "GitHub CLI authentication" "OK" "GitHub CLI is authenticated."
-}
+Add-GitHubAuthGate $gates $ghPath
 
 if ([string]::IsNullOrWhiteSpace($RepoFullName)) {
     try {
