@@ -4,6 +4,8 @@ This is the end-to-end launch path for a first App Store release outside China m
 
 For a short current-state view, start with `docs/app-store/current-release-status.md`.
 
+GitHub Actions minutes are close to the included monthly limit. Prefer local Windows preflight and manual-only macOS workflows until the quota resets or the Apple release materials are ready for a real upload.
+
 For a one-command read-only release diagnosis on Windows:
 
 ```powershell

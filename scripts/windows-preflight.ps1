@@ -1352,6 +1352,15 @@ $iosCiWorkflowText = Get-Content ".github\workflows\ios-ci.yml" -Raw
 if (-not $iosCiWorkflowText.Contains("timeout-minutes: 20")) {
     throw "iOS CI workflow should cap macOS runtime."
 }
+if (-not $iosCiWorkflowText.Contains("workflow_dispatch")) {
+    throw "iOS CI workflow should be manually runnable."
+}
+if ($iosCiWorkflowText.Contains("`n  push:") -or $iosCiWorkflowText.Contains("`r`n  push:")) {
+    throw "iOS CI workflow should not run on every push while GitHub Actions minutes are near the monthly limit."
+}
+if ($iosCiWorkflowText.Contains("`n  pull_request:") -or $iosCiWorkflowText.Contains("`r`n  pull_request:")) {
+    throw "iOS CI workflow should not run on every pull request while GitHub Actions minutes are near the monthly limit."
+}
 $pagesWorkflowText = Get-Content ".github\workflows\pages.yml" -Raw
 if (-not $pagesWorkflowText.Contains("enablement: true")) {
     throw "GitHub Pages workflow should enable Pages when configuring the site."

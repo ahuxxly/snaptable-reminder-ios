@@ -11,6 +11,7 @@ Local repository status:
 - Unit test source files are present for parsing, CSV export, date logic, settings persistence, and reminder date policy.
 - App Store support site files are present in `site/`.
 - GitHub Actions workflows are present for iOS CI, GitHub Pages, App Store screenshots, release readiness, App Store Connect metadata/screenshot upload, TestFlight upload, and protected App Review submission.
+- To conserve the monthly GitHub Actions quota, `iOS CI` is manual-only while the account is near the included minutes limit; run it deliberately from Actions when a release gate needs fresh macOS verification.
 - Fastlane lanes are present for verify, archive, metadata upload, screenshot upload, review checks, TestFlight upload, and protected App Review submission.
 - GitHub login and publish helper script is present in `scripts/github-login-and-publish.ps1`.
 - GitHub publish helper can enable GitHub Issues, prepare the support issue label, write public support request links, and write Fastlane store URL files after the repository URL is known.
@@ -49,6 +50,7 @@ Verified on GitHub:
 
 - Repository is public at `https://github.com/ahuxxly/snaptable-reminder-ios`.
 - `iOS CI` is passing on macOS.
+- Latest pushed code has passed `iOS CI`; further automatic runs are paused by manual-only trigger to protect Actions minutes.
 - `Release Readiness` is passing on macOS.
 - Release Readiness screenshot artifacts can be archived and verified locally with `scripts/archive-release-readiness-artifacts.ps1`.
 - A public App Store submission packet can be built locally with `scripts/build-app-store-submission-packet.ps1`.
