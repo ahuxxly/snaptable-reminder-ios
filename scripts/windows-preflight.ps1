@@ -1050,6 +1050,23 @@ try {
 }
 Write-Host "GitHub publishing helpers present"
 
+Write-Section "GitHub workflow action versions"
+$workflowFiles = @(Get-ChildItem -LiteralPath ".github\workflows" -Filter "*.yml" -File)
+if ($workflowFiles.Count -eq 0) {
+    throw "No GitHub workflow files found."
+}
+foreach ($workflowFile in $workflowFiles) {
+    $workflowText = Get-Content $workflowFile.FullName -Raw
+    if ($workflowText.Contains("actions/checkout@v4")) {
+        throw "$($workflowFile.Name) should use actions/checkout@v5 to avoid the deprecated Node 20 action runtime."
+    }
+}
+$checkoutV5Count = @($workflowFiles | Where-Object { (Get-Content $_.FullName -Raw).Contains("actions/checkout@v5") }).Count
+if ($checkoutV5Count -lt 1) {
+    throw "At least one workflow should use actions/checkout@v5."
+}
+Write-Host "checkout actions use v5"
+
 Write-Section "Screenshot automation"
 if (-not (Test-Path "scripts\mac-capture-screenshots.sh")) {
     throw "Missing Mac screenshot capture script."
