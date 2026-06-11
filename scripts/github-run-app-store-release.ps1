@@ -1,6 +1,8 @@
 param(
     [string]$RepoFullName = "",
     [string]$Ref = "",
+    [ValidateSet("YES", "NO")]
+    [string]$ConfirmUseActionsMinutes = "NO",
 
     [switch]$StatusOnly,
     [switch]$DryRun,
@@ -51,7 +53,11 @@ function Get-SecretNames($ghPath, $repoFullName) {
         throw "Could not list GitHub secrets for $repoFullName."
     }
 
-    $secretRecords = @($secretJson | ConvertFrom-Json)
+    $convertedSecrets = ($secretJson -join [Environment]::NewLine) | ConvertFrom-Json
+    $secretRecords = New-Object "System.Collections.Generic.List[object]"
+    foreach ($convertedSecret in $convertedSecrets) {
+        $secretRecords.Add($convertedSecret) | Out-Null
+    }
     $secretNames = New-Object "System.Collections.Generic.HashSet[string]" ([System.StringComparer]::Ordinal)
     foreach ($secretRecord in $secretRecords) {
         if ($secretRecord.name) {
@@ -220,6 +226,10 @@ if ($willRunTestFlight) {
             throw $missingTestFlightMessage
         }
     }
+}
+
+if (-not $DryRun -and $ConfirmUseActionsMinutes -ne "YES") {
+    throw "Pass -ConfirmUseActionsMinutes YES to spend GitHub Actions minutes on App Store upload workflows. Use -DryRun first to inspect the planned dispatch commands."
 }
 
 $triggeredRunIds = @()

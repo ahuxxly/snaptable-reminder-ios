@@ -163,7 +163,7 @@ function Get-ReleaseActions($materialsPath, $entryPackPath, $submissionPacketPat
         $uploadCommand = @(
             "powershell -ExecutionPolicy Bypass -File scripts/github-set-apple-secrets.ps1 -MaterialsDirectory `"$materialsPath`" -DryRun",
             "powershell -ExecutionPolicy Bypass -File scripts/github-run-app-store-release.ps1 -DryRun",
-            "powershell -ExecutionPolicy Bypass -File scripts/github-run-app-store-release.ps1 -Wait"
+            "powershell -ExecutionPolicy Bypass -File scripts/github-run-app-store-release.ps1 -ConfirmUseActionsMinutes YES -Wait"
         ) -join "`n"
         Add-Action $actions `
             "Upload metadata, screenshots, and TestFlight build" `

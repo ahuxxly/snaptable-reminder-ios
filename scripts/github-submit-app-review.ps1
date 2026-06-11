@@ -3,6 +3,8 @@ param(
     [string]$Ref = "",
     [ValidateSet("YES", "NO")]
     [string]$ConfirmSubmitForReview = "NO",
+    [ValidateSet("YES", "NO")]
+    [string]$ConfirmUseActionsMinutes = "NO",
     [switch]$StatusOnly,
     [switch]$DryRun,
     [switch]$Wait
@@ -35,7 +37,11 @@ function Get-SecretNames($ghPath, $repoFullName) {
         throw "Could not list GitHub secrets for $repoFullName."
     }
 
-    $secretRecords = @($secretJson | ConvertFrom-Json)
+    $convertedSecrets = ($secretJson -join [Environment]::NewLine) | ConvertFrom-Json
+    $secretRecords = New-Object "System.Collections.Generic.List[object]"
+    foreach ($convertedSecret in $convertedSecrets) {
+        $secretRecords.Add($convertedSecret) | Out-Null
+    }
     $secretNames = New-Object "System.Collections.Generic.HashSet[string]" ([System.StringComparer]::Ordinal)
     foreach ($secretRecord in $secretRecords) {
         if ($secretRecord.name) {
@@ -157,6 +163,10 @@ if ($missingSecrets.Count -gt 0) {
     } else {
         throw $missingReviewMessage
     }
+}
+
+if (-not $DryRun -and $ConfirmUseActionsMinutes -ne "YES") {
+    throw "Pass -ConfirmUseActionsMinutes YES to spend GitHub Actions minutes on the App Review submit workflow. Use -DryRun first to inspect the planned dispatch command."
 }
 
 $arguments = @(

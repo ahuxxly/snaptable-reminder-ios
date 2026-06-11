@@ -863,6 +863,9 @@ if (-not $githubAppStoreReleaseText.Contains("testflight-upload.yml")) {
 if (-not $githubAppStoreReleaseText.Contains("StatusOnly") -or -not $githubAppStoreReleaseText.Contains("DryRun")) {
     throw "GitHub App Store release runner should support status-only and dry-run modes."
 }
+if (-not $githubAppStoreReleaseText.Contains("ConfirmUseActionsMinutes")) {
+    throw "GitHub App Store release runner should require explicit confirmation before spending Actions minutes."
+}
 if (-not $githubAppStoreReleaseText.Contains("Dry-run mode will continue so you can inspect the planned workflow command")) {
     throw "GitHub App Store release runner dry-run should show planned workflow commands before secrets exist."
 }
@@ -882,7 +885,10 @@ foreach ($reviewSubmitSecretName in ($requiredGitHubUploadSecretNames + $require
     }
 }
 if (-not $githubAppReviewSubmitText.Contains("ConfirmSubmitForReview")) {
-    throw "GitHub App Review submit helper should require explicit confirmation."
+    throw "GitHub App Review submit helper should require explicit review confirmation."
+}
+if (-not $githubAppReviewSubmitText.Contains("ConfirmUseActionsMinutes")) {
+    throw "GitHub App Review submit helper should require explicit confirmation before spending Actions minutes."
 }
 if (-not $githubAppReviewSubmitText.Contains("app-review-submit.yml")) {
     throw "GitHub App Review submit helper should trigger the App Review workflow."
@@ -919,8 +925,8 @@ foreach ($releaseDoctorTerm in @(
     "scripts/record-app-store-release-evidence.ps1",
     "scripts/record-app-store-connect-setup-evidence.ps1",
     "scripts/stage-apple-release-materials.ps1",
-    "scripts/github-run-app-store-release.ps1 -Wait",
-    "scripts/github-submit-app-review.ps1 -ConfirmSubmitForReview YES -Wait"
+    "scripts/github-run-app-store-release.ps1 -ConfirmUseActionsMinutes YES -Wait",
+    "scripts/github-submit-app-review.ps1 -ConfirmSubmitForReview YES -ConfirmUseActionsMinutes YES -Wait"
 )) {
     if (-not $releaseDoctorText.Contains($releaseDoctorTerm)) {
         throw "Release doctor should include: $releaseDoctorTerm"
@@ -951,8 +957,8 @@ foreach ($releaseIssueSyncTerm in @(
     "scripts/github-set-apple-secrets.ps1 -UploadOnly",
     "scripts/github-set-apple-secrets.ps1 -SigningOnly",
     "scripts/github-set-apple-secrets.ps1 -ReviewOnly",
-    "scripts/github-run-app-store-release.ps1 -Wait",
-    "scripts/github-submit-app-review.ps1 -ConfirmSubmitForReview YES -Wait"
+    "scripts/github-run-app-store-release.ps1 -ConfirmUseActionsMinutes YES -Wait",
+    "scripts/github-submit-app-review.ps1 -ConfirmSubmitForReview YES -ConfirmUseActionsMinutes YES -Wait"
 )) {
     if (-not $releaseIssueSyncText.Contains($releaseIssueSyncTerm)) {
         throw "Release issue sync should include: $releaseIssueSyncTerm"

@@ -699,7 +699,7 @@ Add-Gate $gates "EU DSA trader status" "BLOCKED" "Cannot verify from this worksp
 if (-not [string]::IsNullOrWhiteSpace($validMaterialsPath)) {
     Add-Gate $gates "Build uploaded and submitted" "WARN" "Use the local App Store release evidence gate above as the workspace evidence source." "Keep release-evidence.private.json updated after each App Store Connect status change."
 } else {
-    Add-Gate $gates "Build uploaded and submitted" "BLOCKED" "No App Store Connect evidence is available in this workspace." "After secrets exist, run scripts/github-run-app-store-release.ps1 -Wait, then scripts/github-submit-app-review.ps1 -ConfirmSubmitForReview YES -Wait."
+    Add-Gate $gates "Build uploaded and submitted" "BLOCKED" "No App Store Connect evidence is available in this workspace." "After secrets exist and you intentionally choose to spend Actions minutes, run scripts/github-run-app-store-release.ps1 -ConfirmUseActionsMinutes YES -Wait, then scripts/github-submit-app-review.ps1 -ConfirmSubmitForReview YES -ConfirmUseActionsMinutes YES -Wait."
 }
 
 Complete-Doctor $gates

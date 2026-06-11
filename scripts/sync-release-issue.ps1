@@ -128,14 +128,14 @@ powershell -ExecutionPolicy Bypass -File scripts/github-set-apple-secrets.ps1 -R
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/github-run-app-store-release.ps1 -SkipTestFlight -DryRun
-powershell -ExecutionPolicy Bypass -File scripts/github-run-app-store-release.ps1 -SkipTestFlight -Wait
+powershell -ExecutionPolicy Bypass -File scripts/github-run-app-store-release.ps1 -SkipTestFlight -ConfirmUseActionsMinutes YES -Wait
 ```
 
 - [ ] TestFlight upload succeeds:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/github-run-app-store-release.ps1 -DryRun
-powershell -ExecutionPolicy Bypass -File scripts/github-run-app-store-release.ps1 -Wait
+powershell -ExecutionPolicy Bypass -File scripts/github-run-app-store-release.ps1 -ConfirmUseActionsMinutes YES -Wait
 ```
 
 - [ ] App Store Connect shows the uploaded build as processed.
@@ -144,7 +144,7 @@ powershell -ExecutionPolicy Bypass -File scripts/github-run-app-store-release.ps
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/github-submit-app-review.ps1 -ConfirmSubmitForReview YES -DryRun
-powershell -ExecutionPolicy Bypass -File scripts/github-submit-app-review.ps1 -ConfirmSubmitForReview YES -Wait
+powershell -ExecutionPolicy Bypass -File scripts/github-submit-app-review.ps1 -ConfirmSubmitForReview YES -ConfirmUseActionsMinutes YES -Wait
 powershell -ExecutionPolicy Bypass -File scripts/record-app-store-release-evidence.ps1 -MaterialsDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials" -AppStoreConnectAppId "1234567890" -AppVersion "1.0" -BuildNumber "1" -MetadataWorkflowRunUrl "https://github.com/owner/repo/actions/runs/100" -TestFlightWorkflowRunUrl "https://github.com/owner/repo/actions/runs/101" -AppReviewWorkflowRunUrl "https://github.com/owner/repo/actions/runs/102" -MetadataUploaded -ScreenshotsUploaded -ReviewCheckPassed -TestFlightUploaded -BuildProcessed -AppReviewSubmitted -AppStatus "Waiting for Review" -DryRun
 ```
 

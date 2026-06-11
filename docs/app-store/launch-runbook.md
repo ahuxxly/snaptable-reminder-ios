@@ -269,7 +269,7 @@ GitHub Actions upload path:
 
 1. Add the repository secrets with `scripts/github-set-apple-secrets.ps1 -MaterialsDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials"`.
 2. Preview the dispatch command with `scripts/github-run-app-store-release.ps1 -SkipTestFlight -DryRun`.
-3. Run `scripts/github-run-app-store-release.ps1 -SkipTestFlight`.
+3. Run `scripts/github-run-app-store-release.ps1 -SkipTestFlight -ConfirmUseActionsMinutes YES`.
 4. Keep metadata, screenshots, and review check enabled unless you are intentionally rerunning only part of the upload.
 
 Evidence:
@@ -296,7 +296,7 @@ GitHub Actions alternative:
 GitHub Actions upload path:
 
 1. Add the repository secrets with `scripts/github-set-apple-secrets.ps1`.
-2. Run `scripts/github-run-app-store-release.ps1 -SkipTestFlight -SkipMetadata -SkipReviewCheck`.
+2. Run `scripts/github-run-app-store-release.ps1 -SkipTestFlight -SkipMetadata -SkipReviewCheck -ConfirmUseActionsMinutes YES`.
 3. Confirm screenshots are visible in App Store Connect.
 
 Fastlane upload path:
@@ -346,7 +346,7 @@ GitHub Actions TestFlight path:
 
 1. Add the upload and signing secrets with `scripts/github-set-apple-secrets.ps1 -MaterialsDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials"`.
 2. Preview the dispatch command with `scripts/github-run-app-store-release.ps1 -DryRun`.
-3. Run `scripts/github-run-app-store-release.ps1`.
+3. Run `scripts/github-run-app-store-release.ps1 -ConfirmUseActionsMinutes YES`.
 4. Wait for App Store Connect to finish processing the build.
 5. Record private release evidence:
 
@@ -373,7 +373,7 @@ GitHub Actions metadata and screenshot path:
 
 1. Add the upload secrets with `scripts/github-set-apple-secrets.ps1 -UploadOnly -MaterialsDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials"`.
 2. Preview the dispatch command with `scripts/github-run-app-store-release.ps1 -SkipTestFlight -DryRun`.
-3. Run `scripts/github-run-app-store-release.ps1 -SkipTestFlight`.
+3. Run `scripts/github-run-app-store-release.ps1 -SkipTestFlight -ConfirmUseActionsMinutes YES`.
 4. Confirm the workflow summary says the requested upload steps ran.
 
 Evidence:
@@ -404,7 +404,7 @@ powershell -ExecutionPolicy Bypass -File scripts/github-submit-app-review.ps1 -C
 8. Submit with explicit confirmation:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts/github-submit-app-review.ps1 -ConfirmSubmitForReview YES -Wait
+powershell -ExecutionPolicy Bypass -File scripts/github-submit-app-review.ps1 -ConfirmSubmitForReview YES -ConfirmUseActionsMinutes YES -Wait
 ```
 
 9. Record submitted review evidence:

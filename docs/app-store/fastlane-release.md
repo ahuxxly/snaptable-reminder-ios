@@ -62,7 +62,7 @@ GitHub Actions alternative:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/github-set-apple-secrets.ps1
-powershell -ExecutionPolicy Bypass -File scripts/github-run-app-store-release.ps1
+powershell -ExecutionPolicy Bypass -File scripts/github-run-app-store-release.ps1 -ConfirmUseActionsMinutes YES
 ```
 
 The first helper writes upload and signing secrets to GitHub and refuses `.p8`, `.p12`, and `.mobileprovision` files stored inside this repository.
@@ -72,7 +72,7 @@ After App Store Connect finishes processing the uploaded build, submit for revie
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/github-set-apple-secrets.ps1 -ReviewOnly
-powershell -ExecutionPolicy Bypass -File scripts/github-submit-app-review.ps1 -ConfirmSubmitForReview YES -Wait
+powershell -ExecutionPolicy Bypass -File scripts/github-submit-app-review.ps1 -ConfirmSubmitForReview YES -ConfirmUseActionsMinutes YES -Wait
 ```
 
 The submit helper refuses to run unless review contact secrets are configured and `-ConfirmSubmitForReview YES` is provided.
