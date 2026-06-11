@@ -941,6 +941,15 @@ if (-not $launchRunbookText.Contains("scripts/release-doctor.ps1")) {
 if (-not (Get-Content "docs\app-store\current-release-status.md" -Raw).Contains("scripts/release-doctor.ps1")) {
     throw "Current release status should mention the release doctor."
 }
+$currentReleaseStatusText = Get-Content "docs\app-store\current-release-status.md" -Raw
+foreach ($currentStatusTerm in @(
+    'Current HEAD still needs a manual iOS CI run',
+    'Current HEAD still needs a manual Release Readiness run'
+)) {
+    if (-not $currentReleaseStatusText.Contains($currentStatusTerm)) {
+        throw "Current release status should mention stale macOS workflow evidence: $currentStatusTerm"
+    }
+}
 $releaseIssueSyncText = Get-Content "scripts\sync-release-issue.ps1" -Raw
 foreach ($releaseIssueSyncTerm in @(
     "Do not paste secrets",

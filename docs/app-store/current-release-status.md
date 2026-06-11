@@ -49,9 +49,10 @@ Local repository status:
 Verified on GitHub:
 
 - Repository is public at `https://github.com/ahuxxly/snaptable-reminder-ios`.
-- `iOS CI` is passing on macOS.
-- Latest pushed code has passed `iOS CI`; further automatic runs are paused by manual-only trigger to protect Actions minutes.
-- `Release Readiness` is passing on macOS.
+- Last successful `iOS CI` run passed on macOS for commit `ae3a401`; further automatic runs are paused by manual-only trigger to protect Actions minutes.
+- Current HEAD still needs a manual iOS CI run before upload or App Review because later release-tooling commits used `[skip ci]`.
+- Last successful `Release Readiness` run passed on macOS for commit `c31b98c`.
+- Current HEAD still needs a manual Release Readiness run before upload or App Review because later release-tooling commits used `[skip ci]`.
 - Release Readiness screenshot artifacts can be archived and verified locally with `scripts/archive-release-readiness-artifacts.ps1`.
 - A public App Store submission packet can be built locally with `scripts/build-app-store-submission-packet.ps1`.
 - `Publish App Store Site` is passing.
