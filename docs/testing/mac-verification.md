@@ -44,7 +44,7 @@ After the repository is on GitHub, the same screenshot path is available through
 
 ## GitHub Actions
 
-The repository includes `.github/workflows/ios-ci.yml` and `.github/workflows/release-readiness.yml`. After pushing to GitHub, open the Actions tab and confirm the iOS CI workflow passes. Run `Release Readiness` manually before upload work. These verify project generation, tests, simulator build, screenshot UI test build, and screenshot artifact generation on a hosted macOS runner.
+The repository includes `.github/workflows/ios-ci.yml` and `.github/workflows/release-readiness.yml`. Both macOS workflows are manual while GitHub Actions minutes are near the monthly limit. Run `iOS CI` manually from the Actions tab when the current HEAD needs hosted macOS verification, and run `Release Readiness` manually before upload work. These verify project generation, tests, simulator build, screenshot UI test build, and screenshot artifact generation on a hosted macOS runner.
 
 If the local Mac run or CI fails, use `docs/testing/ci-failure-playbook.md` before retrying.
 

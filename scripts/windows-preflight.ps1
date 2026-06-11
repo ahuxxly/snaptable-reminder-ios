@@ -592,6 +592,9 @@ if (-not (Test-Path "tests\export-app-store-connect-entry-pack.tests.ps1")) {
 if (-not (Test-Path "tests\release-doctor-local-artifacts.tests.ps1")) {
     throw "Missing release doctor local artifact tests."
 }
+if (-not (Test-Path "tests\release-doctor-workflow-gates.tests.ps1")) {
+    throw "Missing release doctor workflow gate tests."
+}
 if (-not (Test-Path "scripts\release-doctor.ps1")) {
     throw "Missing release doctor script."
 }
@@ -784,6 +787,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tests\github-set-apple-secre
 powershell -NoProfile -ExecutionPolicy Bypass -File tests\github-release-workflow.tests.ps1
 powershell -NoProfile -ExecutionPolicy Bypass -File tests\export-app-store-connect-entry-pack.tests.ps1
 powershell -NoProfile -ExecutionPolicy Bypass -File tests\release-doctor-local-artifacts.tests.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File tests\release-doctor-workflow-gates.tests.ps1
 $githubPublishText = Get-Content "scripts\github-publish.ps1" -Raw
 if (-not $githubPublishText.Contains("write-site-support-links.ps1")) {
     throw "GitHub publish script should write public support links after repo creation."
@@ -892,6 +896,7 @@ if (-not $githubAppReviewSubmitText.Contains("Could not list recent workflow run
 $releaseDoctorText = Get-Content "scripts\release-doctor.ps1" -Raw
 foreach ($releaseDoctorTerm in @(
     "RunPreflight",
+    "LoadFunctionsOnly",
     "App Store Connect upload secrets",
     "Apple signing secrets",
     "App Review contact secrets",
@@ -908,6 +913,8 @@ foreach ($releaseDoctorTerm in @(
     "Apple release next actions",
     "App Store Connect setup evidence",
     "App Store release evidence",
+    "Add-WorkflowRunGate",
+    "workflow_dispatch",
     "scripts/apple-release-next-actions.ps1",
     "scripts/record-app-store-release-evidence.ps1",
     "scripts/record-app-store-connect-setup-evidence.ps1",

@@ -138,7 +138,7 @@ powershell -ExecutionPolicy Bypass -File scripts/github-login-and-publish.ps1 -R
 Then:
 
 2. Open GitHub Actions.
-3. Confirm `iOS CI` runs.
+3. Run the manual `iOS CI` workflow only when the current HEAD needs hosted macOS verification.
 4. Enable GitHub Pages using GitHub Actions.
 5. Confirm `Publish App Store Site` runs.
 6. Run `Release Readiness` manually.

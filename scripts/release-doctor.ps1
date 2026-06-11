@@ -2,6 +2,7 @@ param(
     [string]$RepoFullName = "",
     [switch]$RunPreflight,
     [switch]$LocalOnly,
+    [switch]$LoadFunctionsOnly,
     [string]$EntryPackDirectory = "",
     [string]$SubmissionPacketDirectory = "",
     [string]$MaterialsDirectory = "",
@@ -109,6 +110,26 @@ function Get-MissingNames($names, $requiredNames) {
         }
     }
     return $missing
+}
+
+function Add-WorkflowRunGate($gates, $workflowName, $latestRun, $currentHeadSha, $requireCurrentHead) {
+    if ($null -eq $latestRun) {
+        Add-Gate $gates $workflowName "BLOCKED" "No recent run found." "Run the workflow manually from GitHub Actions before release."
+        return
+    }
+
+    if ($latestRun.status -eq "completed" -and $latestRun.conclusion -eq "success") {
+        $runHeadSha = [string]$latestRun.headSha
+        if ($requireCurrentHead -and -not [string]::IsNullOrWhiteSpace($currentHeadSha) -and -not [string]::IsNullOrWhiteSpace($runHeadSha) -and $runHeadSha -ne $currentHeadSha) {
+            Add-Gate $gates $workflowName "WARN" "Latest run succeeded for $runHeadSha, but current HEAD is $currentHeadSha." "Run the manual workflow_dispatch workflow for $workflowName before upload or App Review."
+            return
+        }
+
+        Add-Gate $gates $workflowName "OK" "Latest run succeeded: $($latestRun.url)"
+        return
+    }
+
+    Add-Gate $gates $workflowName "BLOCKED" "Latest run status=$($latestRun.status), conclusion=$($latestRun.conclusion)." "Open $($latestRun.url) and fix before release."
 }
 
 function Test-Url($url, $requiredText) {
@@ -473,6 +494,10 @@ function Write-AppleReleaseNextActions($gates, $entryPackDirectory, $submissionP
     Add-Gate $gates "Apple release next actions" "OK" "Wrote the next Apple release action packet to $outputPath." "Open $outputPath and follow the first unchecked action."
 }
 
+if ($LoadFunctionsOnly) {
+    return
+}
+
 $gates = New-Object "System.Collections.Generic.List[object]"
 
 Write-Section "Local repository"
@@ -488,6 +513,7 @@ if ($gitStatus) {
 
 $branch = (git branch --show-current).Trim()
 $head = (git log -1 --oneline).Trim()
+$currentHeadSha = (git rev-parse HEAD).Trim()
 Write-Host "branch=$branch"
 Write-Host "head=$head"
 
@@ -595,13 +621,8 @@ if (-not [string]::IsNullOrWhiteSpace($RepoFullName)) {
         try {
             $runJson = Invoke-GhJson $ghPath @("run", "list", "--repo", $RepoFullName, "--workflow", $workflowName, "--limit", "1", "--json", "workflowName,status,conclusion,headSha,url") "Could not list GitHub workflow runs for $workflowName."
             $latestRun = @(ConvertFrom-JsonItems $runJson) | Select-Object -First 1
-            if ($null -eq $latestRun) {
-                Add-Gate $gates $workflowName "BLOCKED" "No recent run found." "Run or push the workflow before release."
-            } elseif ($latestRun.status -eq "completed" -and $latestRun.conclusion -eq "success") {
-                Add-Gate $gates $workflowName "OK" "Latest run succeeded: $($latestRun.url)"
-            } else {
-                Add-Gate $gates $workflowName "BLOCKED" "Latest run status=$($latestRun.status), conclusion=$($latestRun.conclusion)." "Open $($latestRun.url) and fix before release."
-            }
+            $requireCurrentHead = @("iOS CI", "Release Readiness") -contains $workflowName
+            Add-WorkflowRunGate $gates $workflowName $latestRun $currentHeadSha $requireCurrentHead
         } catch {
             Add-Gate $gates $workflowName "BLOCKED" $_.Exception.Message "Fix GitHub CLI auth or network access, then rerun the release doctor."
         }

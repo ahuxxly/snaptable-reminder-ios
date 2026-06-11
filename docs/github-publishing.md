@@ -84,7 +84,7 @@ powershell -ExecutionPolicy Bypass -File scripts/write-fastlane-store-urls.ps1 -
 
 ## CI Gate
 
-The `iOS CI` workflow must pass before App Store upload work is trusted. It generates the Xcode project, runs unit tests, and builds for an iPhone simulator on a hosted macOS runner.
+The manual `iOS CI` workflow must pass on the current HEAD before App Store upload work is trusted. It generates the Xcode project, runs unit tests, and builds for an iPhone simulator on a hosted macOS runner. Keep it manual while GitHub Actions minutes are near the monthly limit; run it deliberately from the Actions tab before release upload or review submission.
 
 The manual `App Store Screenshots` workflow generates raw screenshot exports and a Fastlane screenshot folder for App Store Connect after the app builds on GitHub's macOS runner.
 
