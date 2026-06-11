@@ -3,6 +3,7 @@ param(
     [switch]$RunPreflight,
     [switch]$LocalOnly,
     [string]$EntryPackDirectory = "",
+    [string]$SubmissionPacketDirectory = "",
     [string]$MaterialsDirectory = "",
     [string]$NextActionsOutputPath = ""
 )
@@ -203,6 +204,93 @@ function Test-EntryPack($gates, $entryPackDirectory, $explicitPath) {
     }
 
     Add-Gate $gates "App Store Connect entry packet" "OK" "Paste-ready packet is present at $entryPackPath."
+}
+
+function Test-SubmissionPacket($gates, $submissionPacketDirectory, $explicitPath) {
+    $submissionPacketPath = Resolve-ArtifactPath $submissionPacketDirectory "SnapTableReminder-AppStoreSubmissionPacket"
+    Write-Host "submissionPacket=$submissionPacketPath"
+
+    if (-not (Test-Path $submissionPacketPath)) {
+        if ($explicitPath) {
+            Add-Gate $gates "App Store submission packet" "BLOCKED" "Submission packet folder is missing: $submissionPacketPath" "Run scripts/build-app-store-submission-packet.ps1 -OutputDirectory `"$submissionPacketPath`"."
+        } else {
+            Add-Gate $gates "App Store submission packet" "WARN" "Default submission packet folder is missing: $submissionPacketPath" "Run scripts/build-app-store-submission-packet.ps1 after archiving Release Readiness screenshots."
+        }
+        return
+    }
+
+    $privatePatterns = @(
+        "*.p8",
+        "*.p12",
+        "*.mobileprovision",
+        "*.ipa",
+        "release-secrets.private.json",
+        "review-contact.private.json",
+        "account-private-status.md",
+        "dsa-private-evidence.md"
+    )
+    foreach ($privatePattern in $privatePatterns) {
+        $privateMatch = Get-ChildItem -LiteralPath $submissionPacketPath -Recurse -Force -File -Filter $privatePattern -ErrorAction SilentlyContinue | Select-Object -First 1
+        if ($null -ne $privateMatch) {
+            Add-Gate $gates "App Store submission packet" "BLOCKED" "Private Apple file found in public submission packet: $($privateMatch.FullName)" "Remove private Apple files and rebuild the packet with scripts/build-app-store-submission-packet.ps1."
+            return
+        }
+    }
+
+    $requiredSubmissionPaths = @(
+        "SUBMISSION-PACKET-README.md",
+        "app-store-submission-packet.json",
+        "01-app-store-connect-entry-pack\app-store-connect-entry-pack.json",
+        "02-fastlane-screenshots\en-US\01-Capture.png",
+        "02-fastlane-screenshots\en-US\02-Records.png",
+        "02-fastlane-screenshots\en-US\03-Dashboard.png",
+        "02-fastlane-screenshots\en-US\04-Settings.png",
+        "04-release-readiness-evidence\release-readiness-artifacts-summary.md",
+        "04-release-readiness-evidence\release-readiness-artifacts.json"
+    )
+    $missingSubmissionPaths = @()
+    foreach ($requiredSubmissionPath in $requiredSubmissionPaths) {
+        if (-not (Test-Path (Join-Path $submissionPacketPath $requiredSubmissionPath))) {
+            $missingSubmissionPaths += $requiredSubmissionPath
+        }
+    }
+    if ($missingSubmissionPaths.Count -gt 0) {
+        Add-Gate $gates "App Store submission packet" "BLOCKED" "Missing files: $($missingSubmissionPaths -join ', ')." "Rebuild the packet with scripts/build-app-store-submission-packet.ps1."
+        return
+    }
+
+    $rawScreenshotCount = @(Get-ChildItem -LiteralPath (Join-Path $submissionPacketPath "03-raw-screenshots") -Recurse -File -Filter *.png -ErrorAction SilentlyContinue).Count
+    if ($rawScreenshotCount -ne 4) {
+        Add-Gate $gates "App Store submission packet" "BLOCKED" "Expected 4 raw screenshots, found $rawScreenshotCount." "Rebuild the packet from a verified Release Readiness artifact archive."
+        return
+    }
+
+    try {
+        $submissionPacket = Get-Content (Join-Path $submissionPacketPath "app-store-submission-packet.json") -Raw | ConvertFrom-Json
+        if ($submissionPacket.bundleId -ne "com.snaptable.reminder") {
+            Add-Gate $gates "App Store submission packet" "BLOCKED" "Submission packet bundle id is $($submissionPacket.bundleId)." "Rebuild the packet from the current App Store Connect entry pack."
+            return
+        }
+        if ([int]$submissionPacket.fastlaneScreenshotCount -ne 4 -or [int]$submissionPacket.rawScreenshotCount -ne 4) {
+            Add-Gate $gates "App Store submission packet" "BLOCKED" "Submission packet screenshot counts are Fastlane=$($submissionPacket.fastlaneScreenshotCount), raw=$($submissionPacket.rawScreenshotCount)." "Rebuild the packet from a verified Release Readiness artifact archive."
+            return
+        }
+        if ([string]::IsNullOrWhiteSpace([string]$submissionPacket.privacyPolicyUrl) -or [string]::IsNullOrWhiteSpace([string]$submissionPacket.supportUrl)) {
+            Add-Gate $gates "App Store submission packet" "BLOCKED" "Submission packet is missing hosted privacy/support URLs." "Regenerate the entry pack and rebuild the submission packet."
+            return
+        }
+    } catch {
+        Add-Gate $gates "App Store submission packet" "BLOCKED" "app-store-submission-packet.json is invalid." "Rebuild the packet with scripts/build-app-store-submission-packet.ps1."
+        return
+    }
+
+    $readme = Get-Content (Join-Path $submissionPacketPath "SUBMISSION-PACKET-README.md") -Raw
+    if ($readme -match '[\x00-\x08\x0B\x0C\x0E-\x1F]') {
+        Add-Gate $gates "App Store submission packet" "BLOCKED" "Submission packet README contains control characters." "Rebuild the packet with scripts/build-app-store-submission-packet.ps1."
+        return
+    }
+
+    Add-Gate $gates "App Store submission packet" "OK" "Public submission packet is present with 4 Fastlane screenshots and 4 raw screenshots at $submissionPacketPath."
 }
 
 function Test-Materials($gates, $materialsDirectory, $explicitPath) {
@@ -416,6 +504,7 @@ if ($RunPreflight) {
 
 Write-Section "Local release artifacts"
 Test-EntryPack $gates $EntryPackDirectory (-not [string]::IsNullOrWhiteSpace($EntryPackDirectory))
+Test-SubmissionPacket $gates $SubmissionPacketDirectory (-not [string]::IsNullOrWhiteSpace($SubmissionPacketDirectory))
 $validMaterialsPath = Test-Materials $gates $MaterialsDirectory (-not [string]::IsNullOrWhiteSpace($MaterialsDirectory))
 if (-not [string]::IsNullOrWhiteSpace($validMaterialsPath)) {
     Test-AppStoreConnectSetupEvidence $gates $validMaterialsPath

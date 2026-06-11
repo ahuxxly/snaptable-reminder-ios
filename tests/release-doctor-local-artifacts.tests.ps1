@@ -3,6 +3,7 @@ $ErrorActionPreference = "Stop"
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 $releaseDoctorPath = Join-Path $repoRoot "scripts\release-doctor.ps1"
 $entryPackExporterPath = Join-Path $repoRoot "scripts\export-app-store-connect-entry-pack.ps1"
+$submissionPacketBuilderPath = Join-Path $repoRoot "scripts\build-app-store-submission-packet.ps1"
 $materialsPrepPath = Join-Path $repoRoot "scripts\prepare-apple-materials-folder.ps1"
 $recordSetupPath = Join-Path $repoRoot "scripts\record-app-store-connect-setup-evidence.ps1"
 $recordEvidencePath = Join-Path $repoRoot "scripts\record-app-store-release-evidence.ps1"
@@ -140,15 +141,80 @@ function Add-CompleteSetupEvidence($materials) {
     }
 }
 
+function Write-FakePng($path, $width = 1320, $height = 2868) {
+    $parent = Split-Path -Parent $path
+    if (-not (Test-Path $parent)) {
+        New-Item -ItemType Directory -Path $parent -Force | Out-Null
+    }
+
+    $bytes = New-Object byte[] 33
+    [byte[]]$signature = 137, 80, 78, 71, 13, 10, 26, 10
+    [Array]::Copy($signature, 0, $bytes, 0, $signature.Length)
+    [byte[]]$ihdr = 73, 72, 68, 82
+    [Array]::Copy($ihdr, 0, $bytes, 12, $ihdr.Length)
+    $bytes[16] = [byte](($width -shr 24) -band 255)
+    $bytes[17] = [byte](($width -shr 16) -band 255)
+    $bytes[18] = [byte](($width -shr 8) -band 255)
+    $bytes[19] = [byte]($width -band 255)
+    $bytes[20] = [byte](($height -shr 24) -band 255)
+    $bytes[21] = [byte](($height -shr 16) -band 255)
+    $bytes[22] = [byte](($height -shr 8) -band 255)
+    $bytes[23] = [byte]($height -band 255)
+    $bytes[24] = 8
+    $bytes[25] = 2
+    [System.IO.File]::WriteAllBytes($path, $bytes)
+}
+
+function New-ScreenshotArchive($root) {
+    foreach ($name in @("01-Capture.png", "02-Records.png", "03-Dashboard.png", "04-Settings.png")) {
+        Write-FakePng (Join-Path $root "fastlane-screenshots\en-US\$name")
+    }
+    foreach ($name in @("raw-capture.png", "raw-records.png", "raw-dashboard.png", "raw-settings.png")) {
+        Write-FakePng (Join-Path $root "app-store-screenshots\$name")
+    }
+    Set-Content -Path (Join-Path $root "release-readiness-artifacts-summary.md") -Encoding UTF8 -Value @"
+# Release Readiness Artifacts
+
+Run: https://github.com/owner/repo/actions/runs/123456789
+Verified 8 PNGs at 1320x2868.
+"@
+    Set-Content -Path (Join-Path $root "release-readiness-artifacts.json") -Encoding UTF8 -Value @"
+{
+  "schemaVersion": 1,
+  "repoFullName": "owner/repo",
+  "runId": "123456789",
+  "runUrl": "https://github.com/owner/repo/actions/runs/123456789",
+  "headSha": "abc123",
+  "pngCount": 8,
+  "fastlaneScreenshotCount": 4,
+  "rawScreenshotCount": 4
+}
+"@
+}
+
+function New-CompleteSubmissionPacket($entryPack, $target) {
+    $screenshots = Join-Path $tempRoot ("screenshots-" + [guid]::NewGuid().ToString("N"))
+    New-ScreenshotArchive $screenshots
+    & powershell -NoProfile -ExecutionPolicy Bypass -File $submissionPacketBuilderPath `
+        -EntryPackDirectory $entryPack `
+        -ScreenshotArchiveDirectory $screenshots `
+        -OutputDirectory $target | Out-Null
+    if ($LASTEXITCODE -ne 0) {
+        throw "Could not build test App Store submission packet."
+    }
+}
+
 $tempRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("snaptable-release-doctor-local-tests-" + [guid]::NewGuid().ToString("N"))
 New-Item -ItemType Directory -Path $tempRoot | Out-Null
 
 try {
     Run-Test "local-only doctor accepts complete entry packet and materials folder" {
         $entryPack = Join-Path $tempRoot "entry-pack"
+        $submissionPacket = Join-Path $tempRoot "submission-packet"
         $materials = Join-Path $tempRoot "materials"
         & powershell -NoProfile -ExecutionPolicy Bypass -File $entryPackExporterPath -OutputDirectory $entryPack | Out-Null
         Assert-True ($LASTEXITCODE -eq 0) "entry pack setup failed"
+        New-CompleteSubmissionPacket $entryPack $submissionPacket
         New-CompleteMaterialsFolder $materials
         Add-CompleteSetupEvidence $materials
         Add-CompleteReleaseEvidence $materials
@@ -156,11 +222,13 @@ try {
         $result = Invoke-ReleaseDoctor @(
             "-LocalOnly",
             "-EntryPackDirectory", $entryPack,
+            "-SubmissionPacketDirectory", $submissionPacket,
             "-MaterialsDirectory", $materials
         )
 
         Assert-True ($result.ExitCode -ne 2) "complete local artifacts should not create blocked gates: $($result.Output)"
         Assert-Contains $result.Output "[OK] App Store Connect entry packet" "entry pack gate should be OK"
+        Assert-Contains $result.Output "[OK] App Store submission packet" "submission packet gate should be OK"
         Assert-Contains $result.Output "[OK] Apple private material folder" "materials gate should be OK"
         Assert-Contains $result.Output "[OK] App Store Connect setup evidence" "setup evidence gate should be OK"
         Assert-Contains $result.Output "[OK] App Store release evidence" "release evidence gate should be OK"
@@ -169,16 +237,19 @@ try {
 
     Run-Test "local-only doctor blocks missing explicit artifact folders" {
         $missingEntryPack = Join-Path $tempRoot "missing-entry-pack"
+        $missingSubmissionPacket = Join-Path $tempRoot "missing-submission-packet"
         $missingMaterials = Join-Path $tempRoot "missing-materials"
 
         $result = Invoke-ReleaseDoctor @(
             "-LocalOnly",
             "-EntryPackDirectory", $missingEntryPack,
+            "-SubmissionPacketDirectory", $missingSubmissionPacket,
             "-MaterialsDirectory", $missingMaterials
         )
 
         Assert-True ($result.ExitCode -eq 2) "missing explicit artifact folders should exit 2: $($result.Output)"
         Assert-Contains $result.Output "[BLOCKED] App Store Connect entry packet" "missing entry pack should be blocked"
+        Assert-Contains $result.Output "[BLOCKED] App Store submission packet" "missing submission packet should be blocked"
         Assert-Contains $result.Output "[BLOCKED] Apple private material folder" "missing materials should be blocked"
     }
 

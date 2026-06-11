@@ -47,7 +47,7 @@ This issue tracks the private Apple-account work required before SnapTable Remin
 - Privacy URL: https://ahuxxly.github.io/snaptable-reminder-ios/privacy.html
 - Support URL: https://ahuxxly.github.io/snaptable-reminder-ios/support.html
 - Local release doctor: `powershell -ExecutionPolicy Bypass -File scripts/release-doctor.ps1 -RunPreflight`
-- Local artifact doctor: `powershell -ExecutionPolicy Bypass -File scripts/release-doctor.ps1 -LocalOnly -EntryPackDirectory "C:\path\outside\repo\SnapTableReminder-AppStoreConnect-EntryPack" -MaterialsDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials" -NextActionsOutputPath "C:\path\outside\repo\SnapTableReminder-Apple-Next-Actions.md"`
+- Local artifact doctor: `powershell -ExecutionPolicy Bypass -File scripts/release-doctor.ps1 -LocalOnly -EntryPackDirectory "C:\path\outside\repo\SnapTableReminder-AppStoreConnect-EntryPack" -SubmissionPacketDirectory "C:\path\outside\repo\SnapTableReminder-AppStoreSubmissionPacket" -MaterialsDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials" -NextActionsOutputPath "C:\path\outside\repo\SnapTableReminder-Apple-Next-Actions.md"`
 - Windows preflight: `powershell -ExecutionPolicy Bypass -File scripts/windows-preflight.ps1`
 - Release Readiness artifact archive helper: `powershell -ExecutionPolicy Bypass -File scripts/archive-release-readiness-artifacts.ps1 -RunId "<run-id>"`
 - App Store submission packet builder: `powershell -ExecutionPolicy Bypass -File scripts/build-app-store-submission-packet.ps1`

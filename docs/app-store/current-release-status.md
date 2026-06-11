@@ -81,6 +81,7 @@ Local-only artifact diagnosis:
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/release-doctor.ps1 -LocalOnly `
   -EntryPackDirectory "C:\path\outside\repo\SnapTableReminder-AppStoreConnect-EntryPack" `
+  -SubmissionPacketDirectory "C:\path\outside\repo\SnapTableReminder-AppStoreSubmissionPacket" `
   -MaterialsDirectory "C:\path\outside\repo\SnapTableReminder-Apple-Materials" `
   -NextActionsOutputPath "C:\path\outside\repo\SnapTableReminder-Apple-Next-Actions.md"
 ```
